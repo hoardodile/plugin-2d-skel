@@ -1,0 +1,1 @@
+{"frameRate":30,"name":"hero","version":"5.5","compatibleVersion":"5.5","armature":[{"type":"Armature","name":"hero","animation":[{"name":"idle"},{"name":"walk"}],"skin":[{"name":"default","slot":[{"name":"s0","display":[]}]}]}]}

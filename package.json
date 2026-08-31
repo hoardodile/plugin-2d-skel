@@ -1,0 +1,89 @@
+{
+	"name": "@hoardodile/plugin-skeleton-animation",
+	"version": "0.1.6",
+	"private": true,
+	"license": "MIT",
+	"type": "module",
+	"scripts": {
+		"dev": "node scripts/generate-third-party-notices.mjs && hoardodile plugin dev",
+		"build": "node scripts/generate-third-party-notices.mjs && hoardodile plugin build",
+		"watch": "node scripts/generate-third-party-notices.mjs && hoardodile plugin build --watch",
+		"notices": "node scripts/generate-third-party-notices.mjs",
+		"notices:check": "node scripts/generate-third-party-notices.mjs --check",
+		"testdata": "node scripts/make-testdata.mjs",
+		"testdata:real": "node scripts/fetch-testdata-real.mjs --force",
+		"detect:smoke": "hoardodile plugin run detect testdata --plugin-dir dist",
+		"detect:real": "hoardodile plugin run detect C:/data/temp/feie-resources-2026-05-10 --plugin-dir dist",
+		"detect:real2": "hoardodile plugin run detect C:/data/temp/output --plugin-dir dist",
+		"postinstall": "node scripts/fetch-testdata-real.mjs",
+		"lint": "tsc --noEmit",
+		"test": "vitest run",
+		"readme:check": "node scripts/check-readme.mjs",
+		"release": "node scripts/release.mjs"
+	},
+	"release-it": {
+		"git": {
+			"commitMessage": "chore(release): v${version}",
+			"tagName": "v${version}",
+			"requireBranch": "main"
+		},
+		"github": {
+			"release": false
+		},
+		"npm": {
+			"publish": false,
+			"allowSameVersion": true
+		},
+		"plugins": {
+			"@release-it/conventional-changelog": {
+				"preset": {
+					"name": "conventionalcommits"
+				},
+				"infile": "CHANGELOG.md"
+			}
+		},
+		"hooks": {
+			"after:bump": "node scripts/sync-version.mjs"
+		}
+	},
+	"dependencies": {
+		"@esotericsoftware/spine-player-4.0": "npm:@esotericsoftware/spine-player@4.0.31",
+		"@esotericsoftware/spine-player-4.1": "npm:@esotericsoftware/spine-player@4.1.56",
+		"@esotericsoftware/spine-player-4.2": "npm:@esotericsoftware/spine-player@4.2.119",
+		"@esotericsoftware/spine-player-4.3": "npm:@esotericsoftware/spine-player@4.3.13",
+		"@hoardodile/sdk-react": "^0.1.6",
+		"@hoardodile/sdk-server": "^0.1.6",
+		"@hoardodile/sdk-types": "^0.1.6",
+		"@hoardodile/sdk-web": "^0.1.6",
+		"@hoardodile/ui": "^0.1.6",
+		"pixi-dragonbones-runtime": "7.0.0",
+		"pixi-live2d-display": "0.5.0-beta",
+		"pixi.js": "7.4.3",
+		"react": "^19.2.8",
+		"react-dom": "^19.2.8"
+	},
+	"devDependencies": {
+		"@hoardodile/cli": "^0.1.6",
+		"@hoardodile/host": "^0.1.6",
+		"@hoardodile/host-web": "^0.1.6",
+		"@hoardodile/workbench": "^0.1.6",
+		"@release-it/conventional-changelog": "^12.0.0",
+		"@tailwindcss/vite": "^4.3.3",
+		"@testing-library/jest-dom": "^7.0.0",
+		"@testing-library/react": "^16.3.2",
+		"@types/node": "^26.1.2",
+		"@types/react": "^19.2.18",
+		"@types/react-dom": "^19.2.4",
+		"@vitejs/plugin-react": "^6.0.5",
+		"fflate": "^0.8.3",
+		"jsdom": "^30.0.1",
+		"license-checker-rseidelsohn": "^5.0.1",
+		"release-it": "^21.0.2",
+		"shadcn": "^4.19.0",
+		"tailwindcss": "^4.3.3",
+		"tw-animate-css": "^1.4.0",
+		"typescript": "^7.0.2",
+		"vite": "^8.2.0",
+		"vitest": "^4.1.10"
+	}
+}

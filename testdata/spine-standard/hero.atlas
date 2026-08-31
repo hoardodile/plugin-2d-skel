@@ -1,0 +1,5 @@
+hero.png
+size: 1,1
+format: RGBA8888
+filter: Linear,Linear
+repeat: none

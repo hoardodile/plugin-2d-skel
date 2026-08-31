@@ -1,0 +1,92 @@
+{
+	"id": "209220c6-29fa-4f78-850a-bfcf6b4382c1",
+	"name": "2D Skeleton Animation",
+	"description": "Live2D, Spine and DragonBones animation viewer.",
+	"version": "0.1.6",
+	"minAppVersion": "0.1.6",
+	"icon": "bone",
+	"permissions": {
+		"sourceMeta": true,
+		"searchMeta": true,
+		"download": true
+	},
+	"i18n": {
+		"name": {
+			"en": "2D Skeleton Animation",
+			"zh": "2D骨架动画",
+			"ja": "2Dスケルトンアニメーション",
+			"de": "2D-Skelett-Animation",
+			"es": "Animación 2D de esqueletos"
+		},
+		"description": {
+			"en": "Live2D, Spine and DragonBones animation viewer.",
+			"zh": "Live2D、Spine 与 DragonBones 动画查看器。",
+			"ja": "Live2D、Spine、DragonBones アニメーションビューアー。",
+			"de": "Live2D-, Spine- und DragonBones-Animations-Viewer.",
+			"es": "Visor de animaciones Live2D, Spine y DragonBones."
+		},
+		"cubismKindLabel": {
+			"en": "Cubism",
+			"zh": "Cubism",
+			"ja": "Cubism",
+			"de": "Cubism",
+			"es": "Cubism"
+		},
+		"standardKindLabel": {
+			"en": "Standard",
+			"zh": "标准",
+			"ja": "標準",
+			"de": "Standard",
+			"es": "Estándar"
+		},
+		"exKindLabel": {
+			"en": "EX",
+			"zh": "EX",
+			"ja": "EX",
+			"de": "EX",
+			"es": "EX"
+		},
+		"dragonbonesKindLabel": {
+			"en": "DragonBones",
+			"zh": "龙骨",
+			"ja": "DragonBones",
+			"de": "DragonBones",
+			"es": "DragonBones"
+		}
+	},
+	"ui": {
+		"height": "85vh",
+		"card": {
+			"default": {
+				"bl": [
+					"{{join(' ', searchKindIcons(), if(gt(source.modelCount, 1), number(source.modelCount)))}}"
+				],
+				"br": ["{{source.version}}"]
+			}
+		},
+		"search": {
+			"kinds": [
+				{
+					"key": "cubism",
+					"label": "{{t('cubismKindLabel')}}",
+					"icon": "{{icon('Sparkle')}}"
+				},
+				{
+					"key": "standard",
+					"label": "{{t('standardKindLabel')}}",
+					"icon": "{{icon('Star')}}"
+				},
+				{
+					"key": "ex",
+					"label": "{{t('exKindLabel')}}",
+					"icon": "{{icon('Sparkle')}}"
+				},
+				{
+					"key": "dragonbones",
+					"label": "{{t('dragonbonesKindLabel')}}",
+					"icon": "{{icon('Dragon')}}"
+				}
+			]
+		}
+	}
+}

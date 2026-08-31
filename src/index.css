@@ -1,0 +1,49 @@
+@import "@hoardodile/ui/theme.css";
+@source "../**/*.{ts,tsx}";
+
+html,
+body {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+#root {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+/* The hosted sheet overlay applies a backdrop blur by default (frosted glass)
+ * behind the viewer panel. Drop it so opening the right side panel keeps the
+ * stage crisp; only a subtle dim remains. */
+[data-slot="sheet-overlay"] {
+	backdrop-filter: none !important;
+}
+
+.live2d-checker,
+.spine-checker {
+	background-image:
+		linear-gradient(45deg, rgba(255, 255, 255, 0.06) 25%, transparent 25%),
+		linear-gradient(-45deg, rgba(255, 255, 255, 0.06) 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.06) 75%),
+		linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.06) 75%);
+	background-position:
+		0 0,
+		0 8px,
+		8px -8px,
+		-8px 0;
+	background-size: 16px 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.live2d-fade,
+	.spine-fade,
+	.engine-fade {
+		transition-duration: 1ms !important;
+	}
+}
