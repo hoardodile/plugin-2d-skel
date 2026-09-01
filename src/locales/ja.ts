@@ -99,6 +99,7 @@ export default {
 	moveMode: "移動",
 	interactModeHint: "ドラッグでモデルと操作 · ホイールでズーム",
 	moveModeHint: "ドラッグで位置調整 · ホイールでズーム",
+	interactModeNoHitHint: "クリックでアニメーション切替 · ホイールでズーム",
 	more: "もっと",
 	hit: "タップ",
 	scene: "シーン",

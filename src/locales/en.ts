@@ -99,6 +99,7 @@ export default {
 	moveMode: "Move",
 	interactModeHint: "Drag to interact with the model · Scroll to zoom",
 	moveModeHint: "Drag to reposition · Scroll to zoom",
+	interactModeNoHitHint: "Click to switch animation · Scroll to zoom",
 	more: "More",
 	hit: "Hit",
 	scene: "Scene",

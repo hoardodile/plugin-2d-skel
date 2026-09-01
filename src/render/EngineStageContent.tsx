@@ -133,6 +133,11 @@ export function EngineStageContent(props: EngineStageContentProps) {
 				: scene.modelJson
 	const viewportCacheKey = `viewport:${viewportKey}`
 	const mode = settings.interactionMode
+	// Spine/DragonBones models with no hit areas rely on the click-advances
+	// animation fallback, so the interact hint should say so instead of the
+	// misleading "drag to interact" (Live2D keeps its gaze hint always).
+	const noHotspots =
+		(engine === "spine" || engine === "dragonbones") && controller.exHit === undefined
 
 	const viewport = useViewport({
 		target: containerRef,
@@ -258,7 +263,11 @@ export function EngineStageContent(props: EngineStageContentProps) {
 				]}
 			/>
 			<p className="text-tiny leading-snug text-muted-foreground">
-				{mode === "move" ? t("moveModeHint") : t("interactModeHint")}
+				{mode === "move"
+					? t("moveModeHint")
+					: noHotspots
+						? t("interactModeNoHitHint")
+						: t("interactModeHint")}
 			</p>
 		</div>
 	)

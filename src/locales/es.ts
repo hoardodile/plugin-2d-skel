@@ -99,6 +99,7 @@ export default {
 	moveMode: "Mover",
 	interactModeHint: "Arrastra para interactuar con el modelo · Desplázate para ampliar",
 	moveModeHint: "Arrastra para reposicionar · Desplázate para ampliar",
+	interactModeNoHitHint: "Clic para cambiar la animación · Desplázate para ampliar",
 	more: "Más",
 	hit: "Tap",
 	scene: "Escena",

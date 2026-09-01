@@ -99,6 +99,7 @@ export default {
 	moveMode: "Verschieben",
 	interactModeHint: "Ziehen, um mit dem Modell zu interagieren · Scrollen zum Zoomen",
 	moveModeHint: "Ziehen zum Positionieren · Scrollen zum Zoomen",
+	interactModeNoHitHint: "Klicken zum Animationswechsel · Scrollen zum Zoomen",
 	more: "Mehr",
 	hit: "Treffer",
 	scene: "Szene",

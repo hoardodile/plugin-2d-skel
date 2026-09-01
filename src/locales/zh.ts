@@ -99,6 +99,7 @@ export default {
 	moveMode: "移动",
 	interactModeHint: "拖动与模型互动 · 滚轮缩放",
 	moveModeHint: "拖动调整位置 · 滚轮缩放",
+	interactModeNoHitHint: "点击切换动画 · 滚轮缩放",
 	more: "更多",
 	hit: "点击",
 	scene: "场景",
