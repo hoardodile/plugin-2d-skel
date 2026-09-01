@@ -4,7 +4,7 @@
  * The viewer can capture a PNG of the current model frame and set it as the
  * resource cover. The crop UI is handled by the shared `@hoardodile/ui`
  * `ImageCropper`; this module only owns the cover-write boundary, which is
- * the host SDK's `api.uploadCover({ file, filename })` (client SDK, ≥0.1.6) —
+ * the host SDK's `api.uploadCover({ file, filename })` (client SDK, ≥0.1.8) —
  * the host performs the credentialed `PUT /api/resources/:id/cover` on the
  * plugin's behalf and invalidates the resource caches so the new cover
  * renders.
