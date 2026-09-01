@@ -82,6 +82,9 @@ export function DragonBonesHost({
 		armatureChoice,
 		onCommand: handleCommand,
 		reloadKey,
+		// A tap advances to the next animation (armatures aren't hit-tested on
+		// the canvas), so the model still responds to a click.
+		onFallbackTap: () => stepAnimation(1),
 	})
 
 	const animation = effectiveChoice(player.names.animations, animationChoice, scene?.modelJson !== undefined)

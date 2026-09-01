@@ -60,6 +60,12 @@ export function useSpinePlayer(options: {
 	readonly skinChoice: string | undefined
 	readonly onCommand: (command: string) => void
 	readonly reloadKey?: number
+	/**
+	 * Called when a tap hits no interactive hit area (or the model exposes
+	 * none) — the host advances to the next animation so even models without
+	 * hotspots respond to a click.
+	 */
+	readonly onFallbackTap?: () => void
 }): SpineController {
 	const {
 		containerRef,
@@ -70,6 +76,7 @@ export function useSpinePlayer(options: {
 		skinChoice,
 		onCommand,
 		reloadKey = 0,
+		onFallbackTap,
 	} = options
 	const api = usePluginAPI()
 	const playbackRef = useRef<SpinePlayback | null>(null)
@@ -389,19 +396,28 @@ export function useSpinePlayer(options: {
 			viewport: { readonly x: number; readonly y: number; readonly scale: number },
 		) {
 			const host = containerRef.current
+			if (host === null) return
 			const data = exHit
-			if (host === null || data === undefined) return
 			const rect = host.getBoundingClientRect()
-			const area = hitTestSpinePoint({
-				pointer: { x: point.x - rect.left, y: point.y - rect.top },
-				canvasSize: { width: rect.width, height: rect.height },
-				viewport,
-				bounds: data.bounds,
-				areas: data.areas,
-			})
-			if (area !== undefined) playMotionRefImplRef.current(area.motion)
+			if (data !== undefined) {
+				const area = hitTestSpinePoint({
+					pointer: { x: point.x - rect.left, y: point.y - rect.top },
+					canvasSize: { width: rect.width, height: rect.height },
+					viewport,
+					bounds: data.bounds,
+					areas: data.areas,
+				})
+				if (area !== undefined) {
+					playMotionRefImplRef.current(area.motion)
+					return
+				}
+			}
+			// No interactive hotspot hit (or none declared): fall back to a
+			// click response so hotspot-less models aren't "dead" — the host
+			// advances to the next animation.
+			onFallbackTap?.()
 		},
-		[containerRef, exHit],
+		[containerRef, exHit, onFallbackTap],
 	)
 
 	const capture = useCallback(

@@ -55,6 +55,12 @@ export function useDragonBonesPlayer(options: {
 	readonly armatureChoice: string | undefined
 	readonly onCommand: (command: string) => void
 	readonly reloadKey?: number
+	/**
+	 * Called on tap when the model exposes no pointer hit-testing (DragonBones
+	 * armatures aren't hit-tested on the canvas) — the host advances to the
+	 * next animation so the model still responds to a click.
+	 */
+	readonly onFallbackTap?: () => void
 }): DragonBonesController {
 	const {
 		containerRef,
@@ -64,6 +70,7 @@ export function useDragonBonesPlayer(options: {
 		armatureChoice,
 		onCommand,
 		reloadKey = 0,
+		onFallbackTap,
 	} = options
 	const api = usePluginAPI()
 	const armatureRef = useRef<DragonBonesArmatureDisplay | null>(null)
@@ -452,7 +459,9 @@ export function useDragonBonesPlayer(options: {
 	const tapAt = useCallback(() => {
 		// Pointer hit-testing against DragonBones armatures is not yet wired;
 		// hit areas can still be triggered from the controls tab via `hit`.
-	}, [])
+		// Give click a response anyway: the host advances to the next animation.
+		onFallbackTap?.()
+	}, [onFallbackTap])
 
 	const capture = useCallback(
 		function capture() {

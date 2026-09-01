@@ -144,7 +144,9 @@ export function EngineStageContent(props: EngineStageContentProps) {
 			api.setCache(viewportCacheKey, JSON.stringify(next))
 		},
 		onTap(point) {
-			if (engine === "spine" && scene?.modelJson === undefined) return
+			// A tap drives the engine's pointer interaction: a spine/dragonbones
+			// hit area when present, else the host's click-advances-animation
+			// fallback (so hotspot-less models still respond to a click).
 			const host = containerRef.current
 			if (host === null) return
 			const rect = host.getBoundingClientRect()

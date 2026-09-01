@@ -78,6 +78,9 @@ export function SpineHost({ scene, scenes, sceneIndex, selectScene }: SpineHostP
 		skinChoice,
 		onCommand: handleCommand,
 		reloadKey,
+		// A tap that hits no hotspot advances to the next animation, so
+		// hotspot-less models still respond to a click.
+		onFallbackTap: () => stepAnimation(1),
 	})
 
 	const baseNames = baseAnimationNames(player.names.animations, player.names.overlays)
