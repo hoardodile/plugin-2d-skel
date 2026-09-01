@@ -116,7 +116,6 @@ export function EngineStageContent(props: EngineStageContentProps) {
 	const [cropImage, setCropImage] = useState<string | undefined>(undefined)
 	const [cropSceneIndex, setCropSceneIndex] = useState(sceneIndex)
 	const keyboardRef = useRef<(event: KeyboardEvent) => void>(() => {})
-	const resetViewportRef = useRef<() => void>(() => {})
 	const below = useBelowSidebar()
 	const docked = !below
 
@@ -159,11 +158,12 @@ export function EngineStageContent(props: EngineStageContentProps) {
 			if (controller.engine === "live2d") controller.dragAt(point)
 		},
 		onDoubleTap() {
-			// Double-click resets the view (not a zoom toggle).
-			resetViewportRef.current()
+			// Every click in "interact" mode drives model interaction (hit
+			// areas / gaze), so two quick clicks must NOT reset the viewport
+			// — an accidental double-click snapped the model back to home. The
+			// toolbar's "Reset view" button handles explicit resets.
 		},
 	})
-	resetViewportRef.current = viewport.reset
 
 	// The ACTUAL applied transform (derived from each engine's live render
 	// surface) so a re-fit/snap-back is observable via data-viewport.
