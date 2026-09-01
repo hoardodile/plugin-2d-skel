@@ -3,8 +3,7 @@ import spine41Url from "@esotericsoftware/spine-player-4.1/dist/iife/spine-playe
 import spine42Url from "@esotericsoftware/spine-player-4.2/dist/iife/spine-player.js?url"
 import spine43Url from "@esotericsoftware/spine-player-4.3/dist/iife/spine-player.js?url"
 import { isRecord } from "@hoardodile/sdk-web"
-import { HOME, type ViewportTransform } from "./canvas-view"
-import { rewriteAtlas, resolveAtlasPage } from "../core/atlas"
+import { resolveAtlasPage, rewriteAtlas } from "../core/atlas"
 import {
 	isLegacyRejectedVersion,
 	parseSpineVersion,
@@ -12,6 +11,7 @@ import {
 	type SpineRuntime,
 } from "../core/spine-format"
 import type { SpineScene } from "../shared"
+import { HOME, type ViewportTransform } from "./canvas-view"
 
 /** The small surface every bundled SpinePlayer build exposes. */
 type NativePlayer = {
@@ -155,9 +155,7 @@ function patchLegacyPreserveDrawingBuffer(runtime: SpinePlayerModule): void {
  * runtime exposes no LoadingScreen to patch (an absent draw is treated as
  * already suppressed and reports false).
  */
-export function patchLegacyLoadingScreen(
-	runtime: SpinePlayerModule,
-): boolean {
+export function patchLegacyLoadingScreen(runtime: SpinePlayerModule): boolean {
 	const prototype = (
 		runtime as unknown as {
 			readonly webgl?: {
@@ -352,7 +350,9 @@ export function binaryRawDataUri(bytes: Uint8Array): string {
  * seams and transparent edges show a dark fringe. Returns `false` when the
  * flag is absent or malformed.
  */
-export function atlasUsesPremultipliedAlpha(atlasText: string | undefined): boolean {
+export function atlasUsesPremultipliedAlpha(
+	atlasText: string | undefined,
+): boolean {
 	if (atlasText === undefined) return false
 	const match = /^pma:\s*(true|false)\s*$/m.exec(atlasText)
 	return match?.[1]?.toLowerCase() === "true"
@@ -390,7 +390,8 @@ export function worldPerPixel(
 	canvasPx: number,
 ): number {
 	if (viewWorld !== undefined && viewWorld > 0) return viewWorld / canvasPx
-	if (boundsWorld !== undefined && boundsWorld > 0) return boundsWorld / canvasPx
+	if (boundsWorld !== undefined && boundsWorld > 0)
+		return boundsWorld / canvasPx
 	return 1
 }
 
@@ -508,7 +509,15 @@ export async function mountSpinePlayer(
 	let skeletonBase: SkeletonBase | undefined
 	const viewportRef = { current: { ...HOME } }
 
-	function skeletonSurface(): { x: number; y: number; scaleX: number; scaleY: number; updateWorldTransform: () => void } | undefined {
+	function skeletonSurface():
+		| {
+				x: number
+				y: number
+				scaleX: number
+				scaleY: number
+				updateWorldTransform: () => void
+		  }
+		| undefined {
 		const skeleton = player?.skeleton
 		if (skeleton === undefined) return undefined
 		return skeleton as unknown as {
@@ -529,9 +538,20 @@ export async function mountSpinePlayer(
 		if (sw <= 0 || sh <= 0) return
 		// `getBounds` can throw for some skeletons mid-load ("offset cannot be
 		// null"); fall back to a 1:1 world↔px scale rather than fail.
-		let bounds: { x: number; y: number; width: number; height: number } | undefined
+		let bounds:
+			| { x: number; y: number; width: number; height: number }
+			| undefined
 		try {
-			bounds = (surface as unknown as { getBounds?: () => { x: number; y: number; width: number; height: number } }).getBounds?.()
+			bounds = (
+				surface as unknown as {
+					getBounds?: () => {
+						x: number
+						y: number
+						width: number
+						height: number
+					}
+				}
+			).getBounds?.()
 		} catch {
 			bounds = undefined
 		}
@@ -541,9 +561,13 @@ export async function mountSpinePlayer(
 		// which can be much larger than the animated `getBounds()` — using the
 		// latter made the pan lag by that ratio (the "drag 1 m → 10 cm" report).
 		// Prefer the pinned viewport dims when present, else the model's bounds.
-		const viewport = isRecord(player.config?.viewport) ? player.config?.viewport : undefined
-		const viewWidth = typeof viewport?.width === "number" ? viewport.width : undefined
-		const viewHeight = typeof viewport?.height === "number" ? viewport.height : undefined
+		const viewport = isRecord(player.config?.viewport)
+			? player.config?.viewport
+			: undefined
+		const viewWidth =
+			typeof viewport?.width === "number" ? viewport.width : undefined
+		const viewHeight =
+			typeof viewport?.height === "number" ? viewport.height : undefined
 		const worldPerX = worldPerPixel(viewWidth, bounds?.width, sw)
 		const worldPerY = worldPerPixel(viewHeight, bounds?.height, sh)
 		skeletonBase = {
@@ -568,12 +592,15 @@ export async function mountSpinePlayer(
 		surface.scaleY = base.scaleY * tz
 		// Scale around the model's bounds center (keeps the canvas point fixed),
 		// then translate by the screen-px pan.
-		surface.x = base.pivotX + (base.x - base.pivotX) * tz + transform.x * base.worldPerX
-		surface.y = base.pivotY + (base.y - base.pivotY) * tz - transform.y * base.worldPerY
+		surface.x =
+			base.pivotX + (base.x - base.pivotX) * tz + transform.x * base.worldPerX
+		surface.y =
+			base.pivotY + (base.y - base.pivotY) * tz - transform.y * base.worldPerY
 		// Whole-skeleton rotation isn't a field on the Skeleton in every runtime; set
 		// it when present (some 4.x builds expose it), else it's a no-op.
 		if ("rotation" in surface) {
-			;(surface as unknown as { rotation: number }).rotation = transform.rotation
+			;(surface as unknown as { rotation: number }).rotation =
+				transform.rotation
 		}
 		// The player runs `updateWorldTransform` each frame, so setting the
 		// skeleton transform here is enough — calling it manually can throw

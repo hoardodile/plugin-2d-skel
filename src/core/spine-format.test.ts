@@ -63,7 +63,7 @@ describe("spine-format", () => {
 	})
 
 	test("reads the version out of a binary skeleton header", () => {
-		const bytes = new TextEncoder().encode("4.2.119\0" + "\0".repeat(64))
+		const bytes = new TextEncoder().encode(`4.2.119\0${"\0".repeat(64)}`)
 		const doc = readBinarySpineDocument(bytes)
 		expect(doc?.version?.raw).toBe("4.2.119")
 	})
@@ -76,7 +76,9 @@ describe("spine-format", () => {
 	test("routes a full read by extension", () => {
 		const bytes = new TextEncoder().encode(`{"skeleton":{"spine":"4.1.24"}}`)
 		expect(readSpineDocument(bytes, "hero.json")?.version?.raw).toBe("4.1.24")
-		expect(readSpineDocument(new Uint8Array([0x34, 0x2e, 0x30]), "he.skel")).toBeUndefined()
+		expect(
+			readSpineDocument(new Uint8Array([0x34, 0x2e, 0x30]), "he.skel"),
+		).toBeUndefined()
 		expect(readSpineDocument(bytes, "hero.atlas")).toBeUndefined()
 	})
 })

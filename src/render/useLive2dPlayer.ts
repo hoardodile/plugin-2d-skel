@@ -1,9 +1,7 @@
 import { isRecord } from "@hoardodile/sdk-web"
-import type { ViewportPoint, ViewportTransform } from "./canvas-view"
 import { Application } from "pixi.js"
 import type { Live2DModel } from "pixi-live2d-display"
 import { type RefObject, useCallback, useEffect, useRef, useState } from "react"
-import { deriveLive2dViewport, HOME } from "./canvas-view"
 import {
 	type MotionChoice,
 	type MotionEntry,
@@ -12,25 +10,24 @@ import {
 	parseMotionGraph,
 	selectMotion,
 } from "../core/motion-graph"
-import { nextExpressionName, parseExCommand } from "./commands"
-import { usePluginAPI } from "./hooks"
-import { buildExpressionFileMap, buildHitMap, pathBasename } from "./hit-areas"
-import { projectLive2dHitRects, type HitAreaRect, type Live2dModelLike } from "./hit-overlay"
-import { live2dRuntimeVersion } from "./runtime-version"
-import type {
-	Live2dAutoPlayMode,
-	Live2dFitMode,
-	Live2dSettings,
-} from "./prefs"
-import { prepareModel } from "./prepare-model"
-import {
-	ensureLive2dRuntime,
-	type Live2dRuntimeError,
-} from "./runtime"
-import { scaledSoundVolume } from "./sound"
-import type { Live2dController } from "./engine"
 import { useTranslation } from "../i18n"
 import type { Live2dScene } from "../shared"
+import type { ViewportPoint, ViewportTransform } from "./canvas-view"
+import { deriveLive2dViewport, HOME } from "./canvas-view"
+import { nextExpressionName, parseExCommand } from "./commands"
+import type { Live2dController } from "./engine"
+import { buildExpressionFileMap, buildHitMap, pathBasename } from "./hit-areas"
+import {
+	type HitAreaRect,
+	type Live2dModelLike,
+	projectLive2dHitRects,
+} from "./hit-overlay"
+import { usePluginAPI } from "./hooks"
+import type { Live2dAutoPlayMode, Live2dFitMode, Live2dSettings } from "./prefs"
+import { prepareModel } from "./prepare-model"
+import { ensureLive2dRuntime, type Live2dRuntimeError } from "./runtime"
+import { live2dRuntimeVersion } from "./runtime-version"
+import { scaledSoundVolume } from "./sound"
 
 export type Live2dPlayerStatus = "idle" | "loading" | "ready" | "error"
 
@@ -121,9 +118,9 @@ export function useLive2dPlayer(options: {
 	const autoPlayIntervalRef = useRef(settings.autoPlayIntervalMs)
 	autoPlayIntervalRef.current = settings.autoPlayIntervalMs
 	const [status, setStatus] = useState<Live2dPlayerStatus>("idle")
-	const [runtimeError, setRuntimeError] = useState<Live2dRuntimeError | undefined>(
-		undefined,
-	)
+	const [runtimeError, setRuntimeError] = useState<
+		Live2dRuntimeError | undefined
+	>(undefined)
 	const [motionGraph, setMotionGraph] = useState<MotionGraph>({})
 	const [modelInfo, setModelInfo] = useState<Live2dModelInfo | undefined>(
 		undefined,
@@ -134,10 +131,12 @@ export function useLive2dPlayer(options: {
 		choices: [],
 	})
 	const [paused, setPaused] = useState(false)
-	const [currentExpression, setCurrentExpression] = useState<string | undefined>(
+	const [currentExpression, setCurrentExpression] = useState<
+		string | undefined
+	>(undefined)
+	const [runtimeVersion, setRuntimeVersion] = useState<string | undefined>(
 		undefined,
 	)
-	const [runtimeVersion, setRuntimeVersion] = useState<string | undefined>(undefined)
 	const [hitAreaRects, setHitAreaRects] = useState<readonly HitAreaRect[]>([])
 
 	const sceneKey = scene?.modelJson ?? ""
@@ -527,14 +526,7 @@ export function useLive2dPlayer(options: {
 				app.destroy(true, { children: true })
 			}
 		}
-	}, [
-		api,
-		containerRef,
-		scene,
-		sceneKey,
-		reloadKey,
-		onCommand,
-	])
+	}, [api, containerRef, scene, sceneKey, reloadKey, onCommand])
 
 	// Playback speed is applied to the shared Pixi ticker, which scales the
 	// deltaMS every frame drives (both Cubism 2 and Cubism 4 models).
@@ -677,7 +669,11 @@ export function useLive2dPlayer(options: {
 		const { width, height } = model.internalModel
 		if (width <= 0 || height <= 0) return { ...HOME }
 		return deriveLive2dViewport(
-			{ position: model.position, scale: model.scale, rotation: model.rotation },
+			{
+				position: model.position,
+				scale: model.scale,
+				rotation: model.rotation,
+			},
 			{ width: app.screen.width, height: app.screen.height },
 			{ width, height },
 			fitModeRef.current,
@@ -760,7 +756,7 @@ function fitScale(
 ): number {
 	if (mode === "width") return viewWidth / modelWidth
 	if (mode === "height") return viewHeight / modelHeight
-	return (Math.min(viewWidth / modelWidth, viewHeight / modelHeight) * 0.9)
+	return Math.min(viewWidth / modelWidth, viewHeight / modelHeight) * 0.9
 }
 
 /** Surface the loaded model's native canvas + descriptor flags for the Info panel. */

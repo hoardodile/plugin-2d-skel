@@ -81,11 +81,8 @@ writeScene("spine-ex", {
 		],
 		motions: { idle: [{ file: "idle" }] },
 	}),
-	"skeleton_0": Buffer.concat([
-		Buffer.from("4.2.119\0"),
-		Buffer.alloc(64),
-	]),
-	"atlases_0_atlas_0": ATLAS,
+	skeleton_0: Buffer.concat([Buffer.from("4.2.119\0"), Buffer.alloc(64)]),
+	atlases_0_atlas_0: ATLAS,
 	"atlases_0_textures_0_0.png": PNG,
 })
 
@@ -136,7 +133,7 @@ writeScene("dragonbones-ex", {
 		],
 		motions: { idle: [{ file: "idle" }] },
 	}),
-	"skeleton_0": DB_BIN,
+	skeleton_0: DB_BIN,
 	"atlases_0_atlas_0.json": DB_TEX,
 	"atlases_0_textures_0_0.png": PNG,
 })

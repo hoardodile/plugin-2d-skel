@@ -2,8 +2,8 @@ import { fireEvent, render, screen } from "@testing-library/react"
 import type { ReactNode } from "react"
 import { describe, expect, test, vi } from "vitest"
 import type { MotionEntry } from "../core/motion-graph"
-import type { EngineSettings } from "./prefs"
 import { Live2dControlsTab } from "./Live2dTabs"
+import type { EngineSettings } from "./prefs"
 
 vi.mock("../i18n", () => ({
 	useTranslation: () => ({ t: (key: string) => key, language: "en" }),
@@ -145,7 +145,10 @@ function renderTab(
 ) {
 	const base = {
 		graph: {
-			Idle: [makeEntry({ name: "a" }), makeEntry({ name: "b", motionDuration: 3 })],
+			Idle: [
+				makeEntry({ name: "a" }),
+				makeEntry({ name: "b", motionDuration: 3 }),
+			],
 			Walk: [makeEntry({ name: "c" })],
 		},
 		group: "Idle",
@@ -182,7 +185,8 @@ describe("Live2dControlsTab", () => {
 		const playback = screen.getByText("playback")
 		const motions = screen.getByText("motions · 3")
 		expect(
-			playback.compareDocumentPosition(motions) & Node.DOCUMENT_POSITION_FOLLOWING,
+			playback.compareDocumentPosition(motions) &
+				Node.DOCUMENT_POSITION_FOLLOWING,
 		).toBeTruthy()
 	})
 
@@ -258,7 +262,9 @@ describe("Live2dControlsTab", () => {
 		expect(screen.getByTestId("live2d-autoplay-toggle")).toBeInTheDocument()
 		expect(screen.getByTestId("live2d-random")).toBeInTheDocument()
 		expect(screen.queryByTestId("live2d-autoplay-mode")).not.toBeInTheDocument()
-		expect(screen.queryByTestId("live2d-autoplay-interval")).not.toBeInTheDocument()
+		expect(
+			screen.queryByTestId("live2d-autoplay-interval"),
+		).not.toBeInTheDocument()
 		fireEvent.click(screen.getByTestId("live2d-autoplay-toggle"))
 		expect(base.onSettingsChange).toHaveBeenCalledWith({ autoPlay: true })
 	})

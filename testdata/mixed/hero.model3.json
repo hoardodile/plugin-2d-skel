@@ -1,1 +1,8 @@
-{"Version":3,"FileReferences":{"Moc":"Moc_0.moc3","Textures":["Textures_0_0.png"],"Motions":{"Idle":[{"File":"Motions_Idle_0_File_0.json"}]}}}
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "Moc_0.moc3",
+		"Textures": ["Textures_0_0.png"],
+		"Motions": { "Idle": [{ "File": "Motions_Idle_0_File_0.json" }] }
+	}
+}

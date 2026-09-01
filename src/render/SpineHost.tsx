@@ -1,20 +1,20 @@
 import { Icon } from "@hoardodile/ui/components/icon"
 import { AltArrowLeft, AltArrowRight } from "@hoardodile/ui/icons/registry"
 import { useCallback, useEffect, useRef, useState } from "react"
-import type { SpineScene } from "../shared"
 import { useTranslation } from "../i18n"
+import type { SpineScene } from "../shared"
 import { baseAnimationNames, effectiveChoice } from "./choices"
-import type { ViewerScene } from "./engine"
 import { EngineIconButton } from "./EngineIconButton"
-import { EngineStageContent, type EnginePlugin } from "./EngineStageContent"
-import { SpineControlsTab } from "./SpineControlsTab"
+import { type EnginePlugin, EngineStageContent } from "./EngineStageContent"
+import type { ViewerScene } from "./engine"
 import { usePluginAPI } from "./hooks"
 import {
 	ENGINE_SETTINGS_CODEC,
 	ENGINE_SETTINGS_DEFAULT,
-	toSpineSettings,
 	type EngineSettings,
+	toSpineSettings,
 } from "./prefs"
+import { SpineControlsTab } from "./SpineControlsTab"
 import { useSpinePlayer } from "./useSpinePlayer"
 
 export type SpineHostProps = {
@@ -24,7 +24,12 @@ export type SpineHostProps = {
 	readonly selectScene: (index: number) => void
 }
 
-export function SpineHost({ scene, scenes, sceneIndex, selectScene }: SpineHostProps) {
+export function SpineHost({
+	scene,
+	scenes,
+	sceneIndex,
+	selectScene,
+}: SpineHostProps) {
 	const api = usePluginAPI()
 	const { t } = useTranslation()
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -58,7 +63,9 @@ export function SpineHost({ scene, scenes, sceneIndex, selectScene }: SpineHostP
 					const index = scenes.findIndex(
 						(s) =>
 							(s as SpineScene).modelJson === target ||
-							(s as SpineScene).modelJson?.slice((s as SpineScene).modelJson!.lastIndexOf("/") + 1) === target,
+							(s as SpineScene).modelJson?.slice(
+								(s as SpineScene).modelJson!.lastIndexOf("/") + 1,
+							) === target,
 					)
 					if (index !== -1) selectScene(index)
 				}
@@ -83,15 +90,27 @@ export function SpineHost({ scene, scenes, sceneIndex, selectScene }: SpineHostP
 		onFallbackTap: () => stepAnimation(1),
 	})
 
-	const baseNames = baseAnimationNames(player.names.animations, player.names.overlays)
-	const animation = effectiveChoice(baseNames, animationChoice, scene?.modelJson !== undefined)
+	const baseNames = baseAnimationNames(
+		player.names.animations,
+		player.names.overlays,
+	)
+	const animation = effectiveChoice(
+		baseNames,
+		animationChoice,
+		scene?.modelJson !== undefined,
+	)
 	const skin = effectiveChoice(player.names.skins, skinChoice)
 	const overlay = effectiveChoice(player.names.overlays, overlayChoice)
 
 	function stepAnimation(dir: 1 | -1) {
 		if (baseNames.length === 0) return
 		const index = baseNames.indexOf(animation ?? "")
-		const next = index === -1 ? (dir === 1 ? 0 : baseNames.length - 1) : (index + dir + baseNames.length) % baseNames.length
+		const next =
+			index === -1
+				? dir === 1
+					? 0
+					: baseNames.length - 1
+				: (index + dir + baseNames.length) % baseNames.length
 		const name = baseNames[next]
 		if (name !== undefined) setAnimationChoice(name)
 	}

@@ -148,7 +148,8 @@ export function SpineControlsTab(props: SpineControlsTabProps) {
 
 	const blocks: ReactNode[] = []
 	sections.forEach((section, index) => {
-		if (index > 0) blocks.push(<Separator key={`sep-${index}`} size="hairline" />)
+		if (index > 0)
+			blocks.push(<Separator key={`sep-${index}`} size="hairline" />)
 		blocks.push(section)
 	})
 

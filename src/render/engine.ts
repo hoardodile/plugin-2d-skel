@@ -1,10 +1,10 @@
-import type { ViewportPoint, ViewportTransform } from "./canvas-view"
 import type { MotionChoice, MotionGraph, MotionRef } from "../core/motion-graph"
 import type { EngineScene } from "../shared"
-import type { Live2dHitArea, Live2dModelInfo } from "./useLive2dPlayer"
-import type { Live2dRuntimeError } from "./runtime"
-import type { SpineExHitData, SpinePlayerNames } from "./useSpinePlayer"
+import type { ViewportPoint, ViewportTransform } from "./canvas-view"
 import type { HitAreaRect } from "./hit-overlay"
+import type { Live2dRuntimeError } from "./runtime"
+import type { Live2dHitArea, Live2dModelInfo } from "./useLive2dPlayer"
+import type { SpineExHitData, SpinePlayerNames } from "./useSpinePlayer"
 
 export type PlayerStatus = "idle" | "loading" | "ready" | "error"
 
@@ -80,4 +80,7 @@ export type DragonBonesController = PlayerCommon<"dragonbones"> & {
 	readonly runtimeVersion?: string
 }
 
-export type PlayerController = Live2dController | SpineController | DragonBonesController
+export type PlayerController =
+	| Live2dController
+	| SpineController
+	| DragonBonesController

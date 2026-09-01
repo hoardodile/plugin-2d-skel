@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest"
-import { setResourceCover, type CoverUpload } from "./cover"
+import { type CoverUpload, setResourceCover } from "./cover"
 
 const PNG = "data:image/png;base64,AA=="
 
@@ -60,7 +60,10 @@ describe("setResourceCover", () => {
 
 	test("reports bad-data-url without logging when no logger is provided", async () => {
 		const upload = vi.fn(async () => ({ path: "/api/resources/r1/cover" }))
-		const result = await setResourceCover({ dataUrl: "x", sceneIndex: 0 }, upload)
+		const result = await setResourceCover(
+			{ dataUrl: "x", sceneIndex: 0 },
+			upload,
+		)
 		expect(result).toEqual({ ok: false, reason: "bad-data-url" })
 		expect(upload).not.toHaveBeenCalled()
 	})

@@ -117,8 +117,13 @@ const INTERACTION_MODES: readonly InteractionMode[] = ["interact", "move"]
 const LIVE2D_TABS: readonly Live2dPanelTab[] = ["controls", "display", "info"]
 const SPINE_TABS: readonly SpinePanelTab[] = ["controls", "display", "info"]
 
-function isOneOf<T extends string>(value: unknown, list: readonly T[]): value is T {
-	return typeof value === "string" && (list as readonly string[]).includes(value)
+function isOneOf<T extends string>(
+	value: unknown,
+	list: readonly T[],
+): value is T {
+	return (
+		typeof value === "string" && (list as readonly string[]).includes(value)
+	)
 }
 
 function isFiniteNumber(value: unknown): value is number {
@@ -158,7 +163,9 @@ export function decodeEngineSettings(raw: string): EngineSettings | undefined {
 			? parsed.background
 			: ENGINE_SETTINGS_DEFAULT.background
 		const loop =
-			typeof parsed.loop === "boolean" ? parsed.loop : ENGINE_SETTINGS_DEFAULT.loop
+			typeof parsed.loop === "boolean"
+				? parsed.loop
+				: ENGINE_SETTINGS_DEFAULT.loop
 		const interact =
 			typeof parsed.interact === "boolean"
 				? parsed.interact

@@ -31,7 +31,9 @@ describe("resolvePremultipliedAlpha", () => {
 	})
 
 	test("an explicit pma:false wins for any runtime", () => {
-		expect(resolvePremultipliedAlpha("pma:false\nsize:1,1", "legacy")).toBe(false)
+		expect(resolvePremultipliedAlpha("pma:false\nsize:1,1", "legacy")).toBe(
+			false,
+		)
 		expect(resolvePremultipliedAlpha("pma:false\nsize:1,1", "4.1")).toBe(false)
 	})
 
@@ -107,9 +109,11 @@ describe("patchLegacyLoadingScreen", () => {
 
 		expect(patchLegacyLoadingScreen(runtime)).toBe(true)
 
-		const replaced = (runtime as unknown as {
-			webgl: { LoadingScreen: { prototype: { draw: () => void } } }
-		}).webgl.LoadingScreen.prototype.draw
+		const replaced = (
+			runtime as unknown as {
+				webgl: { LoadingScreen: { prototype: { draw: () => void } } }
+			}
+		).webgl.LoadingScreen.prototype.draw
 		expect(replaced).not.toBe(originalDraw)
 		// The no-op must not throw and must not forward to the original.
 		expect(() => replaced()).not.toThrow()
@@ -117,7 +121,9 @@ describe("patchLegacyLoadingScreen", () => {
 	})
 
 	test("returns false when the LoadingScreen prototype is absent", () => {
-		const runtime = { webgl: {} } as unknown as Parameters<typeof patchLegacyLoadingScreen>[0]
+		const runtime = { webgl: {} } as unknown as Parameters<
+			typeof patchLegacyLoadingScreen
+		>[0]
 		expect(patchLegacyLoadingScreen(runtime)).toBe(false)
 	})
 })
@@ -139,10 +145,18 @@ describe("suppressLegacySpineChrome", () => {
 
 		suppressLegacySpineChrome(container)
 
-		const logo = container.querySelector<HTMLElement>("#spine-player-button-logo")
-		const controls = container.querySelector<HTMLElement>(".spine-player-controls")
-		const buttons = container.querySelector<HTMLElement>(".spine-player-buttons")
-		const timeline = container.querySelector<HTMLElement>(".spine-player-timeline")
+		const logo = container.querySelector<HTMLElement>(
+			"#spine-player-button-logo",
+		)
+		const controls = container.querySelector<HTMLElement>(
+			".spine-player-controls",
+		)
+		const buttons = container.querySelector<HTMLElement>(
+			".spine-player-buttons",
+		)
+		const timeline = container.querySelector<HTMLElement>(
+			".spine-player-timeline",
+		)
 		expect(logo?.style.display).toBe("none")
 		expect(controls?.style.display).toBe("none")
 		expect(buttons?.style.display).toBe("none")

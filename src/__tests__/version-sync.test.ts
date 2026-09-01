@@ -10,6 +10,16 @@ const pkg = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"))
 const manifest = JSON.parse(
 	readFileSync(resolve(root, "manifest.json"), "utf8"),
 ) as { version: string; minAppVersion: string }
+// The SDK the plugin compiles against; `minAppVersion` must match it, because
+// the host ships the matching API surface the plugin was built for.
+const sdkVersion = (
+	JSON.parse(
+		readFileSync(
+			resolve(root, "node_modules/@hoardodile/sdk-web/package.json"),
+			"utf8",
+		),
+	) as { version: string }
+).version
 
 describe("manifest / version consistency", () => {
 	it("keeps manifest.json version in lockstep with package.json", () => {
@@ -18,8 +28,9 @@ describe("manifest / version consistency", () => {
 		expect(manifest.version).toBe(pkg.version)
 	})
 
-	it("declares a minAppVersion aligned to the app release (0.1.6)", () => {
-		// The plugin contract: hosts below this version refuse install/update.
-		expect(manifest.minAppVersion).toBe("0.1.6")
+	it("declares a minAppVersion aligned to the SDK it builds against", () => {
+		// Hosts below this version refuse install/update. Must track the SDK
+		// the plugin is compiled against (the host exposes that API surface).
+		expect(manifest.minAppVersion).toBe(sdkVersion)
 	})
 })

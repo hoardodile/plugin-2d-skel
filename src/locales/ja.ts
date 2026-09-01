@@ -19,15 +19,20 @@ export default {
 	loading: "モデルを読み込み中…",
 	close: "閉じる",
 	loadError: "この Live2D モデルを読み込めませんでした",
-	runtimeReason: "Live2D ビューアーランタイム（Live2D プロプライエタリソフトウェアライセンス）。",
-	runtimeDenied: "Live2D ランタイムがダウンロードされていません — ダウンロードを許可するとモデルを表示できます。",
+	runtimeReason:
+		"Live2D ビューアーランタイム（Live2D プロプライエタリソフトウェアライセンス）。",
+	runtimeDenied:
+		"Live2D ランタイムがダウンロードされていません — ダウンロードを許可するとモデルを表示できます。",
 	runtimeUnavailable: "この環境ではランタイムをダウンロードできません。",
-	runtimeNetwork: "ランタイムのダウンロードサーバーに接続できません — ネットワークを確認して再試行してください。",
-	runtimeStale: "キャッシュされたランタイムが固定バージョンと一致しません — 再試行して再ダウンロードしてください。",
+	runtimeNetwork:
+		"ランタイムのダウンロードサーバーに接続できません — ネットワークを確認して再試行してください。",
+	runtimeStale:
+		"キャッシュされたランタイムが固定バージョンと一致しません — 再試行して再ダウンロードしてください。",
 	runtimeFailed: "Live2D ランタイムを読み込めませんでした。",
 	runtimeRetry: "再試行",
 	emptyTitle: "Live2D モデルがありません",
-	emptyBody: "Cubism model3.json または Live2DViewerEX の .moc モデルをドロップしてください。",
+	emptyBody:
+		"Cubism model3.json または Live2DViewerEX の .moc モデルをドロップしてください。",
 	mirror: "ミラー",
 	rotation: "回転",
 	resetRotation: "回転をリセット",

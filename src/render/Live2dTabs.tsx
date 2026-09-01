@@ -4,7 +4,7 @@ import { ListEmptyRow } from "@hoardodile/ui/components/list-empty-row"
 import { SectionLabel } from "@hoardodile/ui/components/section-label"
 import { Separator } from "@hoardodile/ui/components/separator"
 import { TagChip } from "@hoardodile/ui/components/tag-chip"
-import { type ReactNode } from "react"
+import type { ReactNode } from "react"
 import type { MotionEntry, MotionGraph } from "../core/motion-graph"
 import { useTranslation } from "../i18n"
 import type { EngineHitAreaItem } from "./EngineHitAreasTab"
@@ -79,7 +79,9 @@ export function Live2dControlsTab(props: Live2dControlsTabProps) {
 								variant="secondary"
 								size="sm"
 								active={settings.autoPlay}
-								onClick={() => onSettingsChange({ autoPlay: !settings.autoPlay })}
+								onClick={() =>
+									onSettingsChange({ autoPlay: !settings.autoPlay })
+								}
 								aria-label={t("autoPlay")}
 								data-testid="live2d-autoplay-toggle"
 							>
@@ -183,9 +185,7 @@ export function Live2dControlsTab(props: Live2dControlsTabProps) {
 							</div>
 						)}
 					</section>
-					{hasExpressions || hasHit ? (
-						<Separator size="hairline" />
-					) : null}
+					{hasExpressions || hasHit ? <Separator size="hairline" /> : null}
 				</>
 			) : null}
 
@@ -246,7 +246,9 @@ export function Live2dControlsTab(props: Live2dControlsTabProps) {
 }
 
 function labelOf(entry: MotionEntry): string {
-	return entry.name ?? (entry.file === undefined ? "" : pathBasename(entry.file))
+	return (
+		entry.name ?? (entry.file === undefined ? "" : pathBasename(entry.file))
+	)
 }
 
 /** Compact muted suffix torn from the old MetaChip badge cluster — keeps the

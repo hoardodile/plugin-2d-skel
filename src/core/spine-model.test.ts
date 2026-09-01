@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest"
-import { buildSpineExScene, isSpineExDocument } from "./spine-model"
 import type { ModelJsonDocument } from "./model-json"
+import { buildSpineExScene, isSpineExDocument } from "./spine-model"
 
 const EX_DOC: Extract<ModelJsonDocument, { readonly kind: "ex-spine" }> = {
 	kind: "ex-spine",
@@ -20,7 +20,14 @@ describe("spine-model", () => {
 		expect(isSpineExDocument(undefined)).toBe(false)
 		expect(isSpineExDocument(EX_DOC)).toBe(true)
 		expect(
-			isSpineExDocument({ kind: "ex-live2d", label: "", moc: "x.moc", textures: [], motionGroups: [], expressions: [] }),
+			isSpineExDocument({
+				kind: "ex-live2d",
+				label: "",
+				moc: "x.moc",
+				textures: [],
+				motionGroups: [],
+				expressions: [],
+			}),
 		).toBe(false)
 	})
 

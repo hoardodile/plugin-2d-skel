@@ -1,5 +1,9 @@
 import { Button } from "@hoardodile/ui/components/button"
-import { Empty, EmptyDescription, EmptyTitle } from "@hoardodile/ui/components/empty"
+import {
+	Empty,
+	EmptyDescription,
+	EmptyTitle,
+} from "@hoardodile/ui/components/empty"
 import { useTranslation } from "../i18n"
 
 export function EngineEmptyState() {
@@ -19,7 +23,13 @@ export function EngineStatusOverlay(props: {
 	readonly detail?: string
 	readonly testId?: string
 }) {
-	const { label, actionLabel, onAction, detail, testId = "engine-status" } = props
+	const {
+		label,
+		actionLabel,
+		onAction,
+		detail,
+		testId = "engine-status",
+	} = props
 	return (
 		<div
 			className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/60"

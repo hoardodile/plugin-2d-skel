@@ -54,7 +54,8 @@ export async function prepareLive2dModel(options: {
 	// host file URL space is resource-root-relative — join each ref onto
 	// the descriptor's own directory before resolving (a model sitting in
 	// a subdirectory keeps `REF` → `<dir>/REF`).
-	const modelRef = (ref: string): string => resolveFileUrl(joinRef(modelDir(scene.modelJson), ref))
+	const modelRef = (ref: string): string =>
+		resolveFileUrl(joinRef(modelDir(scene.modelJson), ref))
 
 	const url = resolveBaseUrl()
 	if (isRecord(parsed.FileReferences)) {

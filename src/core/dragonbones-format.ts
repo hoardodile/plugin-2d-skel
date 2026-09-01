@@ -1,9 +1,4 @@
-import {
-	dirname,
-	extname,
-	naturalCompare,
-	isTextureName,
-} from "./spine-format"
+import { dirname, extname, isTextureName, naturalCompare } from "./spine-format"
 
 /**
  * Full basename (extension kept). The spine-format `basename` strips the
@@ -124,7 +119,9 @@ function extractDbbtJson(bytes: Uint8Array | ArrayBuffer): string | undefined {
 /** True when the first bytes carry the DBBT binary magic. */
 export function hasDbbtMagic(bytes: Uint8Array | ArrayBuffer): boolean {
 	const view =
-		bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes.slice(0) as ArrayBuffer)
+		bytes instanceof Uint8Array
+			? bytes
+			: new Uint8Array(bytes.slice(0) as ArrayBuffer)
 	return (
 		view.length >= 4 &&
 		view[0] === 0x44 &&
@@ -139,9 +136,7 @@ function parseJsonDocument(parsed: unknown): DragonBonesDocument | undefined {
 	if (!Array.isArray(parsed.armature) || parsed.armature.length === 0) {
 		return undefined
 	}
-	const version = isName(parsed.version)
-		? { raw: parsed.version }
-		: undefined
+	const version = isName(parsed.version) ? { raw: parsed.version } : undefined
 	const armatures: string[] = []
 	const animations: string[] = []
 	const skins: string[] = []
@@ -181,7 +176,9 @@ export function readDragonBonesDocument(
 		const text =
 			ext === ".json"
 				? new TextDecoder().decode(
-						bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes.slice(0) as ArrayBuffer),
+						bytes instanceof Uint8Array
+							? bytes
+							: new Uint8Array(bytes.slice(0) as ArrayBuffer),
 					)
 				: undefined
 		if (text !== undefined) {
@@ -218,17 +215,23 @@ export function textureForAtlas(
 
 	// Fall back to the conventional `*_tex.png` next to the atlas.
 	const conventional =
-		directory === "" ? `${atlasStem(atlas)}_tex.png` : `${directory}/${atlasStem(atlas)}_tex.png`
+		directory === ""
+			? `${atlasStem(atlas)}_tex.png`
+			: `${directory}/${atlasStem(atlas)}_tex.png`
 	if (files.includes(conventional)) return [conventional]
 
-	return files.filter((name) => isTextureName(name) && dirname(name) === directory).sort(naturalCompare)
+	return files
+		.filter((name) => isTextureName(name) && dirname(name) === directory)
+		.sort(naturalCompare)
 }
 
 function readImagePath(atlasContent: string | undefined): string | undefined {
 	if (atlasContent === undefined) return undefined
 	try {
 		const parsed: unknown = JSON.parse(atlasContent)
-		return isRecord(parsed) && isName(parsed.imagePath) ? parsed.imagePath : undefined
+		return isRecord(parsed) && isName(parsed.imagePath)
+			? parsed.imagePath
+			: undefined
 	} catch {
 		return undefined
 	}

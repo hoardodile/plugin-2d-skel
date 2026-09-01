@@ -1,1 +1,7 @@
-{"type":0,"model":"model_0.moc","textures":["textures_0_0.png"],"motions":{"idle":[{"file":"motions_idle_0_file_0"}]},"expressions":[{"name":"smile","file":"expressions_0_file_0.json"}]}
+{
+	"type": 0,
+	"model": "model_0.moc",
+	"textures": ["textures_0_0.png"],
+	"motions": { "idle": [{ "file": "motions_idle_0_file_0" }] },
+	"expressions": [{ "name": "smile", "file": "expressions_0_file_0.json" }]
+}

@@ -37,6 +37,6 @@ liegen hinter den engine-spezifischen Komponenten.
 
 ## Anforderungen
 
-- hoardodile ≥ 0.1.6 (Details im README des Repositories).
+- hoardodile ≥ 0.1.8 (Details im README des Repositories).
 - Vertraue dem Repository, bevor du es installierst — Plugin-Code läuft
   serverseitig in einer eingeschränkten Sandbox.

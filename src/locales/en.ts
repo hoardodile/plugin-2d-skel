@@ -20,14 +20,18 @@ export default {
 	close: "Close",
 	loadError: "Could not load this model",
 	runtimeReason: "Live2D viewer runtime (Live2D Proprietary Software License).",
-	runtimeDenied: "The Live2D runtime was not downloaded — allow the download to view models.",
+	runtimeDenied:
+		"The Live2D runtime was not downloaded — allow the download to view models.",
 	runtimeUnavailable: "Runtime downloads are unavailable in this environment.",
-	runtimeNetwork: "Could not reach the runtime download server — check your network and retry.",
-	runtimeStale: "The cached runtime no longer matches the pinned version — retry to re-download it.",
+	runtimeNetwork:
+		"Could not reach the runtime download server — check your network and retry.",
+	runtimeStale:
+		"The cached runtime no longer matches the pinned version — retry to re-download it.",
 	runtimeFailed: "Could not load the Live2D runtime.",
 	runtimeRetry: "Retry",
 	emptyTitle: "No Live2D or Spine model",
-	emptyBody: "Drop a Cubism model3.json, a Live2DViewerEX .moc/.model3.json, or a Spine .json/.skel export.",
+	emptyBody:
+		"Drop a Cubism model3.json, a Live2DViewerEX .moc/.model3.json, or a Spine .json/.skel export.",
 	mirror: "Mirror",
 	rotation: "Rotation",
 	resetRotation: "Reset rotation",

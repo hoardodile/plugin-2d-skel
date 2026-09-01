@@ -3,7 +3,14 @@ import type { SpineDocument } from "./spine-format"
 import { groupSpineScenes, serializeSpineScenes } from "./spine-scenes"
 
 const DOCS = new Map<string, SpineDocument>([
-	["hero.json", { version: { raw: "4.1.24", major: 4, minor: 1, patch: 24 }, animations: ["idle"], skins: ["default"] }],
+	[
+		"hero.json",
+		{
+			version: { raw: "4.1.24", major: 4, minor: 1, patch: 24 },
+			animations: ["idle"],
+			skins: ["default"],
+		},
+	],
 ])
 
 describe("groupSpineScenes", () => {
@@ -43,16 +50,15 @@ describe("groupSpineScenes", () => {
 
 	test("resolves textures in the skeleton directory first", () => {
 		const scenes = groupSpineScenes(
-			[
-				"spine/hero.json",
-				"spine/hero.atlas",
-				"spine/hero.png",
-				"root.png",
-			],
+			["spine/hero.json", "spine/hero.atlas", "spine/hero.png", "root.png"],
 			new Map([
 				[
 					"spine/hero.json",
-					{ version: { raw: "4.0.0", major: 4, minor: 0, patch: 0 }, animations: [], skins: [] },
+					{
+						version: { raw: "4.0.0", major: 4, minor: 0, patch: 0 },
+						animations: [],
+						skins: [],
+					},
 				],
 			]),
 		)
@@ -60,7 +66,10 @@ describe("groupSpineScenes", () => {
 	})
 
 	test("serializes scenes into sidecar rows", () => {
-		const scenes = groupSpineScenes(["hero.json", "hero.atlas", "hero.png"], DOCS)
+		const scenes = groupSpineScenes(
+			["hero.json", "hero.atlas", "hero.png"],
+			DOCS,
+		)
 		expect(serializeSpineScenes(scenes)).toEqual([
 			{
 				filename: "hero.json",

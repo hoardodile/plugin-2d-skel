@@ -95,7 +95,12 @@ async function runAttempts(
 	// (denied/unavailable) stop immediately.
 	const urlSets = mirrorUrlSets()
 	for (let attempt = 0; attempt < urlSets.length; attempt++) {
-		const outcome = await attemptDownload(api, options, urlSets[attempt]!, injectScript)
+		const outcome = await attemptDownload(
+			api,
+			options,
+			urlSets[attempt]!,
+			injectScript,
+		)
 		if (outcome.ok) return { ok: true }
 		if (
 			outcome.error.kind === "denied" ||
@@ -172,7 +177,9 @@ function mirrorUrlSets(): readonly {
 	readonly url: string
 	readonly sha256: string
 }[][] {
-	const maxUrls = Math.max(...LIVE2D_RUNTIME_FILES.map((entry) => entry.urls.length))
+	const maxUrls = Math.max(
+		...LIVE2D_RUNTIME_FILES.map((entry) => entry.urls.length),
+	)
 	const sets: {
 		readonly dest: string
 		readonly url: string

@@ -1,8 +1,8 @@
 import { AppDialog } from "@hoardodile/ui/components/app-dialog"
 import { Button } from "@hoardodile/ui/components/button"
 import {
-	ImageCropper,
 	type CroppedImage,
+	ImageCropper,
 } from "@hoardodile/ui/components/image-cropper"
 import { useCallback, useRef, useState } from "react"
 import { useTranslation } from "../i18n"
@@ -31,7 +31,9 @@ export function CoverCropDialog(props: {
 }) {
 	const { open, onOpenChange, dataUrl, submitCover } = props
 	const { t } = useTranslation()
-	const renderRef = useRef<() => Promise<CroppedImage>>(() => Promise.reject(new Error("no-crop")))
+	const renderRef = useRef<() => Promise<CroppedImage>>(() =>
+		Promise.reject(new Error("no-crop")),
+	)
 	const [status, setStatus] = useState<"idle" | "saving" | "error">("idle")
 
 	const onCropReady = useCallback((render: () => Promise<CroppedImage>) => {

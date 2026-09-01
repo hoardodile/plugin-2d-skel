@@ -118,7 +118,14 @@ function readVersion(value: unknown): number | undefined {
 
 /** A friendly display name from the descriptor, if it carries one. */
 function readMaybeLabel(value: Record<string, unknown>): string | undefined {
-	for (const key of ["ModelName", "modelName", "Name", "name", "Title", "title"]) {
+	for (const key of [
+		"ModelName",
+		"modelName",
+		"Name",
+		"name",
+		"Title",
+		"title",
+	]) {
 		if (isNonEmptyString(value[key])) return value[key]
 	}
 	return undefined

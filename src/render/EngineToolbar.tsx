@@ -3,10 +3,16 @@ import { Icon } from "@hoardodile/ui/components/icon"
 import { Separator } from "@hoardodile/ui/components/separator"
 import { TooltipProvider } from "@hoardodile/ui/components/tooltip"
 import { useBelowMd } from "@hoardodile/ui/hooks/use-mobile"
-import { Maximize, Pause, Play, Refresh, Scale } from "@hoardodile/ui/icons/registry"
+import {
+	Maximize,
+	Pause,
+	Play,
+	Refresh,
+	Scale,
+} from "@hoardodile/ui/icons/registry"
 import { useTranslation } from "../i18n"
-import type { ViewerScene } from "./engine"
 import { EngineIconButton } from "./EngineIconButton"
+import type { ViewerScene } from "./engine"
 
 export type EngineToolbarProps = {
 	readonly visible: boolean

@@ -8,7 +8,9 @@ vi.mock("../i18n", () => ({
 }))
 
 vi.mock("@hoardodile/ui/components/section-label", () => ({
-	SectionLabel: ({ children }: { readonly children?: ReactNode }) => <div data-testid="section-label">{children}</div>,
+	SectionLabel: ({ children }: { readonly children?: ReactNode }) => (
+		<div data-testid="section-label">{children}</div>
+	),
 }))
 
 vi.mock("@hoardodile/ui/components/separator", () => ({
@@ -27,12 +29,16 @@ vi.mock("@hoardodile/ui/components/tag-chip", () => ({
 }))
 
 vi.mock("@hoardodile/ui/components/list-empty-row", () => ({
-	ListEmptyRow: ({ children }: { readonly children?: ReactNode } & Record<string, unknown>) => (
+	ListEmptyRow: ({
+		children,
+	}: { readonly children?: ReactNode } & Record<string, unknown>) => (
 		<div data-testid="list-empty-row">{children}</div>
 	),
 }))
 
-function renderTab(overrides: Partial<Parameters<typeof DragonBonesControlsTab>[0]> = {}) {
+function renderTab(
+	overrides: Partial<Parameters<typeof DragonBonesControlsTab>[0]> = {},
+) {
 	const base = {
 		armatures: ["root", "sub"],
 		animations: ["idle", "run"],
@@ -60,21 +66,31 @@ describe("DragonBonesControlsTab", () => {
 		expect(screen.getByTestId("dragonbones-animation-run")).toBeInTheDocument()
 		expect(screen.getByTestId("dragonbones-skin-default")).toBeInTheDocument()
 		expect(screen.getByTestId("dragonbones-skin-alt")).toBeInTheDocument()
-		expect(screen.getByTestId("dragonbones-controls-hitarea-body")).toBeInTheDocument()
+		expect(
+			screen.getByTestId("dragonbones-controls-hitarea-body"),
+		).toBeInTheDocument()
 	})
 
 	test("drops singleton armature and skin blocks", () => {
 		renderTab({ armatures: ["root"], skins: ["default"] })
-		expect(screen.queryByTestId("dragonbones-armature-root")).not.toBeInTheDocument()
-		expect(screen.queryByTestId("dragonbones-skin-default")).not.toBeInTheDocument()
+		expect(
+			screen.queryByTestId("dragonbones-armature-root"),
+		).not.toBeInTheDocument()
+		expect(
+			screen.queryByTestId("dragonbones-skin-default"),
+		).not.toBeInTheDocument()
 		expect(screen.getByTestId("dragonbones-animation-idle")).toBeInTheDocument()
 	})
 
 	test("renders the empty state when nothing is available", () => {
 		renderTab({ animations: [], hitAreas: [], armatures: [], skins: [] })
 		expect(screen.getByTestId("list-empty-row")).toBeInTheDocument()
-		expect(screen.queryByTestId("dragonbones-animation-idle")).not.toBeInTheDocument()
-		expect(screen.queryByTestId("dragonbones-skin-default")).not.toBeInTheDocument()
+		expect(
+			screen.queryByTestId("dragonbones-animation-idle"),
+		).not.toBeInTheDocument()
+		expect(
+			screen.queryByTestId("dragonbones-skin-default"),
+		).not.toBeInTheDocument()
 	})
 
 	test("clicking an animation chip selects it", () => {

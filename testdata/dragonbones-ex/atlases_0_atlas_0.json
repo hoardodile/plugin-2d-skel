@@ -1,1 +1,7 @@
-{"name":"hero","imagePath":"hero_tex.png","width":256,"height":256,"SubTexture":[{"name":"idle","x":0,"y":0,"width":10,"height":10}]}
+{
+	"name": "hero",
+	"imagePath": "hero_tex.png",
+	"width": 256,
+	"height": 256,
+	"SubTexture": [{ "name": "idle", "x": 0, "y": 0, "width": 10, "height": 10 }]
+}

@@ -9,7 +9,11 @@ vi.mock("../i18n", () => ({
 // The shared cropper wraps react-image-crop (canvas/geometry heavy in jsdom);
 // stub it so we control the deferred render() that produces the CroppedImage.
 vi.mock("@hoardodile/ui/components/image-cropper", () => ({
-	ImageCropper: ({ onCropReady }: { onCropReady?: (render: () => Promise<unknown>) => void }) => {
+	ImageCropper: ({
+		onCropReady,
+	}: {
+		onCropReady?: (render: () => Promise<unknown>) => void
+	}) => {
 		onCropReady?.(() =>
 			Promise.resolve({
 				blob: new Blob(["crop"], { type: "image/png" }),
@@ -59,7 +63,10 @@ describe("CoverCropDialog", () => {
 	})
 
 	test("shows the unavailable message when the reserved API declines", async () => {
-		const submitCover = vi.fn(async () => ({ ok: false, reason: "api-unavailable" }))
+		const submitCover = vi.fn(async () => ({
+			ok: false,
+			reason: "api-unavailable",
+		}))
 		const onOpenChange = vi.fn()
 		render(
 			<CoverCropDialog
@@ -72,7 +79,9 @@ describe("CoverCropDialog", () => {
 
 		fireEvent.click(screen.getByTestId("crop-confirm"))
 
-		await waitFor(() => expect(screen.getByTestId("crop-error")).toBeInTheDocument())
+		await waitFor(() =>
+			expect(screen.getByTestId("crop-error")).toBeInTheDocument(),
+		)
 		expect(onOpenChange).not.toHaveBeenCalled()
 	})
 })

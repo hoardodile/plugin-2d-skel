@@ -59,7 +59,11 @@ function Harness({ mode, probe }: { mode: "interact" | "move"; probe: Probe }) {
 	return (
 		<>
 			<div ref={ref} data-testid="target" />
-			<button type="button" data-testid="reset" onClick={() => viewport.reset()}>
+			<button
+				type="button"
+				data-testid="reset"
+				onClick={() => viewport.reset()}
+			>
 				reset
 			</button>
 		</>
@@ -88,7 +92,13 @@ function fire(
 	y: number,
 	altKey = false,
 ) {
-	const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientX: x, clientY: y, altKey })
+	const event = new MouseEvent(type, {
+		bubbles: true,
+		cancelable: true,
+		clientX: x,
+		clientY: y,
+		altKey,
+	})
 	Object.defineProperty(event, "pointerId", { value: id })
 	el.dispatchEvent(event)
 }
@@ -96,11 +106,22 @@ function fire(
 function fireWheel(el: Element, deltaY: number, x: number, y: number) {
 	if (typeof WheelEvent === "function") {
 		el.dispatchEvent(
-			new WheelEvent("wheel", { bubbles: true, cancelable: true, deltaY, clientX: x, clientY: y }),
+			new WheelEvent("wheel", {
+				bubbles: true,
+				cancelable: true,
+				deltaY,
+				clientX: x,
+				clientY: y,
+			}),
 		)
 		return
 	}
-	const event = new MouseEvent("wheel", { bubbles: true, cancelable: true, clientX: x, clientY: y })
+	const event = new MouseEvent("wheel", {
+		bubbles: true,
+		cancelable: true,
+		clientX: x,
+		clientY: y,
+	})
 	Object.defineProperty(event, "deltaY", { value: deltaY })
 	el.dispatchEvent(event)
 }

@@ -1,12 +1,22 @@
-import { PLUGIN_IMAGE_PROBE_CONCURRENCY } from "@hoardodile/sdk-types/plugin"
-import { SEARCH_META_VERSION } from "@hoardodile/sdk-types/resource"
-
 import {
 	type Detection,
 	definePlugin,
 	type ResourceAPI,
 } from "@hoardodile/sdk-server"
 import { mapConcurrent } from "@hoardodile/sdk-server/helpers"
+import { PLUGIN_IMAGE_PROBE_CONCURRENCY } from "@hoardodile/sdk-types/plugin"
+import { SEARCH_META_VERSION } from "@hoardodile/sdk-types/resource"
+import {
+	type DragonBonesDocument,
+	isDragonBonesAtlasName,
+	isDragonBonesSkeletonFileName,
+	readDragonBonesDocument,
+} from "./core/dragonbones-format.ts"
+import {
+	buildDragonBonesExScene,
+	isDragonBonesExDocument,
+} from "./core/dragonbones-model.ts"
+import { groupDragonBonesScenes } from "./core/dragonbones-scenes.ts"
 import { groupLive2dScenes, serializeEngineScenes } from "./core/files.ts"
 import {
 	isModelJsonName,
@@ -14,28 +24,15 @@ import {
 	parseModelJson,
 } from "./core/model-json.ts"
 import {
+	dirname,
 	isSkeletonName,
 	readBinarySpineDocument,
 	readJsonSpineHeader,
 	readSpineDocument,
 	type SpineDocument,
-	dirname,
 } from "./core/spine-format.ts"
-import { groupSpineScenes } from "./core/spine-scenes.ts"
 import { buildSpineExScene, isSpineExDocument } from "./core/spine-model.ts"
-import {
-	groupDragonBonesScenes,
-} from "./core/dragonbones-scenes.ts"
-import {
-	buildDragonBonesExScene,
-	isDragonBonesExDocument,
-} from "./core/dragonbones-model.ts"
-import {
-	isDragonBonesAtlasName,
-	isDragonBonesSkeletonFileName,
-	readDragonBonesDocument,
-	type DragonBonesDocument,
-} from "./core/dragonbones-format.ts"
+import { groupSpineScenes } from "./core/spine-scenes.ts"
 import {
 	LIVE2D_RUNTIME_FILES,
 	LIVE2D_RUNTIME_REASON,
@@ -121,15 +118,24 @@ async function scanScenes(
 	const spineStandardScenes = groupSpineScenes(files, spineDocuments)
 
 	// 5. Live2DViewerEX `type: 10` DragonBones scenes.
-	const dragonBonesExScenes = await scanDragonBonesExScenes(api, files, documents)
+	const dragonBonesExScenes = await scanDragonBonesExScenes(
+		api,
+		files,
+		documents,
+	)
 
 	// 6. Direct DragonBones exports — skeletons not claimed by an EX
 	//    descriptor, paired with their `*_tex.json` atlas + page image.
-	const dragonBonesClaimed = new Set(dragonBonesExScenes.map((scene) => scene.skeleton))
+	const dragonBonesClaimed = new Set(
+		dragonBonesExScenes.map((scene) => scene.skeleton),
+	)
 	const dragonBonesSkeletonFiles = files
 		.filter(isDragonBonesSkeletonFileName)
 		.filter((name) => !dragonBonesClaimed.has(name))
-	const dragonBonesDocuments = new Map<string, DragonBonesDocument | undefined>()
+	const dragonBonesDocuments = new Map<
+		string,
+		DragonBonesDocument | undefined
+	>()
 	const atlasContents = new Map<string, string | undefined>()
 	await mapConcurrent(
 		dragonBonesSkeletonFiles,
@@ -137,7 +143,10 @@ async function scanScenes(
 		async (filename) => {
 			try {
 				const bytes = await api.readFile(filename)
-				dragonBonesDocuments.set(filename, readDragonBonesDocument(bytes, filename))
+				dragonBonesDocuments.set(
+					filename,
+					readDragonBonesDocument(bytes, filename),
+				)
 			} catch (reason) {
 				api.logWarn("dragonbones skeleton read failed", {
 					filename,
@@ -220,8 +229,8 @@ async function scanDragonBonesExScenes(
 			if (scene !== undefined) scenes.push(scene)
 		},
 	)
-	return scenes.sort(
-		(a, b) => (a.modelJson ?? "").localeCompare(b.modelJson ?? ""),
+	return scenes.sort((a, b) =>
+		(a.modelJson ?? "").localeCompare(b.modelJson ?? ""),
 	)
 }
 
@@ -255,8 +264,8 @@ async function scanSpineExScenes(
 			if (scene !== undefined) scenes.push(scene)
 		},
 	)
-	return scenes.sort(
-		(a, b) => (a.modelJson ?? "").localeCompare(b.modelJson ?? ""),
+	return scenes.sort((a, b) =>
+		(a.modelJson ?? "").localeCompare(b.modelJson ?? ""),
 	)
 }
 

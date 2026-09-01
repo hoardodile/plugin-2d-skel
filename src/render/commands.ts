@@ -1,4 +1,4 @@
-import { parseMotionRef, type MotionRef } from "../core/motion-graph"
+import { type MotionRef, parseMotionRef } from "../core/motion-graph"
 
 /**
  * Live2DViewerEX controller commands that a scene emits from a motion's

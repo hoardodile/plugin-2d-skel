@@ -1,5 +1,5 @@
-import { SectionTabs } from "@hoardodile/ui/components/section-tabs"
 import { ScrollArea, ScrollBar } from "@hoardodile/ui/components/scroll-area"
+import { SectionTabs } from "@hoardodile/ui/components/section-tabs"
 import { Sheet, SheetContent } from "@hoardodile/ui/components/sheet"
 import { useBelowMd } from "@hoardodile/ui/hooks/use-mobile"
 import type { ReactNode } from "react"
@@ -82,7 +82,12 @@ export function EnginePanel(props: {
 	}
 
 	return (
-		<Sheet open={open} onOpenChange={(nextOpen) => { if (!nextOpen) onClose() }}>
+		<Sheet
+			open={open}
+			onOpenChange={(nextOpen) => {
+				if (!nextOpen) onClose()
+			}}
+		>
 			<SheetContent
 				side={below ? "bottom" : "right"}
 				showCloseButton={false}

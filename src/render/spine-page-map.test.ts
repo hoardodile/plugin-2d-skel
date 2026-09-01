@@ -8,9 +8,15 @@ describe("buildExPageUrls", () => {
 			["atlases_0_textures_0_0.png"],
 			(filename) => `file:///${filename}`,
 		)
-		expect(urls.get("specialillust64")).toBe("file:///atlases_0_textures_0_0.png")
-		expect(urls.get("specialillust64.png")).toBe("file:///atlases_0_textures_0_0.png")
-		expect(urls.get("specialillust64.jpg")).toBe("file:///atlases_0_textures_0_0.png")
+		expect(urls.get("specialillust64")).toBe(
+			"file:///atlases_0_textures_0_0.png",
+		)
+		expect(urls.get("specialillust64.png")).toBe(
+			"file:///atlases_0_textures_0_0.png",
+		)
+		expect(urls.get("specialillust64.jpg")).toBe(
+			"file:///atlases_0_textures_0_0.png",
+		)
 	})
 
 	test("skips names without a corresponding texture", () => {

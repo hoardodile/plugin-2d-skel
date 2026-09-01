@@ -1,6 +1,6 @@
-import { useEffect, useState, type RefObject } from "react"
+import { type RefObject, useEffect, useState } from "react"
+import { type HitAreaRect, projectSpineHitRects } from "./hit-overlay"
 import type { SpineBounds, SpineHitArea } from "./spine-hit"
-import { projectSpineHitRects, type HitAreaRect } from "./hit-overlay"
 
 /**
  * Tracks an element's layout box with a ResizeObserver, reporting the
@@ -8,9 +8,10 @@ import { projectSpineHitRects, type HitAreaRect } from "./hit-overlay"
  * container the user pan/zoom is a CSS `transform` on that same element, so
  * the layout box is the pre-transform frame the native player fits into.
  */
-function useLayoutSize(
-	ref: RefObject<HTMLDivElement | null>,
-): { readonly width: number; readonly height: number } {
+function useLayoutSize(ref: RefObject<HTMLDivElement | null>): {
+	readonly width: number
+	readonly height: number
+} {
 	const [size, setSize] = useState({ width: 0, height: 0 })
 	useEffect(() => {
 		const element = ref.current
@@ -37,10 +38,17 @@ function useLayoutSize(
 export function HitAreaOverlay(props: {
 	readonly visible: boolean
 	readonly containerRef: RefObject<HTMLDivElement | null>
-	readonly spine?: { readonly bounds: SpineBounds; readonly areas: readonly SpineHitArea[] }
+	readonly spine?: {
+		readonly bounds: SpineBounds
+		readonly areas: readonly SpineHitArea[]
+	}
 	readonly live2d?: { readonly rects: readonly HitAreaRect[] }
 	/** The current viewport transform, folded into the spine projection. */
-	readonly viewport?: { readonly x: number; readonly y: number; readonly scale: number }
+	readonly viewport?: {
+		readonly x: number
+		readonly y: number
+		readonly scale: number
+	}
 }) {
 	const { visible, containerRef, spine, live2d, viewport } = props
 	const layout = useLayoutSize(containerRef)
@@ -58,7 +66,12 @@ export function HitAreaOverlay(props: {
 		rects = live2d?.rects ?? []
 	}
 
-	if (!visible || rects.length === 0 || layout.width <= 0 || layout.height <= 0) {
+	if (
+		!visible ||
+		rects.length === 0 ||
+		layout.width <= 0 ||
+		layout.height <= 0
+	) {
 		return null
 	}
 

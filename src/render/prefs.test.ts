@@ -1,8 +1,8 @@
 import { describe, expect, test } from "vitest"
 import {
 	decodeEngineSettings,
-	encodeEngineSettings,
 	ENGINE_SETTINGS_DEFAULT,
+	encodeEngineSettings,
 	toLive2dSettings,
 	toSpineSettings,
 } from "./prefs"

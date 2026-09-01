@@ -1,7 +1,7 @@
 import type { DragonBonesScene } from "../shared"
-import type { ExAtlasRef, ModelJsonDocument } from "./model-json"
-import { basename as spineBasename, dirname } from "./spine-format"
 import type { DragonBonesDocument } from "./dragonbones-format"
+import type { ExAtlasRef, ModelJsonDocument } from "./model-json"
+import { dirname, basename as spineBasename } from "./spine-format"
 
 /**
  * Live2DViewerEX `type: 10` DragonBones descriptors. The descriptor names a
@@ -51,7 +51,10 @@ function collectAtlasTextures(
  */
 export function buildDragonBonesExScene(options: {
 	readonly modelJson: string
-	readonly document: Extract<ModelJsonDocument, { readonly kind: "ex-dragonbones" }>
+	readonly document: Extract<
+		ModelJsonDocument,
+		{ readonly kind: "ex-dragonbones" }
+	>
 	readonly files: readonly string[]
 	readonly skeletonDocument: DragonBonesDocument | undefined
 }): DragonBonesScene | undefined {

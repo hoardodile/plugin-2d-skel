@@ -56,9 +56,7 @@ const DRAGONBONES_SKE = JSON.stringify({
 			type: "Armature",
 			name: "hero",
 			animation: [{ name: "idle" }, { name: "walk" }],
-			skin: [
-				{ name: "default", slot: [{ name: "s0", display: [] }] },
-			],
+			skin: [{ name: "default", slot: [{ name: "s0", display: [] }] }],
 		},
 	],
 })
@@ -78,7 +76,8 @@ const JSON_SKELETON = JSON.stringify({
 	animations: { idle: {} },
 })
 
-const ATLAS = "hero.png\nsize: 1,1\nformat: RGBA8888\nfilter: Linear,Linear\nrepeat: none\n"
+const ATLAS =
+	"hero.png\nsize: 1,1\nformat: RGBA8888\nfilter: Linear,Linear\nrepeat: none\n"
 
 function fixture(
 	overrides: Parameters<typeof createResourceAPIFixture<EngineSchema>>[0] = {},
@@ -130,7 +129,7 @@ describe("live2d plugin hooks (unified live2d + spine)", () => {
 			],
 			contents: {
 				"model0.json": SPINE_EX_MODEL,
-				"skeleton_0": "4.2.119",
+				skeleton_0: "4.2.119",
 			},
 		})
 		const result = await live2dPlugin.detect(api)
@@ -203,7 +202,7 @@ describe("live2d plugin hooks (unified live2d + spine)", () => {
 			],
 			contents: {
 				"model0.json": DRAGONBONES_EX_MODEL,
-				"skeleton_0": Buffer.concat([
+				skeleton_0: Buffer.concat([
 					Buffer.from("DBDT\x00\x00\x00\x02\x00\x00\x00\x00"),
 					Buffer.from(DRAGONBONES_SKE),
 				]),
@@ -243,8 +242,18 @@ describe("live2d plugin hooks (unified live2d + spine)", () => {
 				version: "5.5",
 				engine: "dragonbones",
 			},
-			{ filename: "hero_tex.json", role: "atlas", scene: 0, engine: "dragonbones" },
-			{ filename: "hero_tex.png", role: "texture", scene: 0, engine: "dragonbones" },
+			{
+				filename: "hero_tex.json",
+				role: "atlas",
+				scene: 0,
+				engine: "dragonbones",
+			},
+			{
+				filename: "hero_tex.png",
+				role: "texture",
+				scene: 0,
+				engine: "dragonbones",
+			},
 		])
 	})
 
@@ -262,7 +271,7 @@ describe("live2d plugin hooks (unified live2d + spine)", () => {
 			contents: {
 				"hero.model3.json": CUBISM_MODEL,
 				"model0.json": SPINE_EX_MODEL,
-				"skeleton_0": "4.2.119",
+				skeleton_0: "4.2.119",
 			},
 		})
 		const result = await live2dPlugin.detect(api)
@@ -349,7 +358,12 @@ describe("live2d plugin hooks (unified live2d + spine)", () => {
 				engine: "live2d",
 			},
 			{ filename: "model_0.moc", role: "moc", scene: 0, engine: "live2d" },
-			{ filename: "textures_0_0.png", role: "texture", scene: 0, engine: "live2d" },
+			{
+				filename: "textures_0_0.png",
+				role: "texture",
+				scene: 0,
+				engine: "live2d",
+			},
 			{
 				filename: "spine/hero.json",
 				role: "skeleton",
@@ -358,8 +372,18 @@ describe("live2d plugin hooks (unified live2d + spine)", () => {
 				version: "4.1.24",
 				engine: "spine",
 			},
-			{ filename: "spine/hero.atlas", role: "atlas", scene: 1, engine: "spine" },
-			{ filename: "spine/hero.png", role: "texture", scene: 1, engine: "spine" },
+			{
+				filename: "spine/hero.atlas",
+				role: "atlas",
+				scene: 1,
+				engine: "spine",
+			},
+			{
+				filename: "spine/hero.png",
+				role: "texture",
+				scene: 1,
+				engine: "spine",
+			},
 		])
 		expect(live2dPlugin.coverLocal).toBeUndefined()
 	})

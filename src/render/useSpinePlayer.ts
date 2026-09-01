@@ -1,29 +1,33 @@
 import { type RefObject, useCallback, useEffect, useRef, useState } from "react"
 import { parseExModelJson } from "../core/ex-model"
 import {
-	parseMotionGraph,
-	parseMotionRef,
 	type MotionEntry,
 	type MotionGraph,
 	type MotionRef,
+	parseMotionGraph,
+	parseMotionRef,
 } from "../core/motion-graph"
 import type { SpineScene } from "../shared"
 import { HOME, type ViewportTransform } from "./canvas-view"
 import { baseAnimationNames, effectiveChoice } from "./choices"
+import type { SpineController } from "./engine"
 import { buildHitMap } from "./hit-areas"
-import { buildExPageUrls } from "./spine-page-map"
-import { hitTestSpinePoint, parseSpineBounds, parseSpineHitAreas } from "./spine-hit"
-import { spineRuntimeVersion } from "./runtime-version"
 import { usePluginAPI } from "./hooks"
+import type { SpineSettings } from "./prefs"
+import { spineRuntimeVersion } from "./runtime-version"
+import {
+	hitTestSpinePoint,
+	parseSpineBounds,
+	parseSpineHitAreas,
+} from "./spine-hit"
+import { buildExPageUrls } from "./spine-page-map"
 import {
 	mountSpinePlayer,
 	prepareSpineAssets,
 	releaseSpineAssetUrls,
-	sceneRuntime,
 	type SpinePlayback,
+	sceneRuntime,
 } from "./spine-player"
-import type { SpineController } from "./engine"
-import type { SpineSettings } from "./prefs"
 
 export type SpinePlayerStatus = "idle" | "loading" | "ready" | "error"
 
@@ -35,7 +39,10 @@ export type SpinePlayerNames = {
 
 export type SpineDialogue = {
 	readonly text: string | undefined
-	readonly choices: readonly { readonly text: string; readonly next: MotionRef }[]
+	readonly choices: readonly {
+		readonly text: string
+		readonly next: MotionRef
+	}[]
 }
 
 export type SpineExHitData = {
@@ -104,7 +111,9 @@ export function useSpinePlayer(options: {
 	})
 	const [exHit, setExHit] = useState<SpineExHitData | undefined>(undefined)
 	const [errorDetail, setErrorDetail] = useState<string | undefined>(undefined)
-	const [runtimeVersion, setRuntimeVersion] = useState<string | undefined>(undefined)
+	const [runtimeVersion, setRuntimeVersion] = useState<string | undefined>(
+		undefined,
+	)
 
 	const sceneKey = `${scene?.skeleton ?? ""}\u0000${scene?.atlas ?? ""}`
 
@@ -393,7 +402,11 @@ export function useSpinePlayer(options: {
 	const tapAt = useCallback(
 		function tapAt(
 			point: { readonly x: number; readonly y: number },
-			viewport: { readonly x: number; readonly y: number; readonly scale: number },
+			viewport: {
+				readonly x: number
+				readonly y: number
+				readonly scale: number
+			},
 		) {
 			const host = containerRef.current
 			if (host === null) return
@@ -430,7 +443,9 @@ export function useSpinePlayer(options: {
 		[containerRef],
 	)
 
-	const applyViewport = useCallback(function applyViewport(transform: ViewportTransform) {
+	const applyViewport = useCallback(function applyViewport(
+		transform: ViewportTransform,
+	) {
 		playbackRef.current?.applyViewport(transform)
 	}, [])
 

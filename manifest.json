@@ -3,7 +3,7 @@
 	"name": "2D Skeleton Animation",
 	"description": "Live2D, Spine and DragonBones animation viewer.",
 	"version": "0.1.7",
-	"minAppVersion": "0.1.6",
+	"minAppVersion": "0.1.8",
 	"icon": "bone",
 	"permissions": {
 		"sourceMeta": true,
@@ -90,9 +90,7 @@
 					"{{join(' ', if(searchMeta.facets.live2d, t('live2dEngineLabel')), if(searchMeta.facets.spine, t('spineEngineLabel')), if(searchMeta.facets.dragonbones, t('dragonbonesEngineLabel')), if(searchMeta.facets.ex, t('exKindLabel')))}}",
 					"{{source.version}}"
 				],
-				"br": [
-					"{{join(' ', t('modelCountLabel'), number(source.modelCount))}}"
-				]
+				"br": ["{{join(' ', t('modelCountLabel'), number(source.modelCount))}}"]
 			}
 		},
 		"search": {

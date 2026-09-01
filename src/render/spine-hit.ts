@@ -1,5 +1,5 @@
 import { isRecord } from "@hoardodile/sdk-web"
-import { parseMotionRef, type MotionRef } from "../core/motion-graph"
+import { type MotionRef, parseMotionRef } from "../core/motion-graph"
 
 /**
  * Pointer → EX hit area resolution. The descriptor stores hit areas in
@@ -54,15 +54,14 @@ export function parseSpineBounds(value: unknown): SpineBounds | undefined {
 	}
 }
 
-export function parseSpineHitAreas(
-	value: unknown,
-): readonly SpineHitArea[] {
+export function parseSpineHitAreas(value: unknown): readonly SpineHitArea[] {
 	if (!Array.isArray(value)) return []
 	const areas: SpineHitArea[] = []
 	for (const entry of value) {
 		if (!isRecord(entry)) continue
 		const name = typeof entry.name === "string" ? entry.name : undefined
-		const motionRaw = typeof entry.motion === "string" ? entry.motion : undefined
+		const motionRaw =
+			typeof entry.motion === "string" ? entry.motion : undefined
 		if (name === undefined || motionRaw === undefined) continue
 		const motion = parseMotionRef(motionRaw)
 		if (motion === undefined) continue

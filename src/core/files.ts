@@ -82,9 +82,19 @@ export function serializeEngineScenes(
 				label: scene.label,
 				engine: "live2d",
 			})
-			rows.push({ filename: scene.moc, role: "moc", scene: index, engine: "live2d" })
+			rows.push({
+				filename: scene.moc,
+				role: "moc",
+				scene: index,
+				engine: "live2d",
+			})
 			for (const texture of scene.textures) {
-				rows.push({ filename: texture, role: "texture", scene: index, engine: "live2d" })
+				rows.push({
+					filename: texture,
+					role: "texture",
+					scene: index,
+					engine: "live2d",
+				})
 			}
 			continue
 		}

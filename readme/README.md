@@ -34,6 +34,6 @@ once; engine-specific controls live behind per-engine components.
 
 ## Requirements
 
-- hoardodile ≥ 0.1.6 (see the repository README for details).
+- hoardodile ≥ 0.1.8 (see the repository README for details).
 - Trust the repository before installing — plugin code runs server-side in a
   restricted sandbox.

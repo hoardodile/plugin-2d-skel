@@ -96,7 +96,11 @@ function readCommands(value: unknown): readonly string[] {
 	// (`"start_mtn Idle;set_exp exp2.exp3.json"`); an array is already a
 	// list, but each element can still be `;`-joined. Split and trim.
 	const parts: string[] = []
-	const raw = isNonEmptyString(value) ? [value] : Array.isArray(value) ? value : []
+	const raw = isNonEmptyString(value)
+		? [value]
+		: Array.isArray(value)
+			? value
+			: []
 	for (const entry of raw) {
 		if (typeof entry !== "string") continue
 		for (const part of entry.split(";")) {
@@ -275,7 +279,9 @@ export function selectMotion(
  * greeting group — prefer `idle`/`Idle` (then any `*idle*`), then
  * `start`/`Start`, and only as a last resort the first declared group.
  */
-export function preferredMotionGroup(groups: readonly string[]): string | undefined {
+export function preferredMotionGroup(
+	groups: readonly string[],
+): string | undefined {
 	if (groups.length === 0) return undefined
 	const exact = groups.find((group) => /^idle$/i.test(group))
 	if (exact !== undefined) return exact

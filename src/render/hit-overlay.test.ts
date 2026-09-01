@@ -1,8 +1,8 @@
 import { describe, expect, test } from "vitest"
 import {
+	type Live2dModelLike,
 	projectLive2dHitRects,
 	projectSpineHitRects,
-	type Live2dModelLike,
 } from "./hit-overlay"
 
 describe("projectSpineHitRects", () => {
@@ -41,7 +41,12 @@ describe("projectSpineHitRects", () => {
 
 	test("returns nothing for a degenerate container", () => {
 		expect(
-			projectSpineHitRects({ bounds, areas, containerWidth: 0, containerHeight: 0 }),
+			projectSpineHitRects({
+				bounds,
+				areas,
+				containerWidth: 0,
+				containerHeight: 0,
+			}),
 		).toEqual([])
 	})
 
@@ -64,16 +69,19 @@ describe("projectSpineHitRects", () => {
 })
 
 describe("projectLive2dHitRects", () => {
-	function makeModel(defs: readonly { id: string; name: string; index: number }[]): Live2dModelLike {
-		const vertices = new Float32Array([
-			0, 0, 10, 10, 10, 0, 0, 10,
-		])
+	function makeModel(
+		defs: readonly { id: string; name: string; index: number }[],
+	): Live2dModelLike {
+		const vertices = new Float32Array([0, 0, 10, 10, 10, 0, 0, 10])
 		// Methods read `this`, mirroring the real runtime — so a caller that
 		// detaches them (losing `this`) throws on `this.settings`/`this`.
 		const internalModel = {
 			settings: { hitAreas: defs },
 			localTransform: {
-				apply: (point: { x: number; y: number }, out: { x: number; y: number }) => {
+				apply: (
+					point: { x: number; y: number },
+					out: { x: number; y: number },
+				) => {
 					out.x = point.x * 2
 					out.y = point.y * 2
 					return out

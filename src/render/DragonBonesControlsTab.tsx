@@ -137,7 +137,8 @@ export function DragonBonesControlsTab(props: DragonBonesControlsTabProps) {
 
 	const blocks: ReactNode[] = []
 	sections.forEach((section, index) => {
-		if (index > 0) blocks.push(<Separator key={`sep-${index}`} size="hairline" />)
+		if (index > 0)
+			blocks.push(<Separator key={`sep-${index}`} size="hairline" />)
 		blocks.push(section)
 	})
 

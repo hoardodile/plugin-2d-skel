@@ -30,7 +30,9 @@ vi.mock("@hoardodile/ui/components/dropdown-select", () => ({
 }))
 
 vi.mock("@hoardodile/ui/components/section-label", () => ({
-	SectionLabel: ({ children }: { readonly children?: ReactNode }) => <div data-testid="section-label">{children}</div>,
+	SectionLabel: ({ children }: { readonly children?: ReactNode }) => (
+		<div data-testid="section-label">{children}</div>
+	),
 }))
 
 vi.mock("@hoardodile/ui/components/separator", () => ({
@@ -49,12 +51,16 @@ vi.mock("@hoardodile/ui/components/tag-chip", () => ({
 }))
 
 vi.mock("@hoardodile/ui/components/list-empty-row", () => ({
-	ListEmptyRow: ({ children }: { readonly children?: ReactNode } & Record<string, unknown>) => (
+	ListEmptyRow: ({
+		children,
+	}: { readonly children?: ReactNode } & Record<string, unknown>) => (
 		<div data-testid="list-empty-row">{children}</div>
 	),
 }))
 
-function renderTab(overrides: Partial<Parameters<typeof SpineControlsTab>[0]> = {}) {
+function renderTab(
+	overrides: Partial<Parameters<typeof SpineControlsTab>[0]> = {},
+) {
 	const base = {
 		animations: ["idle", "run"],
 		skins: ["default", "alt"],
@@ -82,7 +88,9 @@ describe("SpineControlsTab", () => {
 		expect(screen.getByTestId("spine-skin-alt")).toBeInTheDocument()
 		expect(screen.getByTestId("spine-overlay-none")).toBeInTheDocument()
 		expect(screen.getByTestId("spine-overlay-blink")).toBeInTheDocument()
-		expect(screen.getByTestId("spine-controls-hitarea-body")).toBeInTheDocument()
+		expect(
+			screen.getByTestId("spine-controls-hitarea-body"),
+		).toBeInTheDocument()
 	})
 
 	test("drops empty sections", () => {
@@ -91,11 +99,18 @@ describe("SpineControlsTab", () => {
 		// A single skin is dropped (already the active choice).
 		expect(screen.queryByTestId("spine-skin-default")).not.toBeInTheDocument()
 		expect(screen.queryByTestId("spine-overlay-none")).not.toBeInTheDocument()
-		expect(screen.queryByTestId("spine-controls-hitarea-body")).not.toBeInTheDocument()
+		expect(
+			screen.queryByTestId("spine-controls-hitarea-body"),
+		).not.toBeInTheDocument()
 	})
 
 	test("renders the empty state when nothing is available", () => {
-		renderTab({ animations: [], skins: ["default"], overlays: [], hitAreas: [] })
+		renderTab({
+			animations: [],
+			skins: ["default"],
+			overlays: [],
+			hitAreas: [],
+		})
 		expect(screen.getByTestId("list-empty-row")).toBeInTheDocument()
 		expect(screen.queryByTestId("spine-animation-idle")).not.toBeInTheDocument()
 	})

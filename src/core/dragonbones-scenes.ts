@@ -1,12 +1,12 @@
 import type { DragonBonesScene } from "../shared"
-import { dirname, isTextureName, naturalCompare } from "./spine-format"
 import {
+	type DragonBonesDocument,
 	isDragonBonesAtlasName,
 	isDragonBonesSkeletonFileName,
 	skeletonStem,
 	textureForAtlas,
-	type DragonBonesDocument,
 } from "./dragonbones-format"
+import { dirname, isTextureName, naturalCompare } from "./spine-format"
 
 /**
  * Group a resource's files into renderable standard-format DragonBones
@@ -36,7 +36,12 @@ export function groupDragonBonesScenes(options: {
 		const stem = skeletonStem(skeleton)
 		const atlas = pickAtlas(files, directory, stem)
 		if (atlas === undefined) continue
-		const textures = textureForAtlas(atlas, atlasContents.get(atlas), files, directory)
+		const textures = textureForAtlas(
+			atlas,
+			atlasContents.get(atlas),
+			files,
+			directory,
+		)
 		if (textures.length === 0) continue
 		const format = skeleton.endsWith(".json") ? "json" : "dbbin"
 		scenes.push({
@@ -62,11 +67,16 @@ function pickAtlas(
 	stem: string,
 ): string | undefined {
 	const sameStem = `${stem}_tex.json`
-	const local = sameStem !== "" ? `${directory === "" ? sameStem : `${directory}/${sameStem}`}` : ""
+	const local =
+		sameStem !== ""
+			? `${directory === "" ? sameStem : `${directory}/${sameStem}`}`
+			: ""
 	if (local !== "" && files.includes(local)) return local
 
 	const directoryAtlases = files
-		.filter((name) => isDragonBonesAtlasName(name) && dirname(name) === directory)
+		.filter(
+			(name) => isDragonBonesAtlasName(name) && dirname(name) === directory,
+		)
 		.sort(naturalCompare)
 	if (directoryAtlases[0] !== undefined) return directoryAtlases[0]
 

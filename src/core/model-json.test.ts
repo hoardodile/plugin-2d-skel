@@ -96,7 +96,11 @@ describe("parseModelJson", () => {
 	test("drops empty placeholder textures from EX descriptors", () => {
 		expect(
 			parseModelJson(
-				JSON.stringify({ type: 0, model: "model_0.moc", textures: ["a.png", ""] }),
+				JSON.stringify({
+					type: 0,
+					model: "model_0.moc",
+					textures: ["a.png", ""],
+				}),
 			),
 		).toMatchObject({ kind: "ex-live2d", textures: ["a.png"] })
 	})

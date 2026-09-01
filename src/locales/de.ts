@@ -20,14 +20,19 @@ export default {
 	close: "Schließen",
 	loadError: "Dieses Live2D-Modell konnte nicht geladen werden",
 	runtimeReason: "Live2D-Viewer-Runtime (Live2D Proprietary Software License).",
-	runtimeDenied: "Die Live2D-Runtime wurde nicht heruntergeladen — erlaube den Download, um Modelle anzusehen.",
-	runtimeUnavailable: "Runtime-Downloads sind in dieser Umgebung nicht verfügbar.",
-	runtimeNetwork: "Der Runtime-Download-Server ist nicht erreichbar — Netzwerk prüfen und erneut versuchen.",
-	runtimeStale: "Die zwischengespeicherte Runtime entspricht nicht mehr der gepinnten Version — erneut herunterladen.",
+	runtimeDenied:
+		"Die Live2D-Runtime wurde nicht heruntergeladen — erlaube den Download, um Modelle anzusehen.",
+	runtimeUnavailable:
+		"Runtime-Downloads sind in dieser Umgebung nicht verfügbar.",
+	runtimeNetwork:
+		"Der Runtime-Download-Server ist nicht erreichbar — Netzwerk prüfen und erneut versuchen.",
+	runtimeStale:
+		"Die zwischengespeicherte Runtime entspricht nicht mehr der gepinnten Version — erneut herunterladen.",
 	runtimeFailed: "Die Live2D-Runtime konnte nicht geladen werden.",
 	runtimeRetry: "Erneut versuchen",
 	emptyTitle: "Kein Live2D-Modell",
-	emptyBody: "Lege ein Cubism-model3.json- oder ein Live2DViewerEX-.moc-Modell ab.",
+	emptyBody:
+		"Lege ein Cubism-model3.json- oder ein Live2DViewerEX-.moc-Modell ab.",
 	mirror: "Spiegeln",
 	rotation: "Rotation",
 	resetRotation: "Rotation zurücksetzen",
@@ -97,7 +102,8 @@ export default {
 	interactionMode: "Interaktionsmodus",
 	interactMode: "Interagieren",
 	moveMode: "Verschieben",
-	interactModeHint: "Ziehen, um mit dem Modell zu interagieren · Scrollen zum Zoomen",
+	interactModeHint:
+		"Ziehen, um mit dem Modell zu interagieren · Scrollen zum Zoomen",
 	moveModeHint: "Ziehen zum Positionieren · Scrollen zum Zoomen",
 	interactModeNoHitHint: "Klicken zum Animationswechsel · Scrollen zum Zoomen",
 	more: "Mehr",
@@ -121,7 +127,8 @@ export default {
 	format: "Format",
 	settings: "Einstellungen",
 	cropCover: "Zuschneiden & als Cover setzen",
-	cropHint: "Ziehen, um das Feld zu verschieben · Ecke ziehen, um es zu skalieren",
+	cropHint:
+		"Ziehen, um das Feld zu verschieben · Ecke ziehen, um es zu skalieren",
 	setCover: "Als Cover setzen",
 	cancel: "Abbrechen",
 	coverUnavailable: "Das Cover konnte nicht gesetzt werden.",

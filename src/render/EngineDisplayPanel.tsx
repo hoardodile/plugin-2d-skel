@@ -1,5 +1,5 @@
-import { ColorPicker } from "@hoardodile/ui/components/color-picker"
 import { Button } from "@hoardodile/ui/components/button"
+import { ColorPicker } from "@hoardodile/ui/components/color-picker"
 import { DropdownSelect } from "@hoardodile/ui/components/dropdown-select"
 import { Label } from "@hoardodile/ui/components/label"
 import { SectionLabel } from "@hoardodile/ui/components/section-label"
@@ -27,7 +27,8 @@ export type EngineDisplayPanelProps = {
 	readonly onCropCover?: () => void
 }
 
-const ROW = "flex h-control items-center justify-between gap-3 text-ui text-foreground"
+const ROW =
+	"flex h-control items-center justify-between gap-3 text-ui text-foreground"
 
 /**
  * Shared viewer settings, shown in the Display tab for both engines. The
@@ -36,13 +37,22 @@ const ROW = "flex h-control items-center justify-between gap-3 text-ui text-fore
  * are shown conditionally on `engine`.
  */
 export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
-	const { engine, settings, onSettingsChange, rotation = 0, onSetRotation, onScreenshot, onCropCover } = props
+	const {
+		engine,
+		settings,
+		onSettingsChange,
+		rotation = 0,
+		onSetRotation,
+		onScreenshot,
+		onCropCover,
+	} = props
 	const { t } = useTranslation()
 
 	// Map radians to a 0–360 degree display value. Keep a full turn (360°) as
 	// the distinct end of the slider instead of wrapping %360 back to 0.
 	const rawDeg = Math.round((rotation * 180) / Math.PI)
-	const rotationDeg = rawDeg % 360 === 0 && rotation > 0.001 ? 360 : ((rawDeg % 360) + 360) % 360
+	const rotationDeg =
+		rawDeg % 360 === 0 && rotation > 0.001 ? 360 : ((rawDeg % 360) + 360) % 360
 
 	const isLive2d = engine === "live2d"
 	const backgroundOptions = isLive2d
@@ -50,11 +60,11 @@ export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
 				{ value: "transparent", label: t("transparent") },
 				{ value: "checker", label: t("checker") },
 				{ value: "solid", label: t("solid") },
-		  ]
+			]
 		: [
 				{ value: "transparent", label: t("transparent") },
 				{ value: "checker", label: t("checker") },
-		  ]
+			]
 	const fitOptions = [
 		{ value: "fit", label: t("fitWindow") },
 		{ value: "width", label: t("fitWidth") },
@@ -71,7 +81,9 @@ export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
 				<SectionLabel size="xs">{t("view")}</SectionLabel>
 				<div className="flex flex-col gap-2">
 					<div className="flex flex-col gap-1">
-						<Label className="text-xs text-muted-foreground">{t("background")}</Label>
+						<Label className="text-xs text-muted-foreground">
+							{t("background")}
+						</Label>
 						<DropdownSelect
 							value={settings.background}
 							onValueChange={(value) =>
@@ -95,11 +107,15 @@ export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
 					</div>
 					{isLive2d ? (
 						<div className="flex flex-col gap-1">
-							<Label className="text-xs text-muted-foreground">{t("fit")}</Label>
+							<Label className="text-xs text-muted-foreground">
+								{t("fit")}
+							</Label>
 							<DropdownSelect
 								value={settings.fitMode}
 								onValueChange={(value) =>
-									onSettingsChange({ fitMode: value as EngineSettings["fitMode"] })
+									onSettingsChange({
+										fitMode: value as EngineSettings["fitMode"],
+									})
 								}
 								options={fitOptions}
 								triggerClassName="self-start text-xs text-foreground"
@@ -113,7 +129,9 @@ export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
 							<span>{t("mirror")}</span>
 							<Switch
 								checked={settings.mirror}
-								onCheckedChange={(checked) => onSettingsChange({ mirror: checked })}
+								onCheckedChange={(checked) =>
+									onSettingsChange({ mirror: checked })
+								}
 								aria-label={t("mirror")}
 								data-testid="engine-mirror-toggle"
 							/>
@@ -123,7 +141,9 @@ export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
 						<span>{t("showHitAreas")}</span>
 						<Switch
 							checked={settings.showHitAreas}
-							onCheckedChange={(checked) => onSettingsChange({ showHitAreas: checked })}
+							onCheckedChange={(checked) =>
+								onSettingsChange({ showHitAreas: checked })
+							}
 							aria-label={t("showHitAreas")}
 							data-testid="engine-showhits-toggle"
 						/>
@@ -131,7 +151,9 @@ export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
 					{onSetRotation !== undefined ? (
 						<div className="flex flex-col gap-1">
 							<div className="flex items-center justify-between">
-								<Label className="text-xs text-muted-foreground">{t("rotation")}</Label>
+								<Label className="text-xs text-muted-foreground">
+									{t("rotation")}
+								</Label>
 								<Button
 									type="button"
 									variant="secondary"
@@ -150,7 +172,11 @@ export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
 								step={1}
 								value={rotationDeg}
 								onValueChange={(value) =>
-									onSetRotation(((Array.isArray(value) ? (value[0] ?? 0) : value) * Math.PI) / 180)
+									onSetRotation(
+										((Array.isArray(value) ? (value[0] ?? 0) : value) *
+											Math.PI) /
+											180,
+									)
 								}
 								className="w-full"
 								aria-label={t("rotation")}
@@ -201,10 +227,14 @@ export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
 				<SectionLabel size="xs">{t("playback")}</SectionLabel>
 				<div className="flex flex-col gap-2">
 					<div className="flex flex-col gap-1">
-						<Label className="text-xs text-muted-foreground">{t("speed")}</Label>
+						<Label className="text-xs text-muted-foreground">
+							{t("speed")}
+						</Label>
 						<DropdownSelect
 							value={String(settings.speed)}
-							onValueChange={(value) => onSettingsChange({ speed: Number(value) })}
+							onValueChange={(value) =>
+								onSettingsChange({ speed: Number(value) })
+							}
 							options={speedOptions}
 							triggerClassName="self-start text-xs text-foreground"
 							aria-label={t("speed")}
@@ -225,7 +255,9 @@ export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
 						<Switch
 							checked={isLive2d ? settings.autoPlay : settings.autoplay}
 							onCheckedChange={(checked) =>
-								onSettingsChange(isLive2d ? { autoPlay: checked } : { autoplay: checked })
+								onSettingsChange(
+									isLive2d ? { autoPlay: checked } : { autoplay: checked },
+								)
 							}
 							aria-label={t("autoPlay")}
 							data-testid="engine-autoplay-toggle"
@@ -266,7 +298,9 @@ export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
 					{isLive2d ? (
 						<div className="flex flex-col gap-1">
 							<div className="flex items-center justify-between">
-								<Label className="text-xs text-muted-foreground">{t("volume")}</Label>
+								<Label className="text-xs text-muted-foreground">
+									{t("volume")}
+								</Label>
 								<button
 									type="button"
 									onClick={() => onSettingsChange({ muted: !settings.muted })}
@@ -298,7 +332,9 @@ export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
 							<span>{t("debug")}</span>
 							<Switch
 								checked={settings.debug}
-								onCheckedChange={(checked) => onSettingsChange({ debug: checked })}
+								onCheckedChange={(checked) =>
+									onSettingsChange({ debug: checked })
+								}
 								aria-label={t("debug")}
 								data-testid="engine-debug-toggle"
 							/>

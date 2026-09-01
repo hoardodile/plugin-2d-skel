@@ -149,7 +149,12 @@ describe("serializeEngineScenes", () => {
 				engine: "live2d",
 			},
 			{ filename: "model_0.moc", role: "moc", scene: 0, engine: "live2d" },
-			{ filename: "textures_0_0.png", role: "texture", scene: 0, engine: "live2d" },
+			{
+				filename: "textures_0_0.png",
+				role: "texture",
+				scene: 0,
+				engine: "live2d",
+			},
 		])
 	})
 })

@@ -1,30 +1,41 @@
 import { isRecord } from "@hoardodile/sdk-web"
 import { Button } from "@hoardodile/ui/components/button"
-import { PillTabs } from "@hoardodile/ui/components/pill-tabs"
 import { Icon } from "@hoardodile/ui/components/icon"
 import { Label } from "@hoardodile/ui/components/label"
-import type { ViewportTransform } from "./canvas-view"
+import { PillTabs } from "@hoardodile/ui/components/pill-tabs"
 import { useBelowSidebar } from "@hoardodile/ui/hooks/use-mobile"
 import { Settings } from "@hoardodile/ui/icons/registry"
-import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react"
+import {
+	type ReactNode,
+	type RefObject,
+	useEffect,
+	useRef,
+	useState,
+} from "react"
 import { useTranslation } from "../i18n"
-import { setResourceCover } from "./cover"
 import { CoverCropDialog } from "./CoverCropDialog"
+import type { ViewportTransform } from "./canvas-view"
+import { setResourceCover } from "./cover"
 import { DialogueOverlay } from "./DialogueOverlay"
-import type { PlayerController, ViewerScene } from "./engine"
 import { EngineDisplayPanel } from "./EngineDisplayPanel"
-import { EngineEmptyState, EngineStatusOverlay } from "./EngineOverlays"
 import { EngineHitAreasTab } from "./EngineHitAreasTab"
 import { EngineInfoPanel } from "./EngineInfoPanel"
-import { HitAreaOverlay } from "./HitAreaOverlay"
+import { EngineEmptyState, EngineStatusOverlay } from "./EngineOverlays"
 import type { EnginePanelTabDef } from "./EnginePanel"
 import { EnginePanel } from "./EnginePanel"
 import { EngineToolbar } from "./EngineToolbar"
+import type { PlayerController, ViewerScene } from "./engine"
+import { HitAreaOverlay } from "./HitAreaOverlay"
 import { usePluginAPI } from "./hooks"
-import { useViewport } from "./useViewport"
 import type { EngineSettings } from "./prefs"
+import { useViewport } from "./useViewport"
 
-const DEFAULT_VIEWPORT: ViewportTransform = { x: 0, y: 0, scale: 1, rotation: 0 }
+const DEFAULT_VIEWPORT: ViewportTransform = {
+	x: 0,
+	y: 0,
+	scale: 1,
+	rotation: 0,
+}
 
 function readCachedViewport(raw: string | undefined): ViewportTransform {
 	if (raw === undefined) return DEFAULT_VIEWPORT
@@ -38,8 +49,7 @@ function readCachedViewport(raw: string | undefined): ViewportTransform {
 		) {
 			return DEFAULT_VIEWPORT
 		}
-		const rotation =
-			typeof parsed.rotation === "number" ? parsed.rotation : 0
+		const rotation = typeof parsed.rotation === "number" ? parsed.rotation : 0
 		return { x: parsed.x, y: parsed.y, scale: parsed.scale, rotation }
 	} catch {
 		return DEFAULT_VIEWPORT
@@ -137,7 +147,8 @@ export function EngineStageContent(props: EngineStageContentProps) {
 	// animation fallback, so the interact hint should say so instead of the
 	// misleading "drag to interact" (Live2D keeps its gaze hint always).
 	const noHotspots =
-		(engine === "spine" || engine === "dragonbones") && controller.exHit === undefined
+		(engine === "spine" || engine === "dragonbones") &&
+		controller.exHit === undefined
 
 	const viewport = useViewport({
 		target: containerRef,
@@ -240,7 +251,9 @@ export function EngineStageContent(props: EngineStageContentProps) {
 
 	const modeControl = (
 		<div className="flex w-full flex-col gap-1.5 pb-1">
-			<Label className="text-xs text-muted-foreground">{t("interactionMode")}</Label>
+			<Label className="text-xs text-muted-foreground">
+				{t("interactionMode")}
+			</Label>
 			<PillTabs
 				value={mode}
 				className="self-start"
@@ -332,7 +345,7 @@ export function EngineStageContent(props: EngineStageContentProps) {
 			? undefined
 			: scene.engine === "spine" || scene.engine === "dragonbones"
 				? `${scene.format.toUpperCase()} · ${scene.version ?? t("version")}`
-				: scene.version ?? t("version")
+				: (scene.version ?? t("version"))
 
 	return (
 		<div
@@ -366,7 +379,10 @@ export function EngineStageContent(props: EngineStageContentProps) {
 							viewport={viewport.transform}
 							spine={
 								controller.engine === "spine" && controller.exHit !== undefined
-									? { bounds: controller.exHit.bounds, areas: controller.exHit.areas }
+									? {
+											bounds: controller.exHit.bounds,
+											areas: controller.exHit.areas,
+										}
 									: undefined
 							}
 							live2d={
@@ -386,48 +402,48 @@ export function EngineStageContent(props: EngineStageContentProps) {
 					) : null}
 				</div>
 
-			{scene !== undefined ? (
-				<span
-					className="absolute left-3 z-10 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white/70 top-[calc(0.75rem+env(safe-area-inset-top))]"
-					data-testid="engine-version-chip"
-				>
-					{versionLabel}
-				</span>
-			) : null}
-
-			<EngineToolbar
-				visible
-				scenes={scenes}
-				sceneIndex={sceneIndex}
-				onSceneChange={selectScene}
-				paused={controller.paused}
-				ready={controller.status === "ready"}
-				onTogglePause={controller.togglePause}
-				onRestart={controller.restart}
-				onResetView={viewport.reset}
-				onToggleFullscreen={toggleFullscreen}
-			>
-				{plugin.stepControls}
-				{below ? (
-					<Button
-						type="button"
-						variant="ghost"
-						size="sm"
-						onClick={() => {
-							setPanelTab(
-								engine === "live2d" ? settings.live2dTab : settings.spineTab,
-							)
-							setPanelOpen(true)
-						}}
-						className="ml-auto h-control shrink-0 gap-1 px-2 text-xs text-foreground hover:bg-muted"
-						aria-label={t("settings")}
-						data-testid="engine-open-panel"
+				{scene !== undefined ? (
+					<span
+						className="absolute left-3 z-10 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white/70 top-[calc(0.75rem+env(safe-area-inset-top))]"
+						data-testid="engine-version-chip"
 					>
-						<Icon icon={Settings} size="sm" />
-						{t("settings")}
-					</Button>
+						{versionLabel}
+					</span>
 				) : null}
-			</EngineToolbar>
+
+				<EngineToolbar
+					visible
+					scenes={scenes}
+					sceneIndex={sceneIndex}
+					onSceneChange={selectScene}
+					paused={controller.paused}
+					ready={controller.status === "ready"}
+					onTogglePause={controller.togglePause}
+					onRestart={controller.restart}
+					onResetView={viewport.reset}
+					onToggleFullscreen={toggleFullscreen}
+				>
+					{plugin.stepControls}
+					{below ? (
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onClick={() => {
+								setPanelTab(
+									engine === "live2d" ? settings.live2dTab : settings.spineTab,
+								)
+								setPanelOpen(true)
+							}}
+							className="ml-auto h-control shrink-0 gap-1 px-2 text-xs text-foreground hover:bg-muted"
+							aria-label={t("settings")}
+							data-testid="engine-open-panel"
+						>
+							<Icon icon={Settings} size="sm" />
+							{t("settings")}
+						</Button>
+					) : null}
+				</EngineToolbar>
 
 				<DialogueOverlay
 					visible
@@ -454,7 +470,8 @@ export function EngineStageContent(props: EngineStageContentProps) {
 								: t("loadError")
 						}
 						detail={
-							controller.engine === "spine" || controller.engine === "dragonbones"
+							controller.engine === "spine" ||
+							controller.engine === "dragonbones"
 								? controller.errorDetail
 								: undefined
 						}
@@ -513,8 +530,14 @@ function infoExtras(
 			if (controller.modelInfo.version !== undefined) {
 				rows.push({ k: t("version"), v: String(controller.modelInfo.version) })
 			}
-			rows.push({ k: t("physics"), v: controller.modelInfo.hasPhysics ? t("yes") : t("no") })
-			rows.push({ k: t("pose"), v: controller.modelInfo.hasPose ? t("yes") : t("no") })
+			rows.push({
+				k: t("physics"),
+				v: controller.modelInfo.hasPhysics ? t("yes") : t("no"),
+			})
+			rows.push({
+				k: t("pose"),
+				v: controller.modelInfo.hasPose ? t("yes") : t("no"),
+			})
 		}
 		if (controller.runtimeVersion !== undefined) {
 			rows.push({ k: t("runtime"), v: controller.runtimeVersion })
@@ -526,7 +549,10 @@ function infoExtras(
 		if (scene?.engine === "spine") {
 			rows.push({ k: t("format"), v: scene.format.toUpperCase() })
 		}
-		rows.push({ k: t("animations"), v: String(controller.names.animations.length) })
+		rows.push({
+			k: t("animations"),
+			v: String(controller.names.animations.length),
+		})
 		rows.push({ k: t("skins"), v: String(controller.names.skins.length) })
 		if (controller.exHit !== undefined) {
 			rows.push({ k: t("hit"), v: String(controller.exHit.areas.length) })
@@ -544,7 +570,10 @@ function infoExtras(
 		if (controller.names.armatures.length > 0) {
 			rows.push({ k: t("scene"), v: String(controller.names.armatures.length) })
 		}
-		rows.push({ k: t("animations"), v: String(controller.names.animations.length) })
+		rows.push({
+			k: t("animations"),
+			v: String(controller.names.animations.length),
+		})
 		rows.push({ k: t("skins"), v: String(controller.names.skins.length) })
 		if (controller.exHit !== undefined) {
 			rows.push({ k: t("hit"), v: String(controller.exHit.areas.length) })

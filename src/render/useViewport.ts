@@ -1,16 +1,16 @@
 import { isTapGesture } from "@hoardodile/ui/hooks/use-pinch-pan"
 import { type RefObject, useEffect, useRef, useState } from "react"
 import {
+	clampPan,
 	clampZoomTransform,
 	HOME,
 	panViewport,
 	rotateViewport,
-	wheelScaleFromDelta,
-	zoomViewportAt,
-	clampPan,
 	type ViewportPoint,
 	type ViewportTransform,
 	type ViewportView,
+	wheelScaleFromDelta,
+	zoomViewportAt,
 } from "./canvas-view"
 
 /**
@@ -94,9 +94,10 @@ export function useViewport(options: ViewportOptions): {
 	const transformRef = useRef(transform)
 	transformRef.current = transform
 	const sessionRef = useRef<GestureSession | null>(null)
-	const lastTapRef = useRef<{ readonly point: ViewportPoint; readonly time: number } | null>(
-		null,
-	)
+	const lastTapRef = useRef<{
+		readonly point: ViewportPoint
+		readonly time: number
+	} | null>(null)
 	const boundsRef = useRef({ minScale, maxScale, tapThreshold, panExtent })
 	boundsRef.current = { minScale, maxScale, tapThreshold, panExtent }
 
@@ -182,7 +183,14 @@ export function useViewport(options: ViewportOptions): {
 				event.deltaY,
 				boundsRef.current,
 			)
-			update(zoomViewportAt(transformRef.current, { x: 0, y: 0 }, nextScale, boundsRef.current))
+			update(
+				zoomViewportAt(
+					transformRef.current,
+					{ x: 0, y: 0 },
+					nextScale,
+					boundsRef.current,
+				),
+			)
 		}
 
 		function startPointer(event: PointerEvent): void {
@@ -233,9 +241,14 @@ export function useViewport(options: ViewportOptions): {
 			if (entries.length === 1) {
 				const pointer = entries[0]
 				if (pointer === undefined) return
-				const delta = { x: pointer.x - pointer.startX, y: pointer.y - pointer.startY }
+				const delta = {
+					x: pointer.x - pointer.startX,
+					y: pointer.y - pointer.startY,
+				}
 				// Track "moved" so a still press fires a tap while a real drag pans.
-				const moved = session.moved || movedBeyondTap(pointer, boundsRef.current.tapThreshold)
+				const moved =
+					session.moved ||
+					movedBeyondTap(pointer, boundsRef.current.tapThreshold)
 				sessionRef.current = { ...session, pointers, moved }
 				// Alt/Option + drag rotates the model finely (around the center),
 				// taking precedence over the per-mode drag.
@@ -329,7 +342,10 @@ export function useViewport(options: ViewportOptions): {
 	return { transform, reset, dragging, setRotation }
 }
 
-function activePointer(event: PointerEvent, start?: ActivePointer): ActivePointer {
+function activePointer(
+	event: PointerEvent,
+	start?: ActivePointer,
+): ActivePointer {
 	const origin = start ?? eventPoint(event)
 	return {
 		id: event.pointerId,
@@ -344,7 +360,10 @@ function activePointer(event: PointerEvent, start?: ActivePointer): ActivePointe
 	}
 }
 
-function eventPoint(event: { readonly clientX: number; readonly clientY: number }): ViewportPoint {
+function eventPoint(event: {
+	readonly clientX: number
+	readonly clientY: number
+}): ViewportPoint {
 	return { x: event.clientX, y: event.clientY }
 }
 

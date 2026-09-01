@@ -132,12 +132,18 @@ describe("ensureLive2dRuntime", () => {
 
 		// The batch is all-or-nothing: a declined dialog stages nothing,
 		// so nothing is awaited before the rejection.
-		const first = await ensureLive2dRuntime(api, { reason: REASON, injectScript })
+		const first = await ensureLive2dRuntime(api, {
+			reason: REASON,
+			injectScript,
+		})
 		expect(first).toEqual({ ok: false, error: { kind: "denied" } })
 		expect(downloads).toBe(1)
 
 		// A failure clears the module cache — the retry starts over.
-		const second = await ensureLive2dRuntime(api, { reason: REASON, injectScript })
+		const second = await ensureLive2dRuntime(api, {
+			reason: REASON,
+			injectScript,
+		})
 		expect(second).toEqual({ ok: false, error: { kind: "denied" } })
 		expect(downloads).toBe(2)
 	})
@@ -162,10 +168,16 @@ describe("ensureLive2dRuntime", () => {
 		})
 		const injectScript = async () => {}
 
-		const first = await ensureLive2dRuntime(api, { reason: REASON, injectScript })
+		const first = await ensureLive2dRuntime(api, {
+			reason: REASON,
+			injectScript,
+		})
 		expect(first).toEqual({ ok: false, error: { kind: "unavailable" } })
 
-		const second = await ensureLive2dRuntime(api, { reason: REASON, injectScript })
+		const second = await ensureLive2dRuntime(api, {
+			reason: REASON,
+			injectScript,
+		})
 		expect(second).toEqual({ ok: true })
 		expect(downloads).toBe(2)
 	})

@@ -1,0 +1,77 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.5.10/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
+	},
+	"files": {
+		"ignoreUnknown": true,
+		"includes": [
+			"**",
+			"!**/vendor",
+			"!**/coverage",
+			"!**/dist",
+			"!**/out",
+			"!**/node_modules",
+			"!.turbo",
+			"!release"
+		]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"preset": "recommended",
+			"a11y": {
+				"noSvgWithoutTitle": "off",
+				"noStaticElementInteractions": "off"
+			},
+			"style": {
+				"noNonNullAssertion": "off",
+				"useTemplate": "error"
+			},
+			"suspicious": {
+				"noArrayIndexKey": "off",
+				"noUnknownAtRules": "off",
+				"noExplicitAny": "off",
+				"noUndeclaredEnvVars": "off"
+			},
+			"security": {
+				"noDangerouslySetInnerHtml": "off"
+			},
+			"correctness": {
+				"noSelfAssign": "off",
+				"useExhaustiveDependencies": "off"
+			},
+			"performance": {
+				"noImgElement": "off"
+			},
+			"complexity": {
+				"noImportantStyles": "off"
+			}
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double",
+			"semicolons": "asNeeded"
+		}
+	},
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	}
+}

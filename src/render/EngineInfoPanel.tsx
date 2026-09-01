@@ -1,5 +1,5 @@
-import type { EngineScene } from "../shared"
 import { useTranslation } from "../i18n"
+import type { EngineScene } from "../shared"
 
 export type EngineInfoPanelProps = {
 	readonly scene: EngineScene | undefined
@@ -20,15 +20,21 @@ export function EngineInfoPanel(props: EngineInfoPanelProps) {
 	const { t } = useTranslation()
 	if (scene === undefined) return null
 
-	const header = scene.label ?? (scene.engine === "live2d" ? basename(scene.modelJson) : basename(scene.skeleton))
-	const descriptor = scene.engine === "live2d" ? scene.modelJson : scene.skeleton
+	const header =
+		scene.label ??
+		(scene.engine === "live2d"
+			? basename(scene.modelJson)
+			: basename(scene.skeleton))
+	const descriptor =
+		scene.engine === "live2d" ? scene.modelJson : scene.skeleton
 
 	const rows: { readonly k: string; readonly v: string }[] = [
 		{ k: t("kind"), v: t(scene.kind) },
 		{ k: t("engine"), v: t(scene.engine) },
 		{ k: t("textures"), v: String(scene.textures.length) },
 	]
-	if (scene.version !== undefined) rows.push({ k: t("version"), v: scene.version })
+	if (scene.version !== undefined)
+		rows.push({ k: t("version"), v: scene.version })
 	rows.push(...extras)
 
 	return (
@@ -37,7 +43,10 @@ export function EngineInfoPanel(props: EngineInfoPanelProps) {
 				<span className="text-sm font-medium text-foreground">{header}</span>
 			</div>
 			{rows.map((row) => (
-				<div key={row.k} className="flex items-center justify-between gap-2 py-0.5">
+				<div
+					key={row.k}
+					className="flex items-center justify-between gap-2 py-0.5"
+				>
 					<span className="text-muted-foreground">{row.k}</span>
 					<span className="text-right text-foreground">{row.v}</span>
 				</div>

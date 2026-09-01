@@ -1,9 +1,9 @@
 import { describe, expect, test } from "vitest"
-import { groupDragonBonesScenes } from "./dragonbones-scenes"
 import {
 	buildDragonBonesExScene,
 	isDragonBonesExDocument,
 } from "./dragonbones-model"
+import { groupDragonBonesScenes } from "./dragonbones-scenes"
 import type { ModelJsonDocument } from "./model-json"
 
 const SKE_DOC = {
@@ -71,7 +71,10 @@ describe("groupDragonBonesScenes", () => {
 })
 
 describe("ex dragonbones", () => {
-	const EX_DOC: Extract<ModelJsonDocument, { readonly kind: "ex-dragonbones" }> = {
+	const EX_DOC: Extract<
+		ModelJsonDocument,
+		{ readonly kind: "ex-dragonbones" }
+	> = {
 		kind: "ex-dragonbones",
 		skeleton: "skeleton_0",
 		atlases: [

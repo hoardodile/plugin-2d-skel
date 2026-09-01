@@ -2,32 +2,35 @@ import { Application, Texture } from "pixi.js"
 import { type RefObject, useCallback, useEffect, useRef, useState } from "react"
 import { parseExModelJson } from "../core/ex-model"
 import {
-	parseMotionGraph,
-	parseMotionRef,
 	type MotionEntry,
 	type MotionGraph,
 	type MotionRef,
+	parseMotionGraph,
+	parseMotionRef,
 } from "../core/motion-graph"
 import type { DragonBonesScene } from "../shared"
 import { HOME, type ViewportTransform } from "./canvas-view"
 import { effectiveChoice } from "./choices"
+import {
+	type DragonBonesArmatureDisplay,
+	DragonBonesPixiFactory,
+} from "./dragonbones-pixi"
+import type { DragonBonesController, DragonBonesPlayerNames } from "./engine"
 import { buildHitMap } from "./hit-areas"
+import { usePluginAPI } from "./hooks"
+import type { SpineSettings } from "./prefs"
+import { dragonBonesRuntimeVersion } from "./runtime-version"
 import { parseSpineBounds, parseSpineHitAreas } from "./spine-hit"
 import type { SpineExHitData } from "./useSpinePlayer"
-import { dragonBonesRuntimeVersion } from "./runtime-version"
-import { usePluginAPI } from "./hooks"
-import type { DragonBonesController, DragonBonesPlayerNames } from "./engine"
-import type { SpineSettings } from "./prefs"
-import {
-	DragonBonesPixiFactory,
-	type DragonBonesArmatureDisplay,
-} from "./dragonbones-pixi"
 
 export type DragonBonesPlayerStatus = "idle" | "loading" | "ready" | "error"
 
 export type DragonBonesDialogue = {
 	readonly text: string | undefined
-	readonly choices: readonly { readonly text: string; readonly next: MotionRef }[]
+	readonly choices: readonly {
+		readonly text: string
+		readonly next: MotionRef
+	}[]
 }
 
 const DEFAULT_EX_MOTION_DURATION = 4000
@@ -98,11 +101,17 @@ export function useDragonBonesPlayer(options: {
 		choices: [],
 	})
 	const [errorDetail, setErrorDetail] = useState<string | undefined>(undefined)
-	const [runtimeVersion, setRuntimeVersion] = useState<string | undefined>(undefined)
+	const [runtimeVersion, setRuntimeVersion] = useState<string | undefined>(
+		undefined,
+	)
 	const [exHit, setExHit] = useState<SpineExHitData | undefined>(undefined)
 
 	const sceneKey = `${scene?.skeleton ?? ""}\u0000${scene?.atlas ?? ""}\u0000${scene?.modelJson ?? ""}`
-	const animation = effectiveChoice(names.animations, animationChoice, scene?.modelJson !== undefined)
+	const animation = effectiveChoice(
+		names.animations,
+		animationChoice,
+		scene?.modelJson !== undefined,
+	)
 	const armature = effectiveChoice(names.armatures, armatureChoice)
 
 	useEffect(() => {
@@ -227,7 +236,7 @@ export function useDragonBonesPlayer(options: {
 			// Build the atlas refs (EX descriptors may split the texture
 			// across several atlas pages; standard exports use the single
 			// `*_tex.json` + `*_tex.png` pair).
-			let atlasRefs: AtlasRefToLoad[] = []
+			const atlasRefs: AtlasRefToLoad[] = []
 			if (scene.modelJson !== undefined) {
 				const modelBytes = await api.readFile(scene.modelJson)
 				const model = parseExModelJson(new TextDecoder().decode(modelBytes))
@@ -245,7 +254,9 @@ export function useDragonBonesPlayer(options: {
 						: { bounds, areas },
 				)
 				for (const ref of model.atlases) {
-					const atlasData = JSON.parse(new TextDecoder().decode(await api.readFile(ref.atlas)))
+					const atlasData = JSON.parse(
+						new TextDecoder().decode(await api.readFile(ref.atlas)),
+					)
 					const texture = resolveAtlasTexture(ref.textures, scene)
 					if (texture !== undefined) atlasRefs.push({ atlasData, texture })
 				}
@@ -255,7 +266,9 @@ export function useDragonBonesPlayer(options: {
 					setStatus("error")
 					return
 				}
-				const atlasData = JSON.parse(new TextDecoder().decode(await api.readFile(atlas)))
+				const atlasData = JSON.parse(
+					new TextDecoder().decode(await api.readFile(atlas)),
+				)
 				const texture = scene.textures[0]
 				if (texture === undefined) {
 					setStatus("error")
@@ -274,7 +287,9 @@ export function useDragonBonesPlayer(options: {
 			// user-supplied `view`, `app.destroy(true)` does not detach it). If it
 			// stays, it stacks over the live canvas and shows a frozen frame, so
 			// clear the container before creating today's canvas.
-			for (const existing of Array.from(containerRef.current.querySelectorAll("canvas"))) {
+			for (const existing of Array.from(
+				containerRef.current.querySelectorAll("canvas"),
+			)) {
 				existing.remove()
 			}
 			const canvas = document.createElement("canvas")
@@ -321,7 +336,8 @@ export function useDragonBonesPlayer(options: {
 					factory.parseTextureAtlasData(ref.atlasData, texture, atlasName, 1)
 				}
 
-				const armatureName = armature ?? scene.armatures[0] ?? firstArmature(factory, dataName)
+				const armatureName =
+					armature ?? scene.armatures[0] ?? firstArmature(factory, dataName)
 				if (armatureName === undefined) {
 					setStatus("error")
 					return
@@ -336,9 +352,15 @@ export function useDragonBonesPlayer(options: {
 				applyViewport(viewportRef.current)
 
 				const loadedAnimations = armatureDisplay.animation.animationNames
-				const armatures = [...new Set([...scene.armatures, ...runtimeArmatures(factory, dataName)])]
+				const armatures = [
+					...new Set([
+						...scene.armatures,
+						...runtimeArmatures(factory, dataName),
+					]),
+				]
 				setNames({
-					animations: loadedAnimations.length > 0 ? loadedAnimations : scene.animations,
+					animations:
+						loadedAnimations.length > 0 ? loadedAnimations : scene.animations,
 					armatures,
 					skins: scene.skins,
 				})
@@ -348,7 +370,8 @@ export function useDragonBonesPlayer(options: {
 					animationChoice,
 					scene.modelJson !== undefined,
 				)
-				const mountAnimation = startAnimation ?? armatureDisplay.animation.animationNames[0]
+				const mountAnimation =
+					startAnimation ?? armatureDisplay.animation.animationNames[0]
 				if (mountAnimation !== undefined) {
 					const prefersLoop = loopRef.current
 					armatureDisplay.animation.play(mountAnimation, prefersLoop ? 0 : 1)
@@ -357,7 +380,8 @@ export function useDragonBonesPlayer(options: {
 				app.ticker.add(() => {
 					if (disposed || app === null || factory === null) return
 					const dt = app.ticker.deltaMS / 1000
-					if (dt > 0 && !pausedRef.current) factory.advanceTime(dt * speedRef.current)
+					if (dt > 0 && !pausedRef.current)
+						factory.advanceTime(dt * speedRef.current)
 					// Wait for the container to be laid out (cold page load mounts
 					// before the iframe/viewport has a size), then keep re-fitting
 					// for a while so the texture finishes loading before settling.
@@ -482,8 +506,11 @@ export function useDragonBonesPlayer(options: {
 
 	const capture = useCallback(
 		function capture() {
-			const canvas = appRef.current?.view ?? containerRef.current?.querySelector("canvas")
-			return canvas instanceof HTMLCanvasElement ? canvas.toDataURL("image/png") : undefined
+			const canvas =
+				appRef.current?.view ?? containerRef.current?.querySelector("canvas")
+			return canvas instanceof HTMLCanvasElement
+				? canvas.toDataURL("image/png")
+				: undefined
 		},
 		[containerRef],
 	)
@@ -491,7 +518,9 @@ export function useDragonBonesPlayer(options: {
 	/** Apply the viewport natively on the armature display (Pixi transform on
 	 *  top of the bounds fit), so it is shared with the `applyViewport`/`getAppliedViewport`
 	 *  interface and re-fit never snaps back. */
-	const applyViewport = useCallback(function applyViewport(transform: ViewportTransform) {
+	const applyViewport = useCallback(function applyViewport(
+		transform: ViewportTransform,
+	) {
 		const armature = armatureRef.current
 		const app = appRef.current
 		if (armature === null || app === null) return
@@ -499,7 +528,11 @@ export function useDragonBonesPlayer(options: {
 		if (!(bounds.width > 0) || !(bounds.height > 0)) return
 		if (app.screen.width <= 0 || app.screen.height <= 0) return
 		viewportRef.current = transform
-		const base = Math.min(app.screen.width / bounds.width, app.screen.height / bounds.height) * 0.9
+		const base =
+			Math.min(
+				app.screen.width / bounds.width,
+				app.screen.height / bounds.height,
+			) * 0.9
 		const scale = base * transform.scale
 		const cx = bounds.x + bounds.width / 2
 		const cy = bounds.y + bounds.height / 2
@@ -522,7 +555,11 @@ export function useDragonBonesPlayer(options: {
 		if (armature === null || app === null) return { ...HOME }
 		const bounds = armature.getLocalBounds()
 		if (!(bounds.width > 0) || !(bounds.height > 0)) return { ...HOME }
-		const base = Math.min(app.screen.width / bounds.width, app.screen.height / bounds.height) * 0.9
+		const base =
+			Math.min(
+				app.screen.width / bounds.width,
+				app.screen.height / bounds.height,
+			) * 0.9
 		if (base <= 0) return { ...HOME }
 		const scale = armature.scale.x
 		const cx = bounds.x + bounds.width / 2
@@ -535,7 +572,7 @@ export function useDragonBonesPlayer(options: {
 		}
 	}, [])
 
-		return {
+	return {
 		engine: "dragonbones" as const,
 		status,
 		names,
@@ -584,7 +621,10 @@ function resolveAtlasTexture(
 /** Convert read bytes to a clean ArrayBuffer for the binary (DBDT) parser. */
 function toArrayBuffer(bytes: ArrayBuffer | Uint8Array): ArrayBuffer {
 	if (bytes instanceof ArrayBuffer) return bytes
-	return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer
+	return bytes.buffer.slice(
+		bytes.byteOffset,
+		bytes.byteOffset + bytes.byteLength,
+	) as ArrayBuffer
 }
 
 /** Read armature names off the cached DragonBones data (runtime-side). */
@@ -594,7 +634,8 @@ function runtimeArmatures(
 ): readonly string[] {
 	const data = factory.getDragonBonesData(name)
 	if (data === null) return []
-	const armatureNames = (data as { armatureNames?: readonly string[] }).armatureNames
+	const armatureNames = (data as { armatureNames?: readonly string[] })
+		.armatureNames
 	return armatureNames ?? []
 }
 

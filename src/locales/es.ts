@@ -19,15 +19,21 @@ export default {
 	loading: "Cargando modelo…",
 	close: "Cerrar",
 	loadError: "No se pudo cargar este modelo Live2D",
-	runtimeReason: "Runtime del visor Live2D (Live2D Proprietary Software License).",
-	runtimeDenied: "No se descargó el runtime de Live2D — permite la descarga para ver modelos.",
-	runtimeUnavailable: "Las descargas de runtime no están disponibles en este entorno.",
-	runtimeNetwork: "No se pudo conectar con el servidor de descarga del runtime — revisa la red y reintenta.",
-	runtimeStale: "El runtime en caché ya no coincide con la versión fijada — reintenta para volver a descargarlo.",
+	runtimeReason:
+		"Runtime del visor Live2D (Live2D Proprietary Software License).",
+	runtimeDenied:
+		"No se descargó el runtime de Live2D — permite la descarga para ver modelos.",
+	runtimeUnavailable:
+		"Las descargas de runtime no están disponibles en este entorno.",
+	runtimeNetwork:
+		"No se pudo conectar con el servidor de descarga del runtime — revisa la red y reintenta.",
+	runtimeStale:
+		"El runtime en caché ya no coincide con la versión fijada — reintenta para volver a descargarlo.",
 	runtimeFailed: "No se pudo cargar el runtime de Live2D.",
 	runtimeRetry: "Reintentar",
 	emptyTitle: "No hay modelo Live2D",
-	emptyBody: "Suelta un model3.json de Cubism o un modelo .moc de Live2DViewerEX.",
+	emptyBody:
+		"Suelta un model3.json de Cubism o un modelo .moc de Live2DViewerEX.",
 	mirror: "Espejo",
 	rotation: "Rotación",
 	resetRotation: "Restablecer rotación",
@@ -97,9 +103,11 @@ export default {
 	interactionMode: "Modo de interacción",
 	interactMode: "Interactuar",
 	moveMode: "Mover",
-	interactModeHint: "Arrastra para interactuar con el modelo · Desplázate para ampliar",
+	interactModeHint:
+		"Arrastra para interactuar con el modelo · Desplázate para ampliar",
 	moveModeHint: "Arrastra para reposicionar · Desplázate para ampliar",
-	interactModeNoHitHint: "Clic para cambiar la animación · Desplázate para ampliar",
+	interactModeNoHitHint:
+		"Clic para cambiar la animación · Desplázate para ampliar",
 	more: "Más",
 	hit: "Tap",
 	scene: "Escena",
@@ -121,7 +129,8 @@ export default {
 	format: "Formato",
 	settings: "Ajustes",
 	cropCover: "Recortar y definir portada",
-	cropHint: "Arrastra para mover el recuadro · tira de una esquina para cambiar el tamaño",
+	cropHint:
+		"Arrastra para mover el recuadro · tira de una esquina para cambiar el tamaño",
 	setCover: "Definir portada",
 	cancel: "Cancelar",
 	coverUnavailable: "No se pudo definir la portada.",

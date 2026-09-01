@@ -5,8 +5,8 @@ import {
 	type ViewportPoint,
 } from "@hoardodile/ui/hooks/use-pinch-pan"
 
-export { clampViewportScale, isTapGesture }
 export type { ViewportPoint }
+export { clampViewportScale, isTapGesture }
 
 /**
  * A viewer's viewport transform: `translate(x, y) scale(scale)` with the
@@ -114,7 +114,10 @@ export function clampZoomTransform(
 	view: ViewportView,
 	options: CanvasViewOptions,
 ): ViewportTransform {
-	const scaled = { ...transform, scale: clampViewportScale(transform.scale, options) }
+	const scaled = {
+		...transform,
+		scale: clampViewportScale(transform.scale, options),
+	}
 	return clampPan(scaled, view, options.panExtent)
 }
 
@@ -128,7 +131,7 @@ export function fitScaleFor(
 ): number {
 	if (mode === "width") return viewWidth / modelWidth
 	if (mode === "height") return viewHeight / modelHeight
-	return (Math.min(viewWidth / modelWidth, viewHeight / modelHeight) * 0.9)
+	return Math.min(viewWidth / modelWidth, viewHeight / modelHeight) * 0.9
 }
 
 /**

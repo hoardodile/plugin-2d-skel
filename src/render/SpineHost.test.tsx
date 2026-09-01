@@ -34,7 +34,11 @@ vi.mock("./useSpinePlayer", () => ({
 	useSpinePlayer: () => ({
 		engine: "spine",
 		status: "ready",
-		names: { animations: ["idle", "run"], overlays: [], skins: ["default", "alt"] },
+		names: {
+			animations: ["idle", "run"],
+			overlays: [],
+			skins: ["default", "alt"],
+		},
 		paused: false,
 		dialogue: { text: undefined, choices: [] },
 		exHit: undefined,
@@ -59,7 +63,11 @@ vi.mock("./EngineToolbar", () => ({
 vi.mock("@hoardodile/ui/components/button", () => ({
 	Button: function Button(props: Record<string, unknown>) {
 		const { children, type, ...rest } = props
-		return <button type={type as "button" | undefined} {...rest}>{children as ReactNode}</button>
+		return (
+			<button type={type as "button" | undefined} {...rest}>
+				{children as ReactNode}
+			</button>
+		)
 	},
 }))
 
@@ -84,7 +92,9 @@ vi.mock("@hoardodile/ui/components/dropdown-select", () => ({
 }))
 
 vi.mock("@hoardodile/ui/components/list-empty-row", () => ({
-	ListEmptyRow: function ListEmptyRow(props: { readonly children?: ReactNode } & Record<string, unknown>) {
+	ListEmptyRow: function ListEmptyRow(
+		props: { readonly children?: ReactNode } & Record<string, unknown>,
+	) {
 		return <div data-testid="list-empty-row">{props.children}</div>
 	},
 }))
@@ -135,7 +145,9 @@ describe("SpineHost", () => {
 		expect(screen.getByTestId("spine-skin-default")).toBeInTheDocument()
 		expect(screen.getByTestId("spine-skin-alt")).toBeInTheDocument()
 		// The OLD dropdown surface must be gone.
-		expect(screen.queryByTestId("spine-animation-select")).not.toBeInTheDocument()
+		expect(
+			screen.queryByTestId("spine-animation-select"),
+		).not.toBeInTheDocument()
 	})
 
 	test("transparent background does not paint an opaque stage", () => {

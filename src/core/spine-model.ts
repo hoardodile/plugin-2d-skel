@@ -58,7 +58,8 @@ export function buildSpineExScene(options: {
 	readonly skeletonDocument: SpineDocument | undefined
 	readonly skeletonFiles: readonly string[]
 }): SpineScene | undefined {
-	const { modelJson, document, files, skeletonDocument, skeletonFiles } = options
+	const { modelJson, document, files, skeletonDocument, skeletonFiles } =
+		options
 	const directory = dirname(modelJson)
 	const skeleton = resolveChild(directory, document.skeleton)
 	if (!skeletonFiles.includes(skeleton)) return undefined

@@ -35,7 +35,12 @@ const LOCKFILE = join(ROOT, "pnpm-lock.yaml")
 const LICENSE_SOURCE = join(ROOT, "LICENSE")
 const OUT_NOTICES = join(ROOT, "public", "THIRD-PARTY-NOTICES.txt")
 const OUT_LICENSE = join(ROOT, "public", "LICENSE")
-const CACHE_FILE = join(ROOT, "node_modules", ".cache", "plugin-skeleton-animation-notices.json")
+const CACHE_FILE = join(
+	ROOT,
+	"node_modules",
+	".cache",
+	"plugin-skeleton-animation-notices.json",
+)
 
 const isCheckOnly = process.argv.includes("--check")
 
@@ -209,7 +214,9 @@ function checkAllowed(raw) {
 		.map((token) => token.trim())
 		.filter(Boolean)
 		.map((token) => LICENSE_DISPLAY[token] ?? token)
-	return tokens.length > 0 && tokens.every((token) => ALLOWED_LICENSES.has(token))
+	return (
+		tokens.length > 0 && tokens.every((token) => ALLOWED_LICENSES.has(token))
+	)
 }
 
 async function scanPackages() {
@@ -235,7 +242,8 @@ async function scanPackages() {
 		if (!rows.has(key)) rows.set(key, row)
 	}
 	return Array.from(rows.values()).sort(
-		(a, b) => a.name.localeCompare(b.name) || a.version.localeCompare(b.version),
+		(a, b) =>
+			a.name.localeCompare(b.name) || a.version.localeCompare(b.version),
 	)
 }
 
@@ -259,10 +267,7 @@ function render(rows) {
 		"",
 	]
 	for (const row of rows) {
-		lines.push(
-			`${row.name}@${row.version}`,
-			`  License:    ${row.license}`,
-		)
+		lines.push(`${row.name}@${row.version}`, `  License:    ${row.license}`)
 		if (row.repository !== "") lines.push(`  Repository: ${row.repository}`)
 		if (row.copyright !== "") lines.push(`  Copyright:  ${row.copyright}`)
 		lines.push("")

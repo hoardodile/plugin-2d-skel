@@ -16,8 +16,24 @@ describe("spine-hit", () => {
 		expect(bounds).toEqual({ width: 100, height: 50, centerX: 10, centerY: -5 })
 
 		const areas = parseSpineHitAreas([
-			{ name: "head", motion: "touch#1", center_x: 0, center_y: 0, width: 20, height: 20, order: 1 },
-			{ name: "body", motion: "drag", center_x: 0, center_y: 0, width: 40, height: 60, order: 0 },
+			{
+				name: "head",
+				motion: "touch#1",
+				center_x: 0,
+				center_y: 0,
+				width: 20,
+				height: 20,
+				order: 1,
+			},
+			{
+				name: "body",
+				motion: "drag",
+				center_x: 0,
+				center_y: 0,
+				width: 40,
+				height: 60,
+				order: 0,
+			},
 		])
 		expect(areas[0]?.name).toBe("body") // sorted by order
 		expect(areas[1]?.name).toBe("head")
@@ -31,7 +47,15 @@ describe("spine-hit", () => {
 			viewport: { x: 0, y: 0, scale: 1 },
 			bounds: { width: 100, height: 100, centerX: 0, centerY: 0 },
 			areas: [
-				{ name: "c", motion: { group: "g", entry: undefined }, centerX: 0, centerY: 0, width: 20, height: 20, order: 0 },
+				{
+					name: "c",
+					motion: { group: "g", entry: undefined },
+					centerX: 0,
+					centerY: 0,
+					width: 20,
+					height: 20,
+					order: 0,
+				},
 			],
 		})
 		expect(area?.name).toBe("c")
@@ -46,7 +70,15 @@ describe("spine-hit", () => {
 			viewport: { x: 0, y: 0, scale: 1 },
 			bounds: { width: 100, height: 100, centerX: 0, centerY: 0 },
 			areas: [
-				{ name: "c", motion: { group: "g", entry: undefined }, centerX: 25, centerY: 0, width: 20, height: 20, order: 0 },
+				{
+					name: "c",
+					motion: { group: "g", entry: undefined },
+					centerX: 25,
+					centerY: 0,
+					width: 20,
+					height: 20,
+					order: 0,
+				},
 			],
 		})
 		expect(area?.name).toBe("c")
@@ -59,7 +91,15 @@ describe("spine-hit", () => {
 			viewport: { x: 0, y: 0, scale: 1 },
 			bounds: { width: 100, height: 100, centerX: 0, centerY: 0 },
 			areas: [
-				{ name: "c", motion: { group: "g", entry: undefined }, centerX: 0, centerY: 0, width: 20, height: 20, order: 0 },
+				{
+					name: "c",
+					motion: { group: "g", entry: undefined },
+					centerX: 0,
+					centerY: 0,
+					width: 20,
+					height: 20,
+					order: 0,
+				},
 			],
 		})
 		expect(area).toBeUndefined()

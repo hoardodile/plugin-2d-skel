@@ -33,7 +33,9 @@ function friendlyLabel(scene: ViewerScene, total: number): ViewerScene {
 	return { ...scene, label }
 }
 
-function scenesFromMeta(scenes: readonly EngineScene[]): readonly ViewerScene[] {
+function scenesFromMeta(
+	scenes: readonly EngineScene[],
+): readonly ViewerScene[] {
 	return scenes.map((scene, index) =>
 		friendlyLabel({ ...scene, index } as ViewerScene, scenes.length),
 	)
@@ -84,7 +86,9 @@ function scenesFromFiles(files: readonly EngineFile[]): readonly ViewerScene[] {
 	}
 
 	const scenes: ViewerScene[] = []
-	for (const [index, acc] of [...byIndex.entries()].sort((a, b) => a[0] - b[0])) {
+	for (const [index, acc] of [...byIndex.entries()].sort(
+		(a, b) => a[0] - b[0],
+	)) {
 		if (acc.skeleton !== undefined) {
 			if (acc.engine === "dragonbones") {
 				const dragon: DragonBonesScene & { readonly index: number } = {
@@ -94,7 +98,8 @@ function scenesFromFiles(files: readonly EngineFile[]): readonly ViewerScene[] {
 					skeleton: acc.skeleton,
 					atlas: acc.atlas,
 					textures: acc.textures,
-					format: (acc.format === "skel" ? "json" : acc.format) ??
+					format:
+						(acc.format === "skel" ? "json" : acc.format) ??
 						(acc.skeleton.endsWith(".json") ? "json" : "dbbin"),
 					version: acc.version,
 					armatures: [],
@@ -112,7 +117,8 @@ function scenesFromFiles(files: readonly EngineFile[]): readonly ViewerScene[] {
 					skeleton: acc.skeleton,
 					atlas: acc.atlas,
 					textures: acc.textures,
-					format: (acc.format === "dbbin" ? "skel" : acc.format) ??
+					format:
+						(acc.format === "dbbin" ? "skel" : acc.format) ??
 						(acc.skeleton.endsWith(".skel") ? "skel" : "json"),
 					version: acc.version,
 					animations: [],

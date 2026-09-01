@@ -1,5 +1,5 @@
 import { isRecord } from "@hoardodile/sdk-web"
-import { parseMotionRef, type MotionRef } from "../core/motion-graph"
+import { type MotionRef, parseMotionRef } from "../core/motion-graph"
 
 /**
  * Interactive-region helpers shared by the player, expressed over the
@@ -16,7 +16,8 @@ export function buildHitMap(value: unknown): ReadonlyMap<string, MotionRef> {
 		const name = entry.name ?? entry.Name
 		// Official Cubism uses PascalCase `Motion`; Live2DViewerEX uses the
 		// lowercase `motion`. Both reference a group or `group:entry`.
-		const motion = typeof entry.motion === "string" ? entry.motion : entry.Motion
+		const motion =
+			typeof entry.motion === "string" ? entry.motion : entry.Motion
 		const ref = parseMotionRef(typeof motion === "string" ? motion : undefined)
 		if (typeof name === "string" && ref !== undefined) map.set(name, ref)
 	}
@@ -33,7 +34,9 @@ export function buildExpressionFileMap(
 ): ReadonlyMap<string, string> {
 	const map = new Map<string, string>()
 	const refs = isRecord(value)
-		? (Array.isArray(value.Expressions) ? value.Expressions : value.expressions)
+		? Array.isArray(value.Expressions)
+			? value.Expressions
+			: value.expressions
 		: undefined
 	if (!Array.isArray(refs)) return map
 	for (const entry of refs) {

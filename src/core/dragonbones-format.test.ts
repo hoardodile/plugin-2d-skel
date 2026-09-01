@@ -50,7 +50,10 @@ describe("dragonbones-format", () => {
 	})
 
 	test("reads a JSON skeleton document", () => {
-		const doc = readDragonBonesDocument(new TextEncoder().encode(JSON_SKE), "starter_ske.json")
+		const doc = readDragonBonesDocument(
+			new TextEncoder().encode(JSON_SKE),
+			"starter_ske.json",
+		)
 		expect(doc).toEqual({
 			version: { raw: "5.5" },
 			armatures: ["starter", "ghost"],
@@ -71,12 +74,24 @@ describe("dragonbones-format", () => {
 	})
 
 	test("rejects JSON that is not a DragonBones skeleton", () => {
-		expect(readDragonBonesDocument(new TextEncoder().encode('{"hello":"world"}'), "hero.json")).toBeUndefined()
-		expect(readDragonBonesDocument(new TextEncoder().encode('{"skeleton":{"spine":"4.1.24"}}'), "hero.json")).toBeUndefined()
+		expect(
+			readDragonBonesDocument(
+				new TextEncoder().encode('{"hello":"world"}'),
+				"hero.json",
+			),
+		).toBeUndefined()
+		expect(
+			readDragonBonesDocument(
+				new TextEncoder().encode('{"skeleton":{"spine":"4.1.24"}}'),
+				"hero.json",
+			),
+		).toBeUndefined()
 	})
 
 	test("rejects a DBBT file with no embedded JSON", () => {
-		const bytes = new Uint8Array(new TextEncoder().encode("DBDT\x00\x00\x00\x02\x00\x00\x00\x00nojson"))
+		const bytes = new Uint8Array(
+			new TextEncoder().encode("DBDT\x00\x00\x00\x02\x00\x00\x00\x00nojson"),
+		)
 		expect(readDragonBonesDocument(bytes, "skeleton_0")).toBeUndefined()
 	})
 })

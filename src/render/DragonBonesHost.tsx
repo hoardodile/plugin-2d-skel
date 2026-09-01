@@ -1,19 +1,19 @@
 import { Icon } from "@hoardodile/ui/components/icon"
 import { AltArrowLeft, AltArrowRight } from "@hoardodile/ui/icons/registry"
 import { useCallback, useEffect, useRef, useState } from "react"
-import type { DragonBonesScene } from "../shared"
 import { useTranslation } from "../i18n"
+import type { DragonBonesScene } from "../shared"
 import { effectiveChoice } from "./choices"
-import type { ViewerScene } from "./engine"
-import { EngineIconButton } from "./EngineIconButton"
-import { EngineStageContent, type EnginePlugin } from "./EngineStageContent"
 import { DragonBonesControlsTab } from "./DragonBonesControlsTab"
+import { EngineIconButton } from "./EngineIconButton"
+import { type EnginePlugin, EngineStageContent } from "./EngineStageContent"
+import type { ViewerScene } from "./engine"
 import { usePluginAPI } from "./hooks"
 import {
 	ENGINE_SETTINGS_CODEC,
 	ENGINE_SETTINGS_DEFAULT,
-	toSpineSettings,
 	type EngineSettings,
+	toSpineSettings,
 } from "./prefs"
 import { useDragonBonesPlayer } from "./useDragonBonesPlayer"
 
@@ -63,7 +63,9 @@ export function DragonBonesHost({
 					const index = scenes.findIndex(
 						(s) =>
 							(s as DragonBonesScene).modelJson === target ||
-							(s as DragonBonesScene).modelJson?.slice((s as DragonBonesScene).modelJson!.lastIndexOf("/") + 1) === target,
+							(s as DragonBonesScene).modelJson?.slice(
+								(s as DragonBonesScene).modelJson!.lastIndexOf("/") + 1,
+							) === target,
 					)
 					if (index !== -1) selectScene(index)
 				}
@@ -87,20 +89,33 @@ export function DragonBonesHost({
 		onFallbackTap: () => stepAnimation(1),
 	})
 
-	const animation = effectiveChoice(player.names.animations, animationChoice, scene?.modelJson !== undefined)
+	const animation = effectiveChoice(
+		player.names.animations,
+		animationChoice,
+		scene?.modelJson !== undefined,
+	)
 	const skin = effectiveChoice(player.names.skins, skinChoice)
 
 	function stepAnimation(dir: 1 | -1) {
 		const names = player.names.animations
 		if (names.length === 0) return
 		const index = names.indexOf(animation ?? "")
-		const next = index === -1 ? (dir === 1 ? 0 : names.length - 1) : (index + dir + names.length) % names.length
+		const next =
+			index === -1
+				? dir === 1
+					? 0
+					: names.length - 1
+				: (index + dir + names.length) % names.length
 		const name = names[next]
 		if (name !== undefined) setAnimationChoice(name)
 	}
 
 	const tabs: EnginePlugin["tabs"] = [
-		{ key: "controls", label: t("controls"), testId: "dragonbones-tab-controls" },
+		{
+			key: "controls",
+			label: t("controls"),
+			testId: "dragonbones-tab-controls",
+		},
 		{ key: "display", label: t("display"), testId: "dragonbones-tab-display" },
 		{ key: "info", label: t("info"), testId: "dragonbones-tab-info" },
 	]

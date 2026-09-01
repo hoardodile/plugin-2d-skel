@@ -32,11 +32,18 @@ export function projectSpineHitRects(options: {
 	readonly areas: readonly SpineHitArea[]
 	readonly containerWidth: number
 	readonly containerHeight: number
-	readonly viewport?: { readonly x: number; readonly y: number; readonly scale: number }
+	readonly viewport?: {
+		readonly x: number
+		readonly y: number
+		readonly scale: number
+	}
 }): readonly HitAreaRect[] {
 	const { bounds, areas, containerWidth, containerHeight, viewport } = options
 	if (containerWidth <= 0 || containerHeight <= 0) return []
-	const fit = Math.min(containerWidth / bounds.width, containerHeight / bounds.height)
+	const fit = Math.min(
+		containerWidth / bounds.width,
+		containerHeight / bounds.height,
+	)
 	const halfWidth = containerWidth / 2
 	const halfHeight = containerHeight / 2
 	const vz = viewport?.scale ?? 1
@@ -48,8 +55,10 @@ export function projectSpineHitRects(options: {
 		// The SpinePlayer fits the viewport (`bounds`) into the container, so
 		// the on-screen scale is `fit` pixels per model unit. Fold in the
 		// native viewport (scale around center + translate).
-		const baseX = halfWidth + (area.centerX - area.width / 2 - bounds.centerX) * fit
-		const baseY = halfHeight + (area.centerY - area.height / 2 - bounds.centerY) * fit
+		const baseX =
+			halfWidth + (area.centerX - area.width / 2 - bounds.centerX) * fit
+		const baseY =
+			halfHeight + (area.centerY - area.height / 2 - bounds.centerY) * fit
 		const baseW = area.width * fit
 		const baseH = area.height * fit
 		rects.push({
@@ -76,10 +85,7 @@ export type PointLike = { x: number; y: number }
 export type Live2dModelLike = {
 	readonly internalModel: {
 		readonly localTransform?: {
-			readonly apply: (
-				point: PointLike,
-				out: PointLike,
-			) => PointLike
+			readonly apply: (point: PointLike, out: PointLike) => PointLike
 		}
 		readonly getHitAreaDefs?: () => readonly Live2dHitAreaDef[]
 		readonly getDrawableVertices?: (drawIndex: number) => ArrayLike<number>
@@ -95,7 +101,9 @@ export type Live2dModelLike = {
  * own transforms (so pan/zoom/mirror/fit stay aligned without manual syncing).
  * Returns `[]` when the runtime exposes no hit-area geometry.
  */
-export function projectLive2dHitRects(model: Live2dModelLike): readonly HitAreaRect[] {
+export function projectLive2dHitRects(
+	model: Live2dModelLike,
+): readonly HitAreaRect[] {
 	const im = model.internalModel
 	const localTransform = im.localTransform
 	if (localTransform === undefined) return []
@@ -123,8 +131,12 @@ export function projectLive2dHitRects(model: Live2dModelLike): readonly HitAreaR
 			if (y > maxY) maxY = y
 		}
 		if (!Number.isFinite(minX) || !Number.isFinite(minY)) continue
-		const a = model.toGlobal(localTransform.apply({ x: minX, y: minY }, { x: 0, y: 0 }))
-		const c = model.toGlobal(localTransform.apply({ x: maxX, y: maxY }, { x: 0, y: 0 }))
+		const a = model.toGlobal(
+			localTransform.apply({ x: minX, y: minY }, { x: 0, y: 0 }),
+		)
+		const c = model.toGlobal(
+			localTransform.apply({ x: maxX, y: maxY }, { x: 0, y: 0 }),
+		)
 		rects.push({
 			name: def.name,
 			x: Math.min(a.x, c.x),

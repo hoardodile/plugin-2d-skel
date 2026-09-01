@@ -13,9 +13,7 @@ describe("ex-model", () => {
 			JSON.stringify({
 				type: 9,
 				skeleton: "skeleton_0",
-				atlases: [
-					{ atlas: "a", tex_names: ["x"], textures: ["x.png"] },
-				],
+				atlases: [{ atlas: "a", tex_names: ["x"], textures: ["x.png"] }],
 				motions: { idle: [{ file: "idle" }] },
 			}),
 		)
@@ -27,13 +25,19 @@ describe("ex-model", () => {
 
 	test("parses a type 10 dragonbones descriptor", () => {
 		const model = parseExModelJson(
-			JSON.stringify({ type: 10, skeleton: "s", atlases: [{ atlas: "a", textures: ["t.png"] }] }),
+			JSON.stringify({
+				type: 10,
+				skeleton: "s",
+				atlases: [{ atlas: "a", textures: ["t.png"] }],
+			}),
 		)
 		expect(model?.kind).toBe("dragonbones")
 	})
 
 	test("returns undefined for non-EX descriptors", () => {
-		expect(parseExModelJson(JSON.stringify({ type: 0, model: "m.moc" }))).toBeUndefined()
+		expect(
+			parseExModelJson(JSON.stringify({ type: 0, model: "m.moc" })),
+		).toBeUndefined()
 		expect(parseExModelJson("not json")).toBeUndefined()
 		expect(parseExModelJson(JSON.stringify({ type: 9 }))).toBeUndefined() // no skeleton
 	})

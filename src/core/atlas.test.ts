@@ -30,8 +30,14 @@ describe("atlas", () => {
 	})
 
 	test("resolves a page path relative to the atlas directory", () => {
-		expect(resolveAtlasPage("spine/hero.atlas", "hero.png")).toBe("spine/hero.png")
-		expect(resolveAtlasPage("hero.atlas", "textures/hero.png")).toBe("textures/hero.png")
-		expect(resolveAtlasPage("spine/hero.atlas", "../tex/hero.png")).toBe("tex/hero.png")
+		expect(resolveAtlasPage("spine/hero.atlas", "hero.png")).toBe(
+			"spine/hero.png",
+		)
+		expect(resolveAtlasPage("hero.atlas", "textures/hero.png")).toBe(
+			"textures/hero.png",
+		)
+		expect(resolveAtlasPage("spine/hero.atlas", "../tex/hero.png")).toBe(
+			"tex/hero.png",
+		)
 	})
 })

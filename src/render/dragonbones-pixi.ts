@@ -1,13 +1,4 @@
 import {
-	Armature,
-	BaseFactory,
-	BaseObject,
-	DragonBones,
-	Slot,
-	TextureAtlasData,
-	TextureData,
-} from "pixi-dragonbones-runtime"
-import {
 	BLEND_MODES,
 	Container,
 	groupD8,
@@ -16,6 +7,15 @@ import {
 	Sprite,
 	Texture,
 } from "pixi.js"
+import {
+	Armature,
+	BaseFactory,
+	BaseObject,
+	DragonBones,
+	Slot,
+	TextureAtlasData,
+	TextureData,
+} from "pixi-dragonbones-runtime"
 
 /**
  * A self-contained DragonBones→Pixi rendering backend.
@@ -122,11 +122,19 @@ export class DragonBonesArmatureDisplay extends Container {
 		return this.listenerCount(type) > 0
 	}
 
-	addDBEventListener(type: string, listener: (...args: unknown[]) => void, target: unknown): void {
+	addDBEventListener(
+		type: string,
+		listener: (...args: unknown[]) => void,
+		target: unknown,
+	): void {
 		this.addListener(type, listener, target)
 	}
 
-	removeDBEventListener(type: string, listener: (...args: unknown[]) => void, target: unknown): void {
+	removeDBEventListener(
+		type: string,
+		listener: (...args: unknown[]) => void,
+		target: unknown,
+	): void {
 		this.removeListener(type, listener, target)
 	}
 
@@ -193,7 +201,8 @@ class DragonBonesSlot extends Slot {
 	}
 
 	override _updateVisible(): void {
-		this._renderDisplay.visible = (this as any)._parent.visible && (this as any)._visible
+		this._renderDisplay.visible =
+			(this as any)._parent.visible && (this as any)._visible
 	}
 
 	protected override _updateBlendMode(): void {
@@ -210,24 +219,30 @@ class DragonBonesSlot extends Slot {
 				11: BLEND_MODES.OVERLAY,
 				12: BLEND_MODES.SCREEN,
 			}
-			if (modes[blend] !== undefined) this._renderDisplay.blendMode = modes[blend]
+			if (modes[blend] !== undefined)
+				this._renderDisplay.blendMode = modes[blend]
 		}
 	}
 
 	protected override _updateColor(): void {
-		const alpha = (this as any)._colorTransform.alphaMultiplier * (this as any)._globalAlpha
+		const alpha =
+			(this as any)._colorTransform.alphaMultiplier * (this as any)._globalAlpha
 		this._renderDisplay.alpha = alpha
-		if (this._renderDisplay instanceof Sprite || this._renderDisplay instanceof SimpleMesh) {
+		if (
+			this._renderDisplay instanceof Sprite ||
+			this._renderDisplay instanceof SimpleMesh
+		) {
 			const color =
 				(Math.round((this as any)._colorTransform.redMultiplier * 0xff) << 16) +
-				(Math.round((this as any)._colorTransform.greenMultiplier * 0xff) << 8) +
+				(Math.round((this as any)._colorTransform.greenMultiplier * 0xff) <<
+					8) +
 				Math.round((this as any)._colorTransform.blueMultiplier * 0xff)
 			this._renderDisplay.tint = color
 		}
 	}
 
 	protected override _updateFrame(): void {
-		let currentTextureData = (this as any)._textureData
+		const currentTextureData = (this as any)._textureData
 		if (
 			(this as any)._displayIndex >= 0 &&
 			(this as any)._display !== null &&
@@ -277,7 +292,8 @@ class DragonBonesSlot extends Slot {
 					if (isSkinned || isSurface) this._identityTransform()
 				} else {
 					this._textureScale =
-						currentTextureData.parent.scale * (this as any)._armature._armatureData.scale
+						currentTextureData.parent.scale *
+						(this as any)._armature._armatureData.scale
 					this._renderDisplay.texture = renderTexture
 				}
 				;(this as any)._visibleDirty = true
@@ -313,7 +329,11 @@ class DragonBonesSlot extends Slot {
 			let weightFloatOffset = intArray[weightData.offset + 1]
 			if (weightFloatOffset < 0) weightFloatOffset += 65536
 			for (
-				let i = 0, iD = 0, iB = weightData.offset + 2 + bones.length, iV = weightFloatOffset, iF = 0;
+				let i = 0,
+					iD = 0,
+					iB = weightData.offset + 2 + bones.length,
+					iV = weightFloatOffset,
+					iF = 0;
 				i < vertexCount;
 				++i
 			) {
@@ -369,7 +389,10 @@ class DragonBonesSlot extends Slot {
 	protected override _updateTransform(): void {
 		this.updateGlobalTransform()
 		const transform = (this as any).global
-		if (this._renderDisplay === this._rawDisplay || this._renderDisplay === this._meshDisplay) {
+		if (
+			this._renderDisplay === this._rawDisplay ||
+			this._renderDisplay === this._meshDisplay
+		) {
 			const x =
 				transform.x -
 				((this as any).globalTransformMatrix.a * (this as any)._pivotX +
@@ -409,7 +432,9 @@ export class DragonBonesPixiFactory extends BaseFactory {
 		super(dataParser ?? null)
 		// Per-instance DragonBones/world clock so scenes stay isolated (a shared
 		// static clock can leave the first cold mount unwarmed).
-		;(this as any)._dragonBones = new DragonBones(new DragonBonesArmatureDisplay())
+		;(this as any)._dragonBones = new DragonBones(
+			new DragonBonesArmatureDisplay(),
+		)
 	}
 
 	protected override _buildTextureAtlasData(
@@ -428,7 +453,11 @@ export class DragonBonesPixiFactory extends BaseFactory {
 	): any {
 		const textureAtlasData = this._buildTextureAtlasData(null, textureAtlas)
 		if (textureAtlasData !== null) textureAtlasData.autoSearch = true
-		;(this as any)._dataParser.parseTextureAtlasData(rawData, textureAtlasData, scale)
+		;(this as any)._dataParser.parseTextureAtlasData(
+			rawData,
+			textureAtlasData,
+			scale,
+		)
 		this.addTextureAtlasData(textureAtlasData, name)
 		// Fix: assign the renderTexture AFTER the sub-textures exist so the
 		// setter actually populates every sub-texture's Pixi texture.
@@ -450,7 +479,11 @@ export class DragonBonesPixiFactory extends BaseFactory {
 		return armature
 	}
 
-	protected override _buildSlot(_dataPackage: any, slotData: any, armature: any): any {
+	protected override _buildSlot(
+		_dataPackage: any,
+		slotData: any,
+		armature: any,
+	): any {
 		const slot = BaseObject.borrowObject(DragonBonesSlot)
 		slot.init(slotData, armature, new Sprite(Texture.EMPTY), new SimpleMesh())
 		return slot
@@ -462,7 +495,12 @@ export class DragonBonesPixiFactory extends BaseFactory {
 		skinName = "",
 		textureAtlasName = "",
 	): DragonBonesArmatureDisplay | null {
-		const armature = this.buildArmature(armatureName, dragonBonesName, skinName, textureAtlasName)
+		const armature = this.buildArmature(
+			armatureName,
+			dragonBonesName,
+			skinName,
+			textureAtlasName,
+		)
 		if (armature === null) return null
 		;(this as any)._dragonBones.clock.add(armature)
 		return armature.display as DragonBonesArmatureDisplay

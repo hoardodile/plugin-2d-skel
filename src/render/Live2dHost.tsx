@@ -2,18 +2,18 @@ import { Icon } from "@hoardodile/ui/components/icon"
 import { AltArrowLeft, AltArrowRight } from "@hoardodile/ui/icons/registry"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { preferredMotionGroup } from "../core/motion-graph"
-import type { Live2dScene } from "../shared"
 import { useTranslation } from "../i18n"
-import type { ViewerScene } from "./engine"
+import type { Live2dScene } from "../shared"
 import { EngineIconButton } from "./EngineIconButton"
-import { EngineStageContent, type EnginePlugin } from "./EngineStageContent"
+import { type EnginePlugin, EngineStageContent } from "./EngineStageContent"
+import type { ViewerScene } from "./engine"
 import { usePluginAPI } from "./hooks"
 import { Live2dControlsTab } from "./Live2dTabs"
 import {
 	ENGINE_SETTINGS_CODEC,
 	ENGINE_SETTINGS_DEFAULT,
-	toLive2dSettings,
 	type EngineSettings,
+	toLive2dSettings,
 } from "./prefs"
 import { useLive2dPlayer } from "./useLive2dPlayer"
 
@@ -24,7 +24,12 @@ export type Live2dHostProps = {
 	readonly selectScene: (index: number) => void
 }
 
-export function Live2dHost({ scene, scenes, sceneIndex, selectScene }: Live2dHostProps) {
+export function Live2dHost({
+	scene,
+	scenes,
+	sceneIndex,
+	selectScene,
+}: Live2dHostProps) {
 	const api = usePluginAPI()
 	const { t } = useTranslation()
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -58,7 +63,8 @@ export function Live2dHost({ scene, scenes, sceneIndex, selectScene }: Live2dHos
 	useEffect(() => {
 		const modelJson = scene?.modelJson
 		if (modelJson === undefined) return
-		if (motionGroup !== undefined) api.setCache(`group:${modelJson}`, motionGroup)
+		if (motionGroup !== undefined)
+			api.setCache(`group:${modelJson}`, motionGroup)
 	}, [scene?.modelJson, motionGroup, api])
 
 	const handleCommand = useCallback(
@@ -90,7 +96,8 @@ export function Live2dHost({ scene, scenes, sceneIndex, selectScene }: Live2dHos
 	})
 
 	useEffect(() => {
-		if (player.currentExpression !== undefined) setExpression(player.currentExpression)
+		if (player.currentExpression !== undefined)
+			setExpression(player.currentExpression)
 	}, [player.currentExpression])
 
 	useEffect(() => {
@@ -115,7 +122,8 @@ export function Live2dHost({ scene, scenes, sceneIndex, selectScene }: Live2dHos
 		const groups = scene?.motionGroups ?? []
 		if (groups.length === 0) return
 		const current = groups.indexOf(motionGroup ?? "")
-		const index = current === -1 ? 0 : (current + dir + groups.length) % groups.length
+		const index =
+			current === -1 ? 0 : (current + dir + groups.length) % groups.length
 		const next = groups[index]
 		if (next === undefined) return
 		setMotionGroup(next)
