@@ -17,5 +17,5 @@ hoardodile 内容插件：Live2D、Spine 与 DragonBones 动画查看器，用�
 
 ## 要求
 
-- hoardodile ≥ 0.1.8（详见仓库 README）。
+- hoardodile ≥ 0.1.9（详见仓库 README）。
 - 安装前请确认信任该仓库——插件代码在受限沙箱中作为服务端代码运行。

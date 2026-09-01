@@ -67,7 +67,7 @@ consent channel (CLI, read-only archives) show an "unavailable" message.
 
 ## SDK packages
 
-`@hoardodile/*` dependencies resolve from the npm registry (`^0.1.8`):
+`@hoardodile/*` dependencies resolve from the npm registry (`^0.1.9`):
 `pnpm install` pulls the published SDK directly — no tarballs, no
 `pnpm-workspace.yaml` overrides.
 
@@ -89,7 +89,7 @@ consent channel (CLI, read-only archives) show an "unavailable" message.
 
 ## Requirements
 
-- hoardodile **≥ 0.1.8** — the built-in plugin marketplace
+- hoardodile **≥ 0.1.9** — the built-in plugin marketplace
   (**Settings → Marketplace**) and the batched asset-download API
   (`download([…])`) when the manifest declares `"download": true`.
   The marketplace's Readme and Release notes tabs and release readme

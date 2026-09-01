@@ -21,20 +21,20 @@ importers:
         specifier: npm:@esotericsoftware/spine-player@4.3.13
         version: '@esotericsoftware/spine-player@4.3.13'
       '@hoardodile/sdk-react':
-        specifier: ^0.1.8
-        version: 0.1.8(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)(zod@4.5.4)
+        specifier: ^0.1.9
+        version: 0.1.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)(zod@4.5.4)
       '@hoardodile/sdk-server':
-        specifier: ^0.1.8
-        version: 0.1.8(zod@4.5.4)
+        specifier: ^0.1.9
+        version: 0.1.9(zod@4.5.4)
       '@hoardodile/sdk-types':
-        specifier: ^0.1.8
-        version: 0.1.8(zod@4.5.4)
+        specifier: ^0.1.9
+        version: 0.1.9(zod@4.5.4)
       '@hoardodile/sdk-web':
-        specifier: ^0.1.8
-        version: 0.1.8(zod@4.5.4)
+        specifier: ^0.1.9
+        version: 0.1.9(zod@4.5.4)
       '@hoardodile/ui':
-        specifier: ^0.1.8
-        version: 0.1.8(@types/react@19.2.18)(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react-i18next@17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2))(react@19.2.8)(shadcn@4.19.0(supports-color@7.2.0)(typescript@7.0.2))(tailwindcss@4.3.3)(tw-animate-css@1.4.0)(typescript@7.0.2)(zod@4.5.4)
+        specifier: ^0.1.9
+        version: 0.1.9(@types/react@19.2.18)(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react-i18next@17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2))(react@19.2.8)(shadcn@4.19.0(supports-color@7.2.0)(typescript@7.0.2))(tailwindcss@4.3.3)(tw-animate-css@1.4.0)(typescript@7.0.2)(zod@4.5.4)
       pixi-dragonbones-runtime:
         specifier: 7.0.0
         version: 7.0.0(pixi.js@7.4.3)
@@ -55,17 +55,17 @@ importers:
         specifier: 2.5.10
         version: 2.5.10
       '@hoardodile/cli':
-        specifier: ^0.1.8
-        version: 0.1.8(@babel/core@8.0.1)(@babel/runtime@7.29.7)(@types/node@26.4.0)(jiti@2.7.0)(rolldown@1.2.6)(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(yaml@2.9.0)(zod@4.5.4)
+        specifier: ^0.1.9
+        version: 0.1.9(@babel/core@8.0.1)(@babel/runtime@7.29.7)(@types/node@26.4.0)(jiti@2.7.0)(rolldown@1.2.6)(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(yaml@2.9.0)(zod@4.5.4)
       '@hoardodile/host':
-        specifier: ^0.1.8
-        version: 0.1.8(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)
+        specifier: ^0.1.9
+        version: 0.1.9(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)
       '@hoardodile/host-web':
-        specifier: ^0.1.8
-        version: 0.1.8(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))
+        specifier: ^0.1.9
+        version: 0.1.9(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))
       '@hoardodile/workbench':
-        specifier: ^0.1.8
-        version: 0.1.8
+        specifier: ^0.1.9
+        version: 0.1.9
       '@release-it/conventional-changelog':
         specifier: ^12.0.0
         version: 12.0.0(conventional-commits-filter@6.0.1)(conventional-commits-parser@7.1.2)(release-it@21.0.2(@types/node@26.4.0)(supports-color@7.2.0))
@@ -510,6 +510,9 @@ packages:
   '@dotenvx/primitives@0.8.0':
     resolution: {integrity: sha512-VYJy0uhFm9zTJ1TxBaW/pA8bjbOM/OttaNMwZ1RHG4JKyRG7DhSdiqD1ipQoAyoD22olUtxbP78W9xY3Wd11bg==}
 
+  '@emnapi/runtime@1.11.3':
+    resolution: {integrity: sha512-Xz4Tpyki7XyrpbUK1jR1AhdAdaXyhhY4lZ3neLodmhpuWfy2PAQN5B46sAiU4liOXGLkHypn/qU+jvfWSCYYLA==}
+
   '@esotericsoftware/spine-core@4.0.31':
     resolution: {integrity: sha512-SiP87Xudw8qfg6t1Gv4NVoqP+Tw0eaCj1ApS+GXLdCvb/i5FNQevqEt4RgEvD8j1vJy+WVriPLMJYQSdaSehgA==}
 
@@ -578,17 +581,17 @@ packages:
     resolution: {integrity: sha512-JUQLLhmV0FnxLB9Wh26C0D+QBviAbXXe0bo4GC9hT6QRPVjzY9s8P164D2rEWtV9NqRs4+dBOBoB7T9/Vk+Jng==}
     engines: {node: '>=18'}
 
-  '@hoardodile/cli@0.1.8':
-    resolution: {integrity: sha512-DPpQfrUxFkb7Pz93BtcuV0x3zbt7AZ0UpydOJp2VBNOvvSDjWO+y88MrA8BoAHtA0+PKA9Jxc7k1a/8LqigXkA==}
+  '@hoardodile/cli@0.1.9':
+    resolution: {integrity: sha512-ohF79rLaljcpECOv+PnBEcGPUFqFM+bQhRk04xV/u6DQOJ5A4D3A1DN1Dyz8zBh39OWD9S85e6FupuDVXKPL6w==}
     engines: {node: '>=24'}
     hasBin: true
 
-  '@hoardodile/host-web@0.1.8':
-    resolution: {integrity: sha512-DqtnzfYpKD1PBuTPHIrXTMB1xg8lnrycDLGQOTksr+WDFlzm45GsVgTDnm/gxRFJTHla8eC6pTvdPGiCAXwiPg==}
+  '@hoardodile/host-web@0.1.9':
+    resolution: {integrity: sha512-36rNxrwS0br0CZI3H61avD10NBoqd+5xibGZ7JrxRdQjVj1J2blLmJrM3JreTYy8Al6h1LRhxgiE3iE6VLyelg==}
     engines: {node: '>=24'}
 
-  '@hoardodile/host@0.1.8':
-    resolution: {integrity: sha512-qk83DPjgzqA2SwscUstC0R38tOxgw1FWxiwuSafqTB/dxAXDAHnJjz3gdmWH+WYMZo3SQ0Z6911hKQU8v3WEvw==}
+  '@hoardodile/host@0.1.9':
+    resolution: {integrity: sha512-M76FLqrshsT7D3qPawY9RK2QXu7w92wTHISTbC86nCdbQc5nzrYDWP3fT6yLkS1eg5eUkHYfiVwv4gpWz+WNqQ==}
     engines: {node: '>=24'}
     peerDependencies:
       sharp: ^0.35.3
@@ -599,33 +602,33 @@ packages:
       vitest:
         optional: true
 
-  '@hoardodile/i18n@0.1.8':
-    resolution: {integrity: sha512-+vSQiArJUpkNmnvSrkzx8QnYViMI+njJ42EqXDV1fIlAPv7jJ9UAZhvd+XN02TW5LgZEU7Hdyz3Gw5GiTf6V9Q==}
+  '@hoardodile/i18n@0.1.9':
+    resolution: {integrity: sha512-7f9CG3yd88sljoxzFS0FHAoVA4du9hvffInWBSAqiddAiLO7pwPFGhcdIsQ2+Y/+5ZULBYOloxcAyDbpv9Y7hA==}
     engines: {node: '>=24'}
 
-  '@hoardodile/sdk-react@0.1.8':
-    resolution: {integrity: sha512-HvjN7O48tmmVF6YJAyOx/okERxDvxymgD8ARYZd9XGG/lmmHBKkMQ3AXerQ7JUxZWjcZzdAOFazYOTz0pbPSbw==}
+  '@hoardodile/sdk-react@0.1.9':
+    resolution: {integrity: sha512-5b3d0VHaHfzEASKhdoVxiUuQ3hxB2KA5G11pi7aKloTJHDiAKmkt8QAWZaTBFhhG22qFcCHhPuy+uoc17texvg==}
     engines: {node: '>=24'}
     peerDependencies:
       react: ^19.2.8
       react-dom: ^19.2.8
 
-  '@hoardodile/sdk-server@0.1.8':
-    resolution: {integrity: sha512-1XurlwUBUdXHtmh3USsQQuxIbl3qavQj4NCRoTZzw7dynX843tJMDDsn9tYtFwfoXPE4p3iwGjZGY3DlRFwayA==}
+  '@hoardodile/sdk-server@0.1.9':
+    resolution: {integrity: sha512-GJCRdDNgNZAz+AK4Uo+awIRwbfvP/Jc1FmByW5lVKAgjNP21W3L6/Mc1dykHgl1RoGkFniK7ZOisNBqiS8+azQ==}
     engines: {node: '>=24'}
 
-  '@hoardodile/sdk-types@0.1.8':
-    resolution: {integrity: sha512-1idy0Hty3fYoYdt2KBfpoqArdJHahitKAuo3xfxmk5LrvPvRM+bs+oc60BW8rLJzXYNg6FfqEMmgUULsra870A==}
+  '@hoardodile/sdk-types@0.1.9':
+    resolution: {integrity: sha512-cfmh8cXNqTnkSKu/iOUHWFAhVHi1yJahAZ+A/4VhB/b1xhcKSfptM/OvRsIT+X3H+PSF+yNkF9Z+XB9phPI7Fg==}
     engines: {node: '>=24'}
     peerDependencies:
       zod: ^4.4.3
 
-  '@hoardodile/sdk-web@0.1.8':
-    resolution: {integrity: sha512-SRnzw2ABpF7CBj5gbEUW2gWRHOYUUAL1oFuPBaOuBkkKs6sE1K/HX2RBGdadXMr09Vt4u/SinbnRohfPMRya5A==}
+  '@hoardodile/sdk-web@0.1.9':
+    resolution: {integrity: sha512-tH2A2I+uWbqmLmEKSrRmwkm7eLfYut5TnSLakskBIMdRnVT940ks7IO5A6x3CBTCLccVoKkuXzjpYGsuVQ7d4A==}
     engines: {node: '>=24'}
 
-  '@hoardodile/ui@0.1.8':
-    resolution: {integrity: sha512-gSb4Xw8iJSHlAJnzI80hUHX+lQyOjZHQgeyGwnMYxItdTOydS5nrpzROWCVDm1+3u4TnVEk31Y3WSx2Rrs9zQg==}
+  '@hoardodile/ui@0.1.9':
+    resolution: {integrity: sha512-Kr6/AmMeor1hNIx97XaF0XcmKkQSaWlRMxHSltSGvSjZBvplX0J8VEcpwTuNLZCmCT61vS6RkTL5k3+XE0mAAg==}
     engines: {node: '>=24'}
     peerDependencies:
       i18next: ^26.4.0
@@ -643,8 +646,8 @@ packages:
       tw-animate-css:
         optional: true
 
-  '@hoardodile/workbench@0.1.8':
-    resolution: {integrity: sha512-GmEAxK09zUGlk1KNGJIJmyCpgnBufmpbp+iBktvpvIik+mul3nARD5HpMHr1SlJX09in2BGgeHvcm1Qw7V3vWQ==}
+  '@hoardodile/workbench@0.1.9':
+    resolution: {integrity: sha512-oGSXgNiqQaXHfOrlkUEqiVmVL1a0aSRwkUw+pxUZvlFumcOZaKkAmzY+8bBixNhJMUiLvGPkPjiRAjFARPkU/w==}
     engines: {node: '>=24'}
 
   '@hono/node-server@2.1.1':
@@ -652,6 +655,168 @@ packages:
     engines: {node: '>=20'}
     peerDependencies:
       hono: ^4
+
+  '@img/colour@1.1.0':
+    resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
+    engines: {node: '>=18'}
+
+  '@img/sharp-darwin-arm64@0.35.4':
+    resolution: {integrity: sha512-Uhfl4V4lhP2nbUVF9+hyH1+luj86f1gUFeo8ALYxFoULoU+G87D43BfeMP8XHsk9boxAnCY/bf2EHwhA7MuGsA==}
+    engines: {node: '>=20.9.0'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@img/sharp-darwin-x64@0.35.4':
+    resolution: {integrity: sha512-hWniXY3bG5qKpkKrAwPe4y+VTPmf086YQAnkxWh7uA1YrlRouWGa0M0Mxj3ZjnXFkv7/TD1bTy9lGUK26vRvWw==}
+    engines: {node: '>=20.9.0'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@img/sharp-freebsd-wasm32@0.35.4':
+    resolution: {integrity: sha512-lIsKw/BU+kjB4eZjxrYrZmwOJYi3Ajrv66iAlBmUPyKc3HpnloevB1g3wxGD9P/5BbQ1brBGl65VRRrCvQDEqA==}
+    engines: {node: '>=20.9.0'}
+    os: [freebsd]
+
+  '@img/sharp-libvips-darwin-arm64@1.3.3':
+    resolution: {integrity: sha512-suTBPTDGrI9WodccaDdwZItTSaBYASlBk1NSfElSHrUfzu3szG6lvIF58+WiFvnfzuK8ZBFS5zE00PxqxnRiPg==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@img/sharp-libvips-darwin-x64@1.3.3':
+    resolution: {integrity: sha512-FVJZ5mITMobmXIz/hPDTw0EintTW5H3WfrxwLqEqjiIihlu+hVRyGrFQ60xl0Lxn7Bt3zdpevPaQi0HEzqz9fw==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@img/sharp-libvips-linux-arm64@1.3.3':
+    resolution: {integrity: sha512-0DaL0A6Xu6sQSQFwe4iVCrKWU2cCTItnRsYsCdxAMm9NF6twAA9BKnoqy4hqz4+azQ0JHuA26qiUKsf1XJ/v5A==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@img/sharp-libvips-linux-arm@1.3.3':
+    resolution: {integrity: sha512-3rbU4vqXXc3hY/OiXdl52xZvT0F1yEngWfvqudtPJg/KkyiaQw2DRsFrNzpmLvfavbwOq3qXn36GP8obHRULQA==}
+    cpu: [arm]
+    os: [linux]
+    libc: [glibc]
+
+  '@img/sharp-libvips-linux-ppc64@1.3.3':
+    resolution: {integrity: sha512-cdn1OvUBwsXhbC0zSzJnNzf5MZ/mTrobawDvNXBTxe8VtqKAm0sRuEY2Evzovb/w9JMk4TvRxqt1mekSuJz64w==}
+    cpu: [ppc64]
+    os: [linux]
+    libc: [glibc]
+
+  '@img/sharp-libvips-linux-riscv64@1.3.3':
+    resolution: {integrity: sha512-HjPVx7yKz+0lqdhDlTw1tt90wamBoxhiXpvl1XZpJLiHH4RCJ5yDTqH+VlYPv2fwFs89JFw4c1IexYOcQUi4IQ==}
+    cpu: [riscv64]
+    os: [linux]
+    libc: [glibc]
+
+  '@img/sharp-libvips-linux-s390x@1.3.3':
+    resolution: {integrity: sha512-neWLh+3yCNThxnfy3c4BbVBeGgt9aftno+XbT56iK28RgeDs3UOFWviLWlUu0bArYVYJaFDK+RRohbicUNCm8Q==}
+    cpu: [s390x]
+    os: [linux]
+    libc: [glibc]
+
+  '@img/sharp-libvips-linux-x64@1.3.3':
+    resolution: {integrity: sha512-4vKmvAst9nrowcqquKFAyZJUDolUaIp8uRiN0mWFguJ1IplC9/pitXtlnnlU4aa/eJw3J7i67V+pwUL+wZGdsA==}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@img/sharp-libvips-linuxmusl-arm64@1.3.3':
+    resolution: {integrity: sha512-Y9kQaLMuNoB0bPYOOdcZMaseNrFpPodIWWMrx+CZyydf2xn68j9WYc6sWWRrDwNkzCQjKYfc68L7jKjGlHMibw==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@img/sharp-libvips-linuxmusl-x64@1.3.3':
+    resolution: {integrity: sha512-fj8Mv0HHfD1Rr+4I68+3agJynxDWtBFgicTbSOb9Bke6pIwzGcJ+RX/yHjmiEGFMCavY/dxvem7MyNaJF+wDiw==}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@img/sharp-linux-arm64@0.35.4':
+    resolution: {integrity: sha512-De4jpEnAU8Hd5oT0j1G3uL4ZvTuipVMn7YC6vPaJhy6/7EwEae0SVAoBrUMYQbkLGDm85taVWwuPc1a44LTzCQ==}
+    engines: {node: '>=20.9.0'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@img/sharp-linux-arm@0.35.4':
+    resolution: {integrity: sha512-7OAS8gI0EReKGVN2HssHlM6umJgxF5VI3xN0p9FA91p/YO+ou5hiNghLdZ5BEHztwaaK5+bLKRf8x/o2L2nk9A==}
+    engines: {node: '>=20.9.0'}
+    cpu: [arm]
+    os: [linux]
+    libc: [glibc]
+
+  '@img/sharp-linux-ppc64@0.35.4':
+    resolution: {integrity: sha512-2oYZJeIl4kCcMGk4ouZVjnkCtFrpQFlNEtJ6GbxzhHQchwH0NH/qEb9ykmOl29dqwMq+JhFdZn+1ak2FKhI9fQ==}
+    engines: {node: '>=20.9.0'}
+    cpu: [ppc64]
+    os: [linux]
+    libc: [glibc]
+
+  '@img/sharp-linux-riscv64@0.35.4':
+    resolution: {integrity: sha512-cPbNChoRURAWdebDIHSenxRpgEdy7JkPydSnUxRm9VvKD7m0/xVaR/8Fzlu81pk5nHEvHH87UZUA7cTtwnbJSA==}
+    engines: {node: '>=20.9.0'}
+    cpu: [riscv64]
+    os: [linux]
+    libc: [glibc]
+
+  '@img/sharp-linux-s390x@0.35.4':
+    resolution: {integrity: sha512-RY0JFY8Fd6RonCBtHz+DvadaPkXDSI1AUn6yWL9TipqkZ1vY8w8evqdgyDFnkm4/K1ve1TvZiaePP5oSd4+WVQ==}
+    engines: {node: '>=20.9.0'}
+    cpu: [s390x]
+    os: [linux]
+    libc: [glibc]
+
+  '@img/sharp-linux-x64@0.35.4':
+    resolution: {integrity: sha512-9qvvEAuk8k89TfWUoX2htWjbAMX8p+NxCppjpcg5k6xMsjhBQPTsoIh36h9Qde4WRuGpJeYnOjdosDn/cnv+OA==}
+    engines: {node: '>=20.9.0'}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@img/sharp-linuxmusl-arm64@0.35.4':
+    resolution: {integrity: sha512-KB5jxpfWQTr0nc3xdHtWChdbifHrBGsd2SM62Eyxrl8afikm+f5qGBU75SJIZBT/S1MC8XyacdlXBMSWq6OURA==}
+    engines: {node: '>=20.9.0'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@img/sharp-linuxmusl-x64@0.35.4':
+    resolution: {integrity: sha512-f+eZJZIQNEEd26RPSW+76chwOf1XtA2Y/O+5ocVyLliHkeih3e+jhLVBdNTd2rS3IbNXK8+ug93Vf5ZXtF5Lxg==}
+    engines: {node: '>=20.9.0'}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@img/sharp-wasm32@0.35.4':
+    resolution: {integrity: sha512-zQnl4Kwp7Q6NHsENtU2T/00Zi+w3AQNwz3+UaTyVBy2FpXrzXzGjndpK61onhZjRtRpQXxCTeqw19bVyXOh7jA==}
+    engines: {node: '>=20.9.0'}
+
+  '@img/sharp-webcontainers-wasm32@0.35.4':
+    resolution: {integrity: sha512-ESfNkywmCfPNyaZjxooddJQiQ+l/nTpGEOGthxiLnIHXC/CmcBixnfwUleX9mCz9ovrUUvKMap/pm8RYbzfwaA==}
+    engines: {node: '>=20.9.0'}
+    cpu: [wasm32]
+
+  '@img/sharp-win32-arm64@0.35.4':
+    resolution: {integrity: sha512-iNdlBX9gLVvqe2I3uIJSIKTq6wckP/DYxZtcqxm09x5Gi24DnFBmPAWZmr60ZyYMG0xlzo6goG3670ar+RXvRw==}
+    engines: {node: '>=20.9.0'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@img/sharp-win32-ia32@0.35.4':
+    resolution: {integrity: sha512-kqRsbaa5CS6KHlpxnN7WhE6vAAugXyZButpRdvDWetlv6Qv4N9WTcrWzF7tXfB9T7MsoadqdI8hmwLq6UlLvtw==}
+    engines: {node: ^20.9.0}
+    cpu: [ia32]
+    os: [win32]
+
+  '@img/sharp-win32-x64@0.35.4':
+    resolution: {integrity: sha512-XtmnYhBcrORsJ4XJngyzr/EWP0hRZLAZRFaApdKuviyqF78+ylxh2y06ZmtULAMOnObJ3ucpN0AcwSWnMowTRg==}
+    engines: {node: '>=20.9.0'}
+    cpu: [x64]
+    os: [win32]
 
   '@inquirer/ansi@2.0.7':
     resolution: {integrity: sha512-3eTuUO1vH2cZm2ZKHeQxnOqlTi9EfZDGgIe3BL3I4u+rJHocr9Fz86M4fjYABPvFnQG/gGK551HqDiIcETwU6Q==}
@@ -3681,6 +3846,15 @@ packages:
     engines: {node: '>=20.18.1'}
     hasBin: true
 
+  sharp@0.35.4:
+    resolution: {integrity: sha512-n++8XWcj+jCOr2IOl7h8LbKnGBDY4aPbmprMONBNFdn0ImXqpGVv5zliDs0V9HbmbCQLpbuo2ej9rAoOQTvMDA==}
+    engines: {node: '>=20.9.0'}
+    peerDependencies:
+      '@types/node': '*'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+
   shebang-command@2.0.0:
     resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
     engines: {node: '>=8'}
@@ -4695,6 +4869,11 @@ snapshots:
 
   '@dotenvx/primitives@0.8.0': {}
 
+  '@emnapi/runtime@1.11.3':
+    dependencies:
+      tslib: 2.8.1
+    optional: true
+
   '@esotericsoftware/spine-core@4.0.31': {}
 
   '@esotericsoftware/spine-core@4.1.56': {}
@@ -4761,15 +4940,16 @@ snapshots:
       tar: 7.5.22
     optional: true
 
-  '@hoardodile/cli@0.1.8(@babel/core@8.0.1)(@babel/runtime@7.29.7)(@types/node@26.4.0)(jiti@2.7.0)(rolldown@1.2.6)(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(yaml@2.9.0)(zod@4.5.4)':
+  '@hoardodile/cli@0.1.9(@babel/core@8.0.1)(@babel/runtime@7.29.7)(@types/node@26.4.0)(jiti@2.7.0)(rolldown@1.2.6)(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(yaml@2.9.0)(zod@4.5.4)':
     dependencies:
-      '@hoardodile/host': 0.1.8(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)
-      '@hoardodile/sdk-types': 0.1.8(zod@4.5.4)
+      '@hoardodile/host': 0.1.9(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)
+      '@hoardodile/sdk-types': 0.1.9(zod@4.5.4)
       '@rolldown/plugin-babel': 0.2.3(@babel/core@8.0.1)(@babel/runtime@7.29.7)(rolldown@1.2.6)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
       '@tailwindcss/vite': 4.3.3(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
       '@vitejs/plugin-react': 6.1.1(@rolldown/plugin-babel@0.2.3(@babel/core@8.0.1)(@babel/runtime@7.29.7)(rolldown@1.2.6)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(babel-plugin-react-compiler@1.0.0)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
       babel-plugin-react-compiler: 1.0.0
       citty: 0.2.2
+      sharp: 0.35.4(@types/node@26.4.0)
       vite: 8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)
     transitivePeerDependencies:
       - '@babel/core'
@@ -4784,7 +4964,6 @@ snapshots:
       - rolldown
       - sass
       - sass-embedded
-      - sharp
       - stylus
       - sugarss
       - supports-color
@@ -4794,20 +4973,20 @@ snapshots:
       - yaml
       - zod
 
-  '@hoardodile/host-web@0.1.8(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))':
+  '@hoardodile/host-web@0.1.9(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))':
     dependencies:
-      '@hoardodile/host': 0.1.8(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)
-      '@hoardodile/sdk-types': 0.1.8(zod@4.5.4)
-      '@hoardodile/sdk-web': 0.1.8(zod@4.5.4)
+      '@hoardodile/host': 0.1.9(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)
+      '@hoardodile/sdk-types': 0.1.9(zod@4.5.4)
+      '@hoardodile/sdk-web': 0.1.9(zod@4.5.4)
       zod: 4.5.4
     transitivePeerDependencies:
       - sharp
       - supports-color
       - vitest
 
-  '@hoardodile/host@0.1.8(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)':
+  '@hoardodile/host@0.1.9(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)':
     dependencies:
-      '@hoardodile/sdk-types': 0.1.8(zod@4.5.4)
+      '@hoardodile/sdk-types': 0.1.9(zod@4.5.4)
       execa: 10.0.1
       file-type: 22.0.2(supports-color@7.2.0)
       yauzl: 3.4.0
@@ -4816,12 +4995,13 @@ snapshots:
       '@derhuerst/ffprobe-static': 5.3.0(supports-color@7.2.0)
       '@hoardodile/7z-bin': 1.1.3
       ffmpeg-static: 5.3.0(supports-color@7.2.0)
+      sharp: 0.35.4(@types/node@26.4.0)
       vitest: 4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
     transitivePeerDependencies:
       - supports-color
       - zod
 
-  '@hoardodile/i18n@0.1.8(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)':
+  '@hoardodile/i18n@0.1.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)':
     dependencies:
       i18next: 26.4.0(typescript@7.0.2)
       react-i18next: 17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
@@ -4831,11 +5011,11 @@ snapshots:
       - react-native
       - typescript
 
-  '@hoardodile/sdk-react@0.1.8(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)(zod@4.5.4)':
+  '@hoardodile/sdk-react@0.1.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)(zod@4.5.4)':
     dependencies:
-      '@hoardodile/i18n': 0.1.8(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
-      '@hoardodile/sdk-types': 0.1.8(zod@4.5.4)
-      '@hoardodile/sdk-web': 0.1.8(zod@4.5.4)
+      '@hoardodile/i18n': 0.1.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
+      '@hoardodile/sdk-types': 0.1.9(zod@4.5.4)
+      '@hoardodile/sdk-web': 0.1.9(zod@4.5.4)
       i18next: 26.4.0(typescript@7.0.2)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
@@ -4845,30 +5025,30 @@ snapshots:
       - typescript
       - zod
 
-  '@hoardodile/sdk-server@0.1.8(zod@4.5.4)':
+  '@hoardodile/sdk-server@0.1.9(zod@4.5.4)':
     dependencies:
-      '@hoardodile/sdk-types': 0.1.8(zod@4.5.4)
+      '@hoardodile/sdk-types': 0.1.9(zod@4.5.4)
     transitivePeerDependencies:
       - zod
 
-  '@hoardodile/sdk-types@0.1.8(zod@4.5.4)':
+  '@hoardodile/sdk-types@0.1.9(zod@4.5.4)':
     dependencies:
       zod: 4.5.4
 
-  '@hoardodile/sdk-web@0.1.8(zod@4.5.4)':
+  '@hoardodile/sdk-web@0.1.9(zod@4.5.4)':
     dependencies:
-      '@hoardodile/sdk-types': 0.1.8(zod@4.5.4)
+      '@hoardodile/sdk-types': 0.1.9(zod@4.5.4)
     transitivePeerDependencies:
       - zod
 
-  '@hoardodile/ui@0.1.8(@types/react@19.2.18)(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react-i18next@17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2))(react@19.2.8)(shadcn@4.19.0(supports-color@7.2.0)(typescript@7.0.2))(tailwindcss@4.3.3)(tw-animate-css@1.4.0)(typescript@7.0.2)(zod@4.5.4)':
+  '@hoardodile/ui@0.1.9(@types/react@19.2.18)(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react-i18next@17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2))(react@19.2.8)(shadcn@4.19.0(supports-color@7.2.0)(typescript@7.0.2))(tailwindcss@4.3.3)(tw-animate-css@1.4.0)(typescript@7.0.2)(zod@4.5.4)':
     dependencies:
       '@base-ui/react': 1.7.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@dnd-kit/core': 6.3.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@dnd-kit/sortable': 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
       '@dnd-kit/utilities': 3.2.2(react@19.2.8)
-      '@hoardodile/i18n': 0.1.8(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
-      '@hoardodile/sdk-types': 0.1.8(zod@4.5.4)
+      '@hoardodile/i18n': 0.1.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
+      '@hoardodile/sdk-types': 0.1.9(zod@4.5.4)
       '@solar-icons/react': 2.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       class-variance-authority: 0.7.1
       clsx: 2.1.1
@@ -4893,11 +5073,117 @@ snapshots:
       - typescript
       - zod
 
-  '@hoardodile/workbench@0.1.8': {}
+  '@hoardodile/workbench@0.1.9': {}
 
   '@hono/node-server@2.1.1(hono@4.13.5)':
     dependencies:
       hono: 4.13.5
+
+  '@img/colour@1.1.0': {}
+
+  '@img/sharp-darwin-arm64@0.35.4':
+    optionalDependencies:
+      '@img/sharp-libvips-darwin-arm64': 1.3.3
+    optional: true
+
+  '@img/sharp-darwin-x64@0.35.4':
+    optionalDependencies:
+      '@img/sharp-libvips-darwin-x64': 1.3.3
+    optional: true
+
+  '@img/sharp-freebsd-wasm32@0.35.4':
+    dependencies:
+      '@img/sharp-wasm32': 0.35.4
+    optional: true
+
+  '@img/sharp-libvips-darwin-arm64@1.3.3':
+    optional: true
+
+  '@img/sharp-libvips-darwin-x64@1.3.3':
+    optional: true
+
+  '@img/sharp-libvips-linux-arm64@1.3.3':
+    optional: true
+
+  '@img/sharp-libvips-linux-arm@1.3.3':
+    optional: true
+
+  '@img/sharp-libvips-linux-ppc64@1.3.3':
+    optional: true
+
+  '@img/sharp-libvips-linux-riscv64@1.3.3':
+    optional: true
+
+  '@img/sharp-libvips-linux-s390x@1.3.3':
+    optional: true
+
+  '@img/sharp-libvips-linux-x64@1.3.3':
+    optional: true
+
+  '@img/sharp-libvips-linuxmusl-arm64@1.3.3':
+    optional: true
+
+  '@img/sharp-libvips-linuxmusl-x64@1.3.3':
+    optional: true
+
+  '@img/sharp-linux-arm64@0.35.4':
+    optionalDependencies:
+      '@img/sharp-libvips-linux-arm64': 1.3.3
+    optional: true
+
+  '@img/sharp-linux-arm@0.35.4':
+    optionalDependencies:
+      '@img/sharp-libvips-linux-arm': 1.3.3
+    optional: true
+
+  '@img/sharp-linux-ppc64@0.35.4':
+    optionalDependencies:
+      '@img/sharp-libvips-linux-ppc64': 1.3.3
+    optional: true
+
+  '@img/sharp-linux-riscv64@0.35.4':
+    optionalDependencies:
+      '@img/sharp-libvips-linux-riscv64': 1.3.3
+    optional: true
+
+  '@img/sharp-linux-s390x@0.35.4':
+    optionalDependencies:
+      '@img/sharp-libvips-linux-s390x': 1.3.3
+    optional: true
+
+  '@img/sharp-linux-x64@0.35.4':
+    optionalDependencies:
+      '@img/sharp-libvips-linux-x64': 1.3.3
+    optional: true
+
+  '@img/sharp-linuxmusl-arm64@0.35.4':
+    optionalDependencies:
+      '@img/sharp-libvips-linuxmusl-arm64': 1.3.3
+    optional: true
+
+  '@img/sharp-linuxmusl-x64@0.35.4':
+    optionalDependencies:
+      '@img/sharp-libvips-linuxmusl-x64': 1.3.3
+    optional: true
+
+  '@img/sharp-wasm32@0.35.4':
+    dependencies:
+      '@emnapi/runtime': 1.11.3
+    optional: true
+
+  '@img/sharp-webcontainers-wasm32@0.35.4':
+    dependencies:
+      '@img/sharp-wasm32': 0.35.4
+    optional: true
+
+  '@img/sharp-win32-arm64@0.35.4':
+    optional: true
+
+  '@img/sharp-win32-ia32@0.35.4':
+    optional: true
+
+  '@img/sharp-win32-x64@0.35.4':
+    optional: true
 
   '@inquirer/ansi@2.0.7': {}
 
@@ -7888,6 +8174,39 @@ snapshots:
       - babel-plugin-macros
       - supports-color
       - typescript
+
+  sharp@0.35.4(@types/node@26.4.0):
+    dependencies:
+      '@img/colour': 1.1.0
+      detect-libc: 2.1.2
+      semver: 7.8.5
+    optionalDependencies:
+      '@img/sharp-darwin-arm64': 0.35.4
+      '@img/sharp-darwin-x64': 0.35.4
+      '@img/sharp-freebsd-wasm32': 0.35.4
+      '@img/sharp-libvips-darwin-arm64': 1.3.3
+      '@img/sharp-libvips-darwin-x64': 1.3.3
+      '@img/sharp-libvips-linux-arm': 1.3.3
+      '@img/sharp-libvips-linux-arm64': 1.3.3
+      '@img/sharp-libvips-linux-ppc64': 1.3.3
+      '@img/sharp-libvips-linux-riscv64': 1.3.3
+      '@img/sharp-libvips-linux-s390x': 1.3.3
+      '@img/sharp-libvips-linux-x64': 1.3.3
+      '@img/sharp-libvips-linuxmusl-arm64': 1.3.3
+      '@img/sharp-libvips-linuxmusl-x64': 1.3.3
+      '@img/sharp-linux-arm': 0.35.4
+      '@img/sharp-linux-arm64': 0.35.4
+      '@img/sharp-linux-ppc64': 0.35.4
+      '@img/sharp-linux-riscv64': 0.35.4
+      '@img/sharp-linux-s390x': 0.35.4
+      '@img/sharp-linux-x64': 0.35.4
+      '@img/sharp-linuxmusl-arm64': 0.35.4
+      '@img/sharp-linuxmusl-x64': 0.35.4
+      '@img/sharp-webcontainers-wasm32': 0.35.4
+      '@img/sharp-win32-arm64': 0.35.4
+      '@img/sharp-win32-ia32': 0.35.4
+      '@img/sharp-win32-x64': 0.35.4
+      '@types/node': 26.4.0
 
   shebang-command@2.0.0:
     dependencies:
