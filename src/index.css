@@ -1,6 +1,10 @@
 @import "@hoardodile/ui/theme.css";
 @source "../**/*.{ts,tsx}";
 
+/* The plugin document must composite transparently against the host page so
+ * the viewer's "Transparent" background is truly iframe-level. Without this
+ * the html/body stay unpainted and the browser/theme canvas shows instead of
+ * the page behind the iframe. */
 html,
 body {
 	height: 100%;
@@ -8,6 +12,7 @@ body {
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
+	background: transparent;
 }
 
 #root {
@@ -16,6 +21,7 @@ body {
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
+	background: transparent;
 }
 
 /* The hosted sheet overlay applies a backdrop blur by default (frosted glass)

@@ -335,7 +335,12 @@ export function EngineStageContent(props: EngineStageContentProps) {
 				: scene.version ?? t("version")
 
 	return (
-		<div ref={rootRef} className="relative flex h-full w-full bg-black text-white">
+		<div
+			ref={rootRef}
+			className={`relative flex h-full w-full text-white ${
+				settings.background === "transparent" ? "bg-transparent" : "bg-black"
+			}`}
+		>
 			<div className="relative min-w-0 flex-1">
 				<div
 					className={`absolute inset-0 touch-none overscroll-none ${

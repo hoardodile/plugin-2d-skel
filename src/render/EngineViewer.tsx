@@ -30,7 +30,7 @@ export function EngineViewer() {
 	const scene = book.scene
 	if (scene?.engine === "spine") {
 		return (
-			<div className="relative h-full w-full bg-black">
+			<div className="relative h-full w-full">
 				<SpineHost
 					key={`spine-${scene.index}`}
 					scene={scene}
@@ -43,7 +43,7 @@ export function EngineViewer() {
 	}
 	if (scene?.engine === "dragonbones") {
 		return (
-			<div className="relative h-full w-full bg-black">
+			<div className="relative h-full w-full">
 				<DragonBonesHost
 					key={`dragonbones-${scene.index}`}
 					scene={scene}
@@ -56,7 +56,7 @@ export function EngineViewer() {
 	}
 
 	return (
-		<div className="relative h-full w-full bg-black">
+		<div className="relative h-full w-full">
 			<Live2dHost
 				key={`live2d-${scene?.index ?? "none"}`}
 				scene={scene}

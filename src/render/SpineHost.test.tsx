@@ -137,4 +137,13 @@ describe("SpineHost", () => {
 		// The OLD dropdown surface must be gone.
 		expect(screen.queryByTestId("spine-animation-select")).not.toBeInTheDocument()
 	})
+
+	test("transparent background does not paint an opaque stage", () => {
+		renderHost()
+		// The default background is "transparent", so the shared stage root must
+		// be transparent (no `bg-black`) behind the canvas host.
+		const canvasHost = screen.getByTestId("spine-canvas-host")
+		expect(canvasHost.closest(".bg-transparent")).not.toBeNull()
+		expect(canvasHost.closest(".bg-black")).toBeNull()
+	})
 })
