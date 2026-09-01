@@ -3,7 +3,7 @@ import {
 	definePlugin,
 	type ResourceAPI,
 } from "@hoardodile/sdk-server"
-import { mapConcurrent, probeImageFile } from "@hoardodile/sdk-server/helpers"
+import { mapConcurrent } from "@hoardodile/sdk-server/helpers"
 import { PLUGIN_IMAGE_PROBE_CONCURRENCY } from "@hoardodile/sdk-types/plugin"
 import { SEARCH_META_VERSION } from "@hoardodile/sdk-types/resource"
 import {
@@ -340,17 +340,20 @@ async function sourceMeta(
 	)
 
 	// First model's texture size: the card's right corner badge shows it
-	// (mirroring the gallery's `widthxheight`). Best-effort — a texture that
-	// cannot be probed just leaves the badge empty.
+	// (mirroring the gallery's `widthxheight`). Probe the texture directly
+	// (the same `api.probe` the gallery routes through) — best-effort, so a
+	// texture the host can't decode just leaves the badge empty.
 	const firstTexture = scenes.find((scene) => scene.textures.length > 0)
 		?.textures[0]
 	let width: number | undefined
 	let height: number | undefined
 	if (firstTexture !== undefined) {
 		try {
-			const info = await probeImageFile(api, firstTexture)
-			width = info.width
-			height = info.height
+			const probed = await api.probe(firstTexture)
+			if (probed.kind === "image") {
+				width = probed.width
+				height = probed.height
+			}
 		} catch {
 			// keep width/height undefined
 		}

@@ -8,7 +8,8 @@
 		"node": ">=24"
 	},
 	"scripts": {
-		"dev": "node scripts/generate-third-party-notices.mjs && hoardodile plugin dev --resource-dir testdata",
+		"dev": "node scripts/generate-third-party-notices.mjs && hoardodile plugin dev --resource-dir testdata-real",
+		"dev:fixtures": "node scripts/generate-third-party-notices.mjs && hoardodile plugin dev --resource-dir testdata",
 		"build": "node scripts/generate-third-party-notices.mjs && hoardodile plugin build",
 		"watch": "node scripts/generate-third-party-notices.mjs && hoardodile plugin build --watch",
 		"notices": "node scripts/generate-third-party-notices.mjs",

@@ -370,12 +370,25 @@ export function EngineStageContent(props: EngineStageContentProps) {
 		return plugin.renderTab(panelTab)
 	})()
 
-	const versionLabel =
+	// The top-left chip shows the engine + version for every engine, so the
+	// badge reads the same way regardless of format (`Live2D · v3`,
+	// `Spine · v4.1.24`, `DragonBones · v5.5`) instead of a bare number or a
+	// confusing `JSON ·` prefix.
+	const engineLabel =
 		scene === undefined
 			? undefined
-			: scene.engine === "spine" || scene.engine === "dragonbones"
-				? `${scene.format.toUpperCase()} · ${scene.version ?? t("version")}`
-				: (scene.version ?? t("version"))
+			: scene.engine === "live2d"
+				? t("live2d")
+				: scene.engine === "spine"
+					? t("spine")
+					: t("dragonbones")
+	const version = scene?.version
+	const versionLabel =
+		engineLabel === undefined
+			? undefined
+			: version === undefined || version === ""
+				? engineLabel
+				: `${engineLabel} · v${version}`
 
 	return (
 		<div

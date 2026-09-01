@@ -25,7 +25,8 @@ hoardodile server, no web app:
 
 ```bash
 pnpm build          # bundle manifest + client + server hooks into dist/
-pnpm dev            # watch-build and serve the workbench (http://127.0.0.1:5199)
+pnpm dev            # watch-build and serve the workbench (http://127.0.0.1:5199), defaulting to the real renderable testdata-real/
+pnpm dev:fixtures   # same, but against the synthetic testdata/ (detection fixtures)
 pnpm detect:smoke   # run detect against testdata/ through the real sandbox
 pnpm test           # vitest
 pnpm testdata       # regenerate synthetic fixtures
@@ -34,16 +35,16 @@ pnpm testdata       # regenerate synthetic fixtures
 `pnpm dev` captures the server-side hook results (`detect`, `sourceMeta`,
 `searchMeta`, `listFiles`) from the real worker sandbox and feeds them to
 the workbench, so the iframe receives the same context the app would push.
+By default it serves the real renderable models in `testdata-real/`; use
+`pnpm dev:fixtures` to iterate against the synthetic detection fixtures.
 
 ## Real test data
 
 `pnpm install` fetches a real renderable model into the gitignored
 `testdata-real/` folder (Arch-chan — CC0 1.0, shipped as a Live2D export;
 source commit and sha256 pins live in
-`scripts/fetch-testdata-real.mjs`). With it,
-`pnpm exec hoardodile plugin dev --resource-dir testdata-real` exercises
-the full consent-download + render path with an actual `.moc3`.
-`pnpm testdata:real` re-fetches it (`--force`).
+`scripts/fetch-testdata-real.mjs`). `pnpm dev` uses these by default so a
+model renders on open. `pnpm testdata:real` re-fetches it (`--force`).
 
 ## Runtime downloads
 
