@@ -1,4 +1,4 @@
-# 2D骨架动画
+# 2D骨骼
 
 hoardodile 内容插件：Live2D、Spine 与 DragonBones 动画查看器，用同一查看器从单个资源渲染这三种格式的动画角色：
 

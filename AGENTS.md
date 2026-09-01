@@ -1,6 +1,6 @@
-# hoardodile plugin-skeleton-animation
+# hoardodile plugin-2d-skel
 
-2D skeleton animation content plugin: `detect` → `sourceMeta` → iframe render. Serves Live2D (Cubism Standard/EX), Spine (multiple runtimes) and DragonBones model folders as an interactive animation viewer with engine tabs, hit areas, sound and cover cropping.
+2D skeleton content plugin: `detect` → `sourceMeta` → iframe render. Serves Live2D (Cubism Standard/EX), Spine (multiple runtimes) and DragonBones model folders as an interactive animation viewer with engine tabs, hit areas, sound and cover cropping.
 
 ## Commands
 

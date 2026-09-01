@@ -39,7 +39,7 @@ const CACHE_FILE = join(
 	ROOT,
 	"node_modules",
 	".cache",
-	"plugin-skeleton-animation-notices.json",
+	"plugin-2d-skel-notices.json",
 )
 
 const isCheckOnly = process.argv.includes("--check")

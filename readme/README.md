@@ -1,4 +1,4 @@
-# 2D Skeleton Animation
+# 2D Skel
 
 A Live2D, Spine and DragonBones animation viewer for hoardodile. One
 engine-agnostic viewer renders, from a single resource, animated characters

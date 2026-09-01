@@ -1,6 +1,6 @@
 {
 	"id": "209220c6-29fa-4f78-850a-bfcf6b4382c1",
-	"name": "2D Skeleton Animation",
+	"name": "2D Skel",
 	"description": "Live2D, Spine and DragonBones animation viewer.",
 	"version": "0.1.7",
 	"minAppVersion": "0.1.8",
@@ -12,11 +12,11 @@
 	},
 	"i18n": {
 		"name": {
-			"en": "2D Skeleton Animation",
-			"zh": "2D骨架动画",
-			"ja": "2Dスケルトンアニメーション",
-			"de": "2D-Skelett-Animation",
-			"es": "Animación 2D de esqueletos"
+			"en": "2D Skel",
+			"zh": "2D骨骼",
+			"ja": "2Dスケル",
+			"de": "2D-Skel",
+			"es": "2D Esqueleto"
 		},
 		"description": {
 			"en": "Live2D, Spine and DragonBones animation viewer.",

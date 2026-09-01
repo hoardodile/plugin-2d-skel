@@ -1,4 +1,4 @@
-# @hoardodile/plugin-skeleton-animation
+# @hoardodile/plugin-2d-skel
 
 Live2D, Spine and DragonBones animation viewer for hoardodile. One
 engine-agnostic viewer that renders, from a single resource, animated

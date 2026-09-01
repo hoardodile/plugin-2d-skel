@@ -1,4 +1,4 @@
-# 2D-Skelett-Animation
+# 2D-Skel
 
 Ein Live2D-, Spine- und DragonBones-Animationsviewer für hoardodile. Ein
 Viewer rendert aus einer einzelnen Ressource animierte Charaktere in allen

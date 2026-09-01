@@ -1,4 +1,4 @@
-# Animación 2D de esqueletos
+# 2D Esqueleto
 
 Un visor de animaciones Live2D, Spine y DragonBones para hoardodile. Un
 único visor renderiza, desde un solo recurso, personajes animados en los
