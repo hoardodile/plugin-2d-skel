@@ -284,10 +284,10 @@ describe("live2d plugin hooks (unified live2d + spine)", () => {
 			v: 1,
 			facets: {
 				live2d: true,
-				cubism: true,
 				spine: true,
 				dragonbones: false,
-				standard: false,
+				// Cubism folds into "standard"; only EX is a separate kind.
+				standard: true,
 				ex: true,
 			},
 		})
@@ -322,7 +322,6 @@ describe("live2d plugin hooks (unified live2d + spine)", () => {
 			v: 1,
 			facets: {
 				live2d: true,
-				cubism: false,
 				spine: false,
 				dragonbones: false,
 				standard: false,

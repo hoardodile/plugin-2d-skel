@@ -89,6 +89,9 @@ export type EngineSourceMeta = {
 	readonly modelCount?: number
 	readonly animationCount?: number
 	readonly motionCount?: number
+	/** First model's texture bounding box (its first texture's pixel size). */
+	readonly width?: number
+	readonly height?: number
 	readonly scenes?: readonly EngineScene[]
 }
 
@@ -96,7 +99,6 @@ export type EngineSearchMeta = {
 	readonly v: number
 	readonly facets?: {
 		readonly live2d?: boolean
-		readonly cubism?: boolean
 		readonly spine?: boolean
 		readonly dragonbones?: boolean
 		readonly standard?: boolean

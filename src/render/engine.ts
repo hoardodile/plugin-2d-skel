@@ -11,6 +11,18 @@ export type PlayerStatus = "idle" | "loading" | "ready" | "error"
 /** A scene from the book: the union scene plus its index in the list. */
 export type ViewerScene = EngineScene & { readonly index: number }
 
+function basename(filename: string): string {
+	const slash = filename.lastIndexOf("/")
+	return slash === -1 ? filename : filename.slice(slash + 1)
+}
+
+/** The friendly name shown in the model selector: the descriptor/skeleton
+    name, else its basename. Shared by the panel scene select. */
+export function sceneLabel(scene: ViewerScene): string {
+	const file = "skeleton" in scene ? scene.skeleton : scene.modelJson
+	return scene.label ?? basename(file)
+}
+
 export type PlayerDialogue = {
 	readonly text: string | undefined
 	readonly choices: readonly MotionChoice[]
@@ -18,9 +30,9 @@ export type PlayerDialogue = {
 
 /**
  * The surface every engine's player controller shares. The viewer renders
- * its chrome (scene selector, transport, version chip, dialogue, status)
- * against this alone; engine-specific behaviour lives behind narrowing on
- * `engine`.
+ * its chrome (model selector in the controls panel, transport, version
+ * chip, dialogue, status) against this alone; engine-specific behaviour
+ * lives behind narrowing on `engine`.
  */
 export type PlayerCommon<M> = {
 	readonly engine: M

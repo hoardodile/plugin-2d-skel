@@ -40,9 +40,10 @@ the workbench, so the iframe receives the same context the app would push.
 `pnpm install` fetches a real renderable model into the gitignored
 `testdata-real/` folder (Arch-chan — CC0 1.0, shipped as a Live2D export;
 source commit and sha256 pins live in
-`scripts/fetch-testdata-real.mjs`). With it, `pnpm dev --data
-testdata-real` exercises the full consent-download + render path with an
-actual `.moc3`. `pnpm testdata:real` re-fetches it (`--force`).
+`scripts/fetch-testdata-real.mjs`). With it,
+`pnpm exec hoardodile plugin dev --resource-dir testdata-real` exercises
+the full consent-download + render path with an actual `.moc3`.
+`pnpm testdata:real` re-fetches it (`--force`).
 
 ## Runtime downloads
 

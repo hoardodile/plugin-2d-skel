@@ -87,33 +87,29 @@
 		"card": {
 			"default": {
 				"bl": [
-					"{{join(' ', if(searchMeta.facets.live2d, t('live2dEngineLabel')), if(searchMeta.facets.spine, t('spineEngineLabel')), if(searchMeta.facets.dragonbones, t('dragonbonesEngineLabel')), if(searchMeta.facets.ex, t('exKindLabel')))}}",
-					"{{source.version}}"
+					"{{join(' ', if(searchMeta.facets.ex, t('exKindLabel')), searchKindIcons(), if(gt(source.modelCount, 1), number(source.modelCount)))}}"
 				],
-				"br": ["{{join(' ', t('modelCountLabel'), number(source.modelCount))}}"]
+				"br": [
+					"{{if(source.width, join('', source.width, 'x', source.height))}}"
+				]
 			}
 		},
 		"search": {
 			"kinds": [
 				{
-					"key": "cubism",
-					"label": "{{t('cubismKindLabel')}}",
-					"icon": "{{icon('Sparkle')}}"
+					"key": "live2d",
+					"label": "{{t('live2dEngineLabel')}}",
+					"icon": "{{icon('Swimming')}}"
 				},
 				{
-					"key": "standard",
-					"label": "{{t('standardKindLabel')}}",
-					"icon": "{{icon('Star')}}"
-				},
-				{
-					"key": "ex",
-					"label": "{{t('exKindLabel')}}",
-					"icon": "{{icon('Sparkle')}}"
+					"key": "spine",
+					"label": "{{t('spineEngineLabel')}}",
+					"icon": "{{icon('WalkingRound')}}"
 				},
 				{
 					"key": "dragonbones",
-					"label": "{{t('dragonbonesKindLabel')}}",
-					"icon": "{{icon('Dragon')}}"
+					"label": "{{t('dragonbonesEngineLabel')}}",
+					"icon": "{{icon('Walking')}}"
 				}
 			]
 		}

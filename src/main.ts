@@ -3,7 +3,7 @@ import {
 	definePlugin,
 	type ResourceAPI,
 } from "@hoardodile/sdk-server"
-import { mapConcurrent } from "@hoardodile/sdk-server/helpers"
+import { mapConcurrent, probeImageFile } from "@hoardodile/sdk-server/helpers"
 import { PLUGIN_IMAGE_PROBE_CONCURRENCY } from "@hoardodile/sdk-types/plugin"
 import { SEARCH_META_VERSION } from "@hoardodile/sdk-types/resource"
 import {
@@ -338,11 +338,30 @@ async function sourceMeta(
 			sum + (scene.engine === "live2d" ? scene.motionGroups.length : 0),
 		0,
 	)
+
+	// First model's texture size: the card's right corner badge shows it
+	// (mirroring the gallery's `widthxheight`). Best-effort — a texture that
+	// cannot be probed just leaves the badge empty.
+	const firstTexture = scenes.find((scene) => scene.textures.length > 0)
+		?.textures[0]
+	let width: number | undefined
+	let height: number | undefined
+	if (firstTexture !== undefined) {
+		try {
+			const info = await probeImageFile(api, firstTexture)
+			width = info.width
+			height = info.height
+		} catch {
+			// keep width/height undefined
+		}
+	}
+
 	return {
 		version,
 		modelCount,
 		...(animationCount > 0 ? { animationCount } : {}),
 		...(motionCount > 0 ? { motionCount } : {}),
+		...(width !== undefined && height !== undefined ? { width, height } : {}),
 		scenes,
 	}
 }
@@ -356,12 +375,13 @@ async function searchMeta(
 		v: SEARCH_META_VERSION,
 		facets: {
 			live2d: scenes.some((scene) => scene.engine === "live2d"),
-			cubism: scenes.some(
-				(scene) => scene.engine === "live2d" && scene.kind === "cubism",
-			),
 			spine: scenes.some((scene) => scene.engine === "spine"),
 			dragonbones: scenes.some((scene) => scene.engine === "dragonbones"),
-			standard: scenes.some((scene) => scene.kind === "standard"),
+			// Non-EX models (Spine/DragonBones standard, plus Live2D Cubism)
+			// all count as "standard"; `cubism` is folded in, not a facet.
+			standard: scenes.some(
+				(scene) => scene.kind === "standard" || scene.kind === "cubism",
+			),
 			ex: scenes.some((scene) => scene.kind === "ex"),
 		},
 	}

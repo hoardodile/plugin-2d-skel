@@ -136,6 +136,8 @@ describe("SpineHost", () => {
 		expect(screen.queryByTestId("spine-tab-skins")).not.toBeInTheDocument()
 		expect(screen.queryByTestId("spine-tab-overlays")).not.toBeInTheDocument()
 		expect(screen.queryByTestId("spine-tab-hit")).not.toBeInTheDocument()
+		// A single-scene resource has no in-panel model chips.
+		expect(screen.queryByTestId("engine-model-0")).not.toBeInTheDocument()
 	})
 
 	test("renders the animation and skin tag chips inside the merged controls tab", () => {
@@ -157,5 +159,23 @@ describe("SpineHost", () => {
 		const canvasHost = screen.getByTestId("spine-canvas-host")
 		expect(canvasHost.closest(".bg-transparent")).not.toBeNull()
 		expect(canvasHost.closest(".bg-black")).toBeNull()
+	})
+
+	test("shows the model chips below the interaction mode when several scenes exist", () => {
+		render(
+			<SpineHost
+				scene={SCENE}
+				scenes={[
+					{ ...SCENE, index: 0 },
+					{ ...SCENE, index: 1, skeleton: "skeleton_1", label: "Second" },
+				]}
+				sceneIndex={0}
+				selectScene={() => {}}
+			/>,
+		)
+		expect(screen.getByTestId("engine-model-0")).toBeInTheDocument()
+		expect(screen.getByTestId("engine-model-1")).toBeInTheDocument()
+		// The old dropdown surface is gone.
+		expect(screen.queryByTestId("engine-scene-select")).not.toBeInTheDocument()
 	})
 })

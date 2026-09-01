@@ -3,6 +3,8 @@ import { Button } from "@hoardodile/ui/components/button"
 import { Icon } from "@hoardodile/ui/components/icon"
 import { Label } from "@hoardodile/ui/components/label"
 import { PillTabs } from "@hoardodile/ui/components/pill-tabs"
+import { SectionLabel } from "@hoardodile/ui/components/section-label"
+import { TagChip } from "@hoardodile/ui/components/tag-chip"
 import { useBelowSidebar } from "@hoardodile/ui/hooks/use-mobile"
 import { Settings } from "@hoardodile/ui/icons/registry"
 import {
@@ -24,7 +26,7 @@ import { EngineEmptyState, EngineStatusOverlay } from "./EngineOverlays"
 import type { EnginePanelTabDef } from "./EnginePanel"
 import { EnginePanel } from "./EnginePanel"
 import { EngineToolbar } from "./EngineToolbar"
-import type { PlayerController, ViewerScene } from "./engine"
+import { type PlayerController, sceneLabel, type ViewerScene } from "./engine"
 import { HitAreaOverlay } from "./HitAreaOverlay"
 import { usePluginAPI } from "./hooks"
 import type { EngineSettings } from "./prefs"
@@ -285,6 +287,32 @@ export function EngineStageContent(props: EngineStageContentProps) {
 		</div>
 	)
 
+	// The model selector lives in the Controls tab, below the interaction
+	// mode: one tag chip per scene, styled like the motion/skin lists (the
+	// model display is just another part of the controls). Shown only when
+	// the resource holds more than one scene.
+	const modelSelect =
+		scenes.length > 1 ? (
+			<section className="flex flex-col gap-2 mb-2">
+				<SectionLabel size="xs">
+					{t("model")} · {scenes.length}
+				</SectionLabel>
+				<div className="flex flex-wrap gap-1.5">
+					{scenes.map((entry) => (
+						<TagChip
+							key={entry.index}
+							display="button"
+							active={entry.index === sceneIndex}
+							onClick={() => selectScene(entry.index)}
+							data-testid={`engine-model-${entry.index}`}
+						>
+							{sceneLabel(entry)}
+						</TagChip>
+					))}
+				</div>
+			</section>
+		) : null
+
 	const activeTabBody = (() => {
 		if (panelTab === SHARED_TABS.DISPLAY) {
 			return (
@@ -328,11 +356,13 @@ export function EngineStageContent(props: EngineStageContentProps) {
 				/>
 			)
 		}
-		// "controls" tab: the mode control sits at its very top.
+		// "controls" tab: interaction mode, then the model chips, then the
+		// engine-specific controls.
 		if (panelTab === "controls") {
 			return (
 				<>
 					{modeControl}
+					{modelSelect}
 					{plugin.renderTab("controls")}
 				</>
 			)
@@ -413,9 +443,6 @@ export function EngineStageContent(props: EngineStageContentProps) {
 
 				<EngineToolbar
 					visible
-					scenes={scenes}
-					sceneIndex={sceneIndex}
-					onSceneChange={selectScene}
 					paused={controller.paused}
 					ready={controller.status === "ready"}
 					onTogglePause={controller.togglePause}
