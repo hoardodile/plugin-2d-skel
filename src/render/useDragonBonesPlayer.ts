@@ -119,6 +119,7 @@ export function useDragonBonesPlayer(options: {
 		let armatureDisplay: DragonBonesArmatureDisplay | null = null
 		let resizeObserver: ResizeObserver | null = null
 		let dataName: string | undefined
+		let lastCanvas: HTMLCanvasElement | null = null
 		const atlasNames: string[] = []
 		armatureRef.current = null
 		appRef.current = null
@@ -268,8 +269,17 @@ export function useDragonBonesPlayer(options: {
 			}
 
 			setStatus("loading")
+			// A prior mount may have left a stale Pixi canvas in the container
+			// (a brand-new `Application` is created on every (re)mount and, on a
+			// user-supplied `view`, `app.destroy(true)` does not detach it). If it
+			// stays, it stacks over the live canvas and shows a frozen frame, so
+			// clear the container before creating today's canvas.
+			for (const existing of Array.from(containerRef.current.querySelectorAll("canvas"))) {
+				existing.remove()
+			}
 			const canvas = document.createElement("canvas")
 			containerRef.current.append(canvas)
+			lastCanvas = canvas
 			try {
 				app = new Application({
 					view: canvas,
@@ -406,6 +416,13 @@ export function useDragonBonesPlayer(options: {
 			app = null
 			armatureDisplay = null
 			factory = null
+			// Detach the canvas we created (a user-supplied `view` is not removed
+			// by `app.destroy`), so a later mount doesn't stack a stale frame over
+			// the live app.
+			if (lastCanvas !== null) {
+				lastCanvas.remove()
+				lastCanvas = null
+			}
 		}
 	}, [
 		api,
