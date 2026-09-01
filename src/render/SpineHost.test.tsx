@@ -128,9 +128,13 @@ describe("SpineHost", () => {
 		expect(screen.queryByTestId("spine-tab-hit")).not.toBeInTheDocument()
 	})
 
-	test("renders the animation selector inside the merged controls tab", () => {
+	test("renders the animation and skin tag chips inside the merged controls tab", () => {
 		renderHost()
-		expect(screen.getByTestId("spine-animation-select")).toBeInTheDocument()
-		expect(screen.getByTestId("spine-skin-select")).toBeInTheDocument()
+		expect(screen.getByTestId("spine-animation-idle")).toBeInTheDocument()
+		expect(screen.getByTestId("spine-animation-run")).toBeInTheDocument()
+		expect(screen.getByTestId("spine-skin-default")).toBeInTheDocument()
+		expect(screen.getByTestId("spine-skin-alt")).toBeInTheDocument()
+		// The OLD dropdown surface must be gone.
+		expect(screen.queryByTestId("spine-animation-select")).not.toBeInTheDocument()
 	})
 })

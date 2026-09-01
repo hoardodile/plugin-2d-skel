@@ -71,9 +71,10 @@ describe("DragonBonesControlsTab", () => {
 	})
 
 	test("renders the empty state when nothing is available", () => {
-		renderTab({ animations: [], hitAreas: [] })
+		renderTab({ animations: [], hitAreas: [], armatures: [], skins: [] })
 		expect(screen.getByTestId("list-empty-row")).toBeInTheDocument()
 		expect(screen.queryByTestId("dragonbones-animation-idle")).not.toBeInTheDocument()
+		expect(screen.queryByTestId("dragonbones-skin-default")).not.toBeInTheDocument()
 	})
 
 	test("clicking an animation chip selects it", () => {
