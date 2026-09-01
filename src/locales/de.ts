@@ -123,5 +123,5 @@ export default {
 	cropHint: "Ziehen, um das Feld zu verschieben · Ecke ziehen, um es zu skalieren",
 	setCover: "Als Cover setzen",
 	cancel: "Abbrechen",
-	coverUnavailable: "Das Speichern des Covers ist in dieser Version noch nicht verfügbar.",
+	coverUnavailable: "Das Cover konnte nicht gesetzt werden.",
 }

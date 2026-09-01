@@ -30,6 +30,9 @@ type NativePlayer = {
 	readonly skeleton?: Record<string, unknown>
 	readonly config?: Record<string, unknown>
 	readonly canvas?: HTMLCanvasElement
+	readonly sceneRenderer?: {
+		readonly skeletonRenderer?: { premultipliedAlpha?: boolean }
+	}
 	readonly play?: () => void
 	readonly pause?: () => void
 	speed?: number
@@ -141,6 +144,36 @@ function patchLegacyPreserveDrawingBuffer(runtime: SpinePlayerModule): void {
 	}
 }
 
+/**
+ * The legacy 3.8 build has no `showLoading` option — `drawFrame` always
+ * calls `loadingScreen.draw(isLoadingComplete())`, which fills the canvas
+ * with an opaque background and paints the Spine logo + spinner centered
+ * until the asset manager reports complete (then fades over ~1s). For big
+ * EX textures that branded overlay dominates the viewport. Suppress it by
+ * no-oping `LoadingScreen.prototype.draw` so the canvas stays clear while
+ * the host surfaces the loading/error state itself. Returns false when the
+ * runtime exposes no LoadingScreen to patch (an absent draw is treated as
+ * already suppressed and reports false).
+ */
+export function patchLegacyLoadingScreen(
+	runtime: SpinePlayerModule,
+): boolean {
+	const prototype = (
+		runtime as unknown as {
+			readonly webgl?: {
+				readonly LoadingScreen?: {
+					readonly prototype?: { draw?: (...args: unknown[]) => void }
+				}
+			}
+		}
+	).webgl?.LoadingScreen?.prototype
+	if (prototype === undefined || prototype.draw === undefined) return false
+	prototype.draw = function draw(..._args: unknown[]): void {
+		// No-op — never paint the branded loading screen over the canvas.
+	}
+	return true
+}
+
 function loadLegacyRuntime(): SpinePlayerModule {
 	if (legacyRuntime === undefined) {
 		if (!isSpinePlayerModule(window.spine)) {
@@ -148,6 +181,7 @@ function loadLegacyRuntime(): SpinePlayerModule {
 		}
 		legacyRuntime = window.spine
 		patchLegacyPreserveDrawingBuffer(legacyRuntime)
+		patchLegacyLoadingScreen(legacyRuntime)
 	}
 	return legacyRuntime
 }
@@ -324,6 +358,42 @@ export function atlasUsesPremultipliedAlpha(atlasText: string | undefined): bool
 	return match?.[1]?.toLowerCase() === "true"
 }
 
+/**
+ * Resolve the premultiplied-alpha flag a runtime should render with. An
+ * explicit `pma:true`/`pma:false` header always wins. When the flag is
+ * absent, the legacy 3.8 runtime defaults to **premultiplied** because the
+ * game-export atlases it serves (Live2DViewerEX `type:9`) are premultiplied
+ * but omit the header — rendering them non-premultiplied is what leaves the
+ * dark fringe at region seams. The 4.x builds default to non-premultiplied
+ * (their atlases carry the header when premultiplied).
+ */
+export function resolvePremultipliedAlpha(
+	atlasText: string | undefined,
+	runtime: SpineRuntime,
+): boolean {
+	if (atlasText === undefined) return false
+	const match = /^pma:\s*(true|false)\s*$/m.exec(atlasText)
+	if (match !== null) return match[1]?.toLowerCase() === "true"
+	return runtime === "legacy"
+}
+
+/**
+ * World units per screen pixel for the pan. The camera's pinned viewport
+ * (`viewWorld`, set by `configureSkeletonViewport` on EX scenes) is the true
+ * scale; falling back to the model's `getBounds()` (used when there is no
+ * pinned viewport, i.e. standard scenes) keeps that path unchanged. `1` when
+ * neither yields a positive width.
+ */
+export function worldPerPixel(
+	viewWorld: number | undefined,
+	boundsWorld: number | undefined,
+	canvasPx: number,
+): number {
+	if (viewWorld !== undefined && viewWorld > 0) return viewWorld / canvasPx
+	if (boundsWorld !== undefined && boundsWorld > 0) return boundsWorld / canvasPx
+	return 1
+}
+
 function bytesToBase64(bytes: Uint8Array): string {
 	let binary = ""
 	for (let offset = 0; offset < bytes.length; offset += 0x8000) {
@@ -351,6 +421,28 @@ export function suppressSpinePlayerError(container: HTMLElement): void {
 		if (element instanceof HTMLElement) {
 			element.style.display = "none"
 			element.classList.add("spine-player-hidden")
+		}
+	}
+}
+
+/**
+ * The legacy 3.8 build renders its full chrome — the controls bar with the
+ * Spine logo button, the timeline and the button row — regardless of
+ * `showControls:false` (on that build the option only gates the hover
+ * behaviour, not the initial visibility), so a full-width Spine logo and
+ * the controls dominate the stage. Hide that chrome so only the model
+ * canvas occupies the viewport. The 4.x builds honour `showControls:false`
+ * and never need this; call it for the legacy runtime only.
+ */
+export function suppressLegacySpineChrome(container: HTMLElement): void {
+	for (const selector of [
+		".spine-player-controls",
+		".spine-player-buttons",
+		".spine-player-timeline",
+		"#spine-player-button-logo",
+	]) {
+		for (const element of container.querySelectorAll(selector)) {
+			if (element instanceof HTMLElement) element.style.display = "none"
 		}
 	}
 }
@@ -443,8 +535,17 @@ export async function mountSpinePlayer(
 		} catch {
 			bounds = undefined
 		}
-		const worldPerX = bounds !== undefined && bounds.width > 0 ? bounds.width / sw : 1
-		const worldPerY = bounds !== undefined && bounds.height > 0 ? bounds.height / sh : 1
+		// The pan must move the model 1:1 with the cursor, in the camera's own
+		// scale. On EX scenes the camera is pinned (configureSkeletonViewport)
+		// to the descriptor's setup bounds (`config.viewport.width/height`),
+		// which can be much larger than the animated `getBounds()` — using the
+		// latter made the pan lag by that ratio (the "drag 1 m → 10 cm" report).
+		// Prefer the pinned viewport dims when present, else the model's bounds.
+		const viewport = isRecord(player.config?.viewport) ? player.config?.viewport : undefined
+		const viewWidth = typeof viewport?.width === "number" ? viewport.width : undefined
+		const viewHeight = typeof viewport?.height === "number" ? viewport.height : undefined
+		const worldPerX = worldPerPixel(viewWidth, bounds?.width, sw)
+		const worldPerY = worldPerPixel(viewHeight, bounds?.height, sh)
 		skeletonBase = {
 			x: surface.x,
 			y: surface.y,
@@ -505,6 +606,8 @@ export async function mountSpinePlayer(
 		}
 	}
 
+	const premultipliedAlpha = resolvePremultipliedAlpha(urls.atlasText, runtime)
+
 	const player = new Constructor(container, {
 		...(scene.format === "json"
 			? { jsonUrl: urls.skeletonUrl }
@@ -518,8 +621,9 @@ export async function mountSpinePlayer(
 		alpha: true,
 		// Match the atlas's premultiplied-alpha flag; a `pma:true` atlas on a
 		// non-premultiplied canvas shows black seam fringes (common on standard
-		// Spine exports like the `c###` models).
-		premultipliedAlpha: atlasUsesPremultipliedAlpha(urls.atlasText),
+		// Spine exports like the `c###` models). The legacy 3.8 build defaults
+		// to premultiplied when the header is absent (game-export atlases).
+		premultipliedAlpha,
 		preserveDrawingBuffer: true,
 		backgroundColor: "#00000000",
 		showControls: false,
@@ -540,6 +644,21 @@ export async function mountSpinePlayer(
 			onError(message)
 		},
 	})
+
+	// The legacy 3.8 build ignores `showControls:false` for the initial
+	// visibility, so its controls bar + Spine logo occupy the stage — hide
+	// that chrome (the 4.x builds honour the option and never need this).
+	// It also ignores the `premultipliedAlpha` config option: the renderer's
+	// SkeletonRenderer keeps its default `false`, which is what leaves the
+	// dark seam fringe on the premultiplied game exports. Push the resolved
+	// flag onto it directly here.
+	if (runtime === "legacy") {
+		suppressLegacySpineChrome(container)
+		const skeletonRenderer = player.sceneRenderer?.skeletonRenderer
+		if (skeletonRenderer !== undefined) {
+			skeletonRenderer.premultipliedAlpha = premultipliedAlpha
+		}
+	}
 
 	return {
 		canvas: player.canvas,

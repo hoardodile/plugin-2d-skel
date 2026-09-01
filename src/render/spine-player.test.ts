@@ -1,5 +1,12 @@
-import { describe, expect, test } from "vitest"
-import { atlasUsesPremultipliedAlpha, suppressSpinePlayerError } from "./spine-player"
+import { describe, expect, test, vi } from "vitest"
+import {
+	atlasUsesPremultipliedAlpha,
+	patchLegacyLoadingScreen,
+	resolvePremultipliedAlpha,
+	suppressLegacySpineChrome,
+	suppressSpinePlayerError,
+	worldPerPixel,
+} from "./spine-player"
 
 describe("atlasUsesPremultipliedAlpha", () => {
 	test("reads an explicit pma:true flag", () => {
@@ -14,6 +21,46 @@ describe("atlasUsesPremultipliedAlpha", () => {
 		expect(atlasUsesPremultipliedAlpha("size:2048,2048")).toBe(false)
 		expect(atlasUsesPremultipliedAlpha("pma:maybe")).toBe(false)
 		expect(atlasUsesPremultipliedAlpha(undefined)).toBe(false)
+	})
+})
+
+describe("resolvePremultipliedAlpha", () => {
+	test("an explicit pma:true wins for any runtime", () => {
+		expect(resolvePremultipliedAlpha("pma:true\nsize:1,1", "legacy")).toBe(true)
+		expect(resolvePremultipliedAlpha("pma:true\nsize:1,1", "4.1")).toBe(true)
+	})
+
+	test("an explicit pma:false wins for any runtime", () => {
+		expect(resolvePremultipliedAlpha("pma:false\nsize:1,1", "legacy")).toBe(false)
+		expect(resolvePremultipliedAlpha("pma:false\nsize:1,1", "4.1")).toBe(false)
+	})
+
+	test("the legacy default is premultiplied when the header is absent", () => {
+		expect(resolvePremultipliedAlpha("size:1,1", "legacy")).toBe(true)
+	})
+
+	test("the 4.x default is non-premultiplied when the header is absent", () => {
+		expect(resolvePremultipliedAlpha("size:1,1", "4.0")).toBe(false)
+		expect(resolvePremultipliedAlpha("size:1,1", "4.3")).toBe(false)
+	})
+
+	test("an absent atlas resolves to false", () => {
+		expect(resolvePremultipliedAlpha(undefined, "legacy")).toBe(false)
+	})
+})
+
+describe("worldPerPixel", () => {
+	test("uses the pinned viewport width when present (EX scenes)", () => {
+		expect(worldPerPixel(2000, 800, 1483)).toBeCloseTo(2000 / 1483)
+	})
+
+	test("falls back to the model bounds when there is no pinned viewport", () => {
+		expect(worldPerPixel(undefined, 800, 1483)).toBeCloseTo(800 / 1483)
+	})
+
+	test("returns 1 when neither dimension is usable", () => {
+		expect(worldPerPixel(undefined, undefined, 1483)).toBe(1)
+		expect(worldPerPixel(0, 800, 1483)).toBeCloseTo(800 / 1483)
 	})
 })
 
@@ -48,5 +95,65 @@ describe("suppressSpinePlayerError", () => {
 	test("tolerates a container without an error element", () => {
 		const container = document.createElement("div")
 		expect(() => suppressSpinePlayerError(container)).not.toThrow()
+	})
+})
+
+describe("patchLegacyLoadingScreen", () => {
+	test("replaces the LoadingScreen draw with a no-op", () => {
+		const originalDraw = vi.fn()
+		const runtime = {
+			webgl: { LoadingScreen: { prototype: { draw: originalDraw } } },
+		} as unknown as Parameters<typeof patchLegacyLoadingScreen>[0]
+
+		expect(patchLegacyLoadingScreen(runtime)).toBe(true)
+
+		const replaced = (runtime as unknown as {
+			webgl: { LoadingScreen: { prototype: { draw: () => void } } }
+		}).webgl.LoadingScreen.prototype.draw
+		expect(replaced).not.toBe(originalDraw)
+		// The no-op must not throw and must not forward to the original.
+		expect(() => replaced()).not.toThrow()
+		expect(originalDraw).not.toHaveBeenCalled()
+	})
+
+	test("returns false when the LoadingScreen prototype is absent", () => {
+		const runtime = { webgl: {} } as unknown as Parameters<typeof patchLegacyLoadingScreen>[0]
+		expect(patchLegacyLoadingScreen(runtime)).toBe(false)
+	})
+})
+
+describe("suppressLegacySpineChrome", () => {
+	test("hides the legacy controls bar, timeline and logo button", () => {
+		const container = document.createElement("div")
+		container.innerHTML = `
+			<div class="spine-player">
+				<canvas class="spine-player-canvas"></canvas>
+				<div class="spine-player-controls">
+					<div class="spine-player-timeline"></div>
+					<div class="spine-player-buttons">
+						<img id="spine-player-button-logo" class="spine-player-button-icon-spine-logo" />
+					</div>
+				</div>
+			</div>
+		`
+
+		suppressLegacySpineChrome(container)
+
+		const logo = container.querySelector<HTMLElement>("#spine-player-button-logo")
+		const controls = container.querySelector<HTMLElement>(".spine-player-controls")
+		const buttons = container.querySelector<HTMLElement>(".spine-player-buttons")
+		const timeline = container.querySelector<HTMLElement>(".spine-player-timeline")
+		expect(logo?.style.display).toBe("none")
+		expect(controls?.style.display).toBe("none")
+		expect(buttons?.style.display).toBe("none")
+		expect(timeline?.style.display).toBe("none")
+		// The canvas stays visible.
+		const canvas = container.querySelector<HTMLElement>(".spine-player-canvas")
+		expect(canvas?.style.display).not.toBe("none")
+	})
+
+	test("tolerates a container without the legacy chrome", () => {
+		const container = document.createElement("div")
+		expect(() => suppressLegacySpineChrome(container)).not.toThrow()
 	})
 })

@@ -1,4 +1,3 @@
-import { DropdownSelect } from "@hoardodile/ui/components/dropdown-select"
 import { ListEmptyRow } from "@hoardodile/ui/components/list-empty-row"
 import { SectionLabel } from "@hoardodile/ui/components/section-label"
 import { Separator } from "@hoardodile/ui/components/separator"
@@ -23,8 +22,8 @@ export type DragonBonesControlsTabProps = {
 
 /**
  * The DragonBones Controls tab: armature select (when several), animation
- * select, skins and interactive hit areas, each block dropped entirely when
- * it has no entries.
+ * select, skins and interactive hit areas rendered as wrapping tag chips
+ * (not dropdowns), each block dropped entirely when it has no entries.
  */
 export function DragonBonesControlsTab(props: DragonBonesControlsTabProps) {
 	const {
@@ -49,14 +48,19 @@ export function DragonBonesControlsTab(props: DragonBonesControlsTabProps) {
 				<SectionLabel size="xs">
 					{t("scene")} · {armatures.length}
 				</SectionLabel>
-				<DropdownSelect
-					value={armature ?? ""}
-					onValueChange={onArmatureChange}
-					options={armatures.map((name) => ({ value: name, label: name }))}
-					triggerClassName="self-start text-xs text-foreground"
-					aria-label={t("scene")}
-					data-testid="dragonbones-armature-select"
-				/>
+				<div className="flex flex-wrap gap-1.5">
+					{armatures.map((name) => (
+						<TagChip
+							key={name}
+							display="button"
+							active={armature === name}
+							onClick={() => onArmatureChange(name)}
+							data-testid={`dragonbones-armature-${name}`}
+						>
+							{name}
+						</TagChip>
+					))}
+				</div>
 			</section>,
 		)
 	}
@@ -66,14 +70,19 @@ export function DragonBonesControlsTab(props: DragonBonesControlsTabProps) {
 				<SectionLabel size="xs">
 					{t("animations")} · {animations.length}
 				</SectionLabel>
-				<DropdownSelect
-					value={animation ?? ""}
-					onValueChange={onAnimationChange}
-					options={animations.map((name) => ({ value: name, label: name }))}
-					triggerClassName="self-start text-xs text-foreground"
-					aria-label={t("animation")}
-					data-testid="dragonbones-animation-select"
-				/>
+				<div className="flex flex-wrap gap-1.5">
+					{animations.map((name) => (
+						<TagChip
+							key={name}
+							display="button"
+							active={animation === name}
+							onClick={() => onAnimationChange(name)}
+							data-testid={`dragonbones-animation-${name}`}
+						>
+							{name}
+						</TagChip>
+					))}
+				</div>
 			</section>,
 		)
 	}
@@ -83,14 +92,19 @@ export function DragonBonesControlsTab(props: DragonBonesControlsTabProps) {
 				<SectionLabel size="xs">
 					{t("skins")} · {skins.length}
 				</SectionLabel>
-				<DropdownSelect
-					value={skin ?? ""}
-					onValueChange={onSkinChange}
-					options={skins.map((name) => ({ value: name, label: name }))}
-					triggerClassName="self-start text-xs text-foreground"
-					aria-label={t("skin")}
-					data-testid="dragonbones-skin-select"
-				/>
+				<div className="flex flex-wrap gap-1.5">
+					{skins.map((name) => (
+						<TagChip
+							key={name}
+							display="button"
+							active={skin === name}
+							onClick={() => onSkinChange(name)}
+							data-testid={`dragonbones-skin-${name}`}
+						>
+							{name}
+						</TagChip>
+					))}
+				</div>
 			</section>,
 		)
 	}

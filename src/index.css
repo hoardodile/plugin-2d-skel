@@ -47,3 +47,24 @@ body {
 		transition-duration: 1ms !important;
 	}
 }
+
+/*
+ * The spine-player widget injects its own `.spine-player` root div and
+ * `.spine-player-canvas` canvas, which by default don't stretch to the
+ * plugin's full-size stage container (the legacy 3.8 build in particular) —
+ * so the model renders as a small intrinsic (300×150) tile at the top-left
+ * and leaves the rest of the stage empty. Make them fill the container; the
+ * player's ResizeMode.Expand then sizes the framebuffer to match, so the
+ * model uses the whole viewport. Scoped to the widget's own DOM; applies to
+ * every spine runtime and is harmless where one already sizes itself.
+ */
+.spine-player {
+	width: 100%;
+	height: 100%;
+}
+
+.spine-player-canvas {
+	width: 100%;
+	height: 100%;
+	display: block;
+}

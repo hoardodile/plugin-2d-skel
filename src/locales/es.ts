@@ -123,5 +123,5 @@ export default {
 	cropHint: "Arrastra para mover el recuadro · tira de una esquina para cambiar el tamaño",
 	setCover: "Definir portada",
 	cancel: "Cancelar",
-	coverUnavailable: "Guardar la portada aún no está disponible en esta versión.",
+	coverUnavailable: "No se pudo definir la portada.",
 }

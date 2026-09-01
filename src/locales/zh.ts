@@ -123,5 +123,5 @@ export default {
 	cropHint: "拖拽移动裁剪框 · 拉动角落调整大小",
 	setCover: "设为封面",
 	cancel: "取消",
-	coverUnavailable: "当前版本暂不支持保存封面。",
+	coverUnavailable: "设置封面失败。",
 }

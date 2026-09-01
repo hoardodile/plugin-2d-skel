@@ -74,25 +74,41 @@ function renderTab(overrides: Partial<Parameters<typeof SpineControlsTab>[0]> = 
 }
 
 describe("SpineControlsTab", () => {
-	test("renders every populated section", () => {
+	test("renders every populated section as tag chips", () => {
 		renderTab()
-		expect(screen.getByTestId("spine-animation-select")).toBeInTheDocument()
-		expect(screen.getByTestId("spine-skin-select")).toBeInTheDocument()
-		expect(screen.getByTestId("spine-overlay-select")).toBeInTheDocument()
+		expect(screen.getByTestId("spine-animation-idle")).toBeInTheDocument()
+		expect(screen.getByTestId("spine-animation-run")).toBeInTheDocument()
+		expect(screen.getByTestId("spine-skin-default")).toBeInTheDocument()
+		expect(screen.getByTestId("spine-skin-alt")).toBeInTheDocument()
+		expect(screen.getByTestId("spine-overlay-none")).toBeInTheDocument()
+		expect(screen.getByTestId("spine-overlay-blink")).toBeInTheDocument()
 		expect(screen.getByTestId("spine-controls-hitarea-body")).toBeInTheDocument()
 	})
 
 	test("drops empty sections", () => {
 		renderTab({ overlays: [], hitAreas: [], skins: ["default"] })
-		expect(screen.getByTestId("spine-animation-select")).toBeInTheDocument()
-		expect(screen.queryByTestId("spine-skin-select")).not.toBeInTheDocument()
-		expect(screen.queryByTestId("spine-overlay-select")).not.toBeInTheDocument()
+		expect(screen.getByTestId("spine-animation-idle")).toBeInTheDocument()
+		// A single skin is dropped (already the active choice).
+		expect(screen.queryByTestId("spine-skin-default")).not.toBeInTheDocument()
+		expect(screen.queryByTestId("spine-overlay-none")).not.toBeInTheDocument()
 		expect(screen.queryByTestId("spine-controls-hitarea-body")).not.toBeInTheDocument()
 	})
 
 	test("renders the empty state when nothing is available", () => {
 		renderTab({ animations: [], skins: ["default"], overlays: [], hitAreas: [] })
 		expect(screen.getByTestId("list-empty-row")).toBeInTheDocument()
-		expect(screen.queryByTestId("spine-animation-select")).not.toBeInTheDocument()
+		expect(screen.queryByTestId("spine-animation-idle")).not.toBeInTheDocument()
+	})
+
+	test("clicking a tag chip selects that animation", () => {
+		const base = renderTab()
+		screen.getByTestId("spine-animation-run").click()
+		expect(base.onAnimationChange).toHaveBeenCalledWith("run")
+	})
+
+	test("clicking the overlay-none chip clears the overlay", () => {
+		const base = renderTab()
+		screen.getByTestId("spine-overlay-none").click()
+		expect(base.onOverlayChange).toHaveBeenCalledWith("")
 	})
 })

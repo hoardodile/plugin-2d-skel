@@ -226,6 +226,7 @@ export function EngineStageContent(props: EngineStageContentProps) {
 	function submitCover(dataUrl: string) {
 		return setResourceCover(
 			{ dataUrl, sceneIndex: cropSceneIndex },
+			api.uploadCover,
 			(message, data) => api.logWarn(message, data),
 		)
 	}

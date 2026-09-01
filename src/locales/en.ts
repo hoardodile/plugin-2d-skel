@@ -123,5 +123,5 @@ export default {
 	cropHint: "Drag to move the crop box · pull a corner to resize",
 	setCover: "Set cover",
 	cancel: "Cancel",
-	coverUnavailable: "Cover saving isn't available in this build yet.",
+	coverUnavailable: "Failed to set the cover.",
 }

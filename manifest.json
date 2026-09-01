@@ -2,7 +2,7 @@
 	"id": "209220c6-29fa-4f78-850a-bfcf6b4382c1",
 	"name": "2D Skeleton Animation",
 	"description": "Live2D, Spine and DragonBones animation viewer.",
-	"version": "0.1.6",
+	"version": "0.1.7",
 	"minAppVersion": "0.1.6",
 	"icon": "bone",
 	"permissions": {
@@ -52,6 +52,34 @@
 			"ja": "DragonBones",
 			"de": "DragonBones",
 			"es": "DragonBones"
+		},
+		"live2dEngineLabel": {
+			"en": "Live2D",
+			"zh": "Live2D",
+			"ja": "Live2D",
+			"de": "Live2D",
+			"es": "Live2D"
+		},
+		"spineEngineLabel": {
+			"en": "Spine",
+			"zh": "Spine",
+			"ja": "Spine",
+			"de": "Spine",
+			"es": "Spine"
+		},
+		"dragonbonesEngineLabel": {
+			"en": "DragonBones",
+			"zh": "龙骨",
+			"ja": "DragonBones",
+			"de": "DragonBones",
+			"es": "DragonBones"
+		},
+		"modelCountLabel": {
+			"en": "Model",
+			"zh": "模型",
+			"ja": "モデル",
+			"de": "Modell",
+			"es": "Modelo"
 		}
 	},
 	"ui": {
@@ -59,9 +87,12 @@
 		"card": {
 			"default": {
 				"bl": [
-					"{{join(' ', searchKindIcons(), if(gt(source.modelCount, 1), number(source.modelCount)))}}"
+					"{{join(' ', if(searchMeta.facets.live2d, t('live2dEngineLabel')), if(searchMeta.facets.spine, t('spineEngineLabel')), if(searchMeta.facets.dragonbones, t('dragonbonesEngineLabel')), if(searchMeta.facets.ex, t('exKindLabel')))}}",
+					"{{source.version}}"
 				],
-				"br": ["{{source.version}}"]
+				"br": [
+					"{{join(' ', t('modelCountLabel'), number(source.modelCount))}}"
+				]
 			}
 		},
 		"search": {

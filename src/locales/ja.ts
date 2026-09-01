@@ -123,5 +123,5 @@ export default {
 	cropHint: "ドラッグで枠を移動 · 角をドラッグでサイズ変更",
 	setCover: "カバーに設定",
 	cancel: "キャンセル",
-	coverUnavailable: "このビルドではカバーの保存はまだ利用できません。",
+	coverUnavailable: "カバーの設定に失敗しました。",
 }

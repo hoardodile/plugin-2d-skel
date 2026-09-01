@@ -84,7 +84,7 @@ export function useViewport(options: ViewportOptions): {
 		maxScale = 8,
 		tapThreshold = 8,
 		resetKey,
-		panExtent = 1.5,
+		panExtent = 3,
 		mode = "interact",
 	} = options
 	const [transform, setTransform] = useState<ViewportTransform>(initial)

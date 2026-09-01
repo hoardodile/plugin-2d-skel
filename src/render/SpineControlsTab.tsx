@@ -1,4 +1,3 @@
-import { DropdownSelect } from "@hoardodile/ui/components/dropdown-select"
 import { ListEmptyRow } from "@hoardodile/ui/components/list-empty-row"
 import { SectionLabel } from "@hoardodile/ui/components/section-label"
 import { Separator } from "@hoardodile/ui/components/separator"
@@ -24,9 +23,10 @@ export type SpineControlsTabProps = {
 /**
  * The merged Spine Controls tab, mirroring the Live2D side panel: animations,
  * skins, overlays and interactive hit areas share one scrollable column, each
- * block being dropped entirely (label, content and its separator) when it has
- * no entries. A single animation/skin is left out too, since it is already the
- * active choice.
+ * selectable choice being a wrapping tag chip (not a dropdown) so the list
+ * takes a fraction of the vertical space. A block is dropped entirely (label,
+ * content and its separator) when it has no entries; a single animation/skin
+ * is left out too, since it is already the active choice.
  */
 export function SpineControlsTab(props: SpineControlsTabProps) {
 	const {
@@ -51,14 +51,19 @@ export function SpineControlsTab(props: SpineControlsTabProps) {
 				<SectionLabel size="xs">
 					{t("animations")} · {animations.length}
 				</SectionLabel>
-				<DropdownSelect
-					value={animation ?? ""}
-					onValueChange={onAnimationChange}
-					options={animations.map((name) => ({ value: name, label: name }))}
-					triggerClassName="self-start text-xs text-foreground"
-					aria-label={t("animation")}
-					data-testid="spine-animation-select"
-				/>
+				<div className="flex flex-wrap gap-1.5">
+					{animations.map((name) => (
+						<TagChip
+							key={name}
+							display="button"
+							active={animation === name}
+							onClick={() => onAnimationChange(name)}
+							data-testid={`spine-animation-${name}`}
+						>
+							{name}
+						</TagChip>
+					))}
+				</div>
 			</section>,
 		)
 	}
@@ -68,14 +73,19 @@ export function SpineControlsTab(props: SpineControlsTabProps) {
 				<SectionLabel size="xs">
 					{t("skins")} · {skins.length}
 				</SectionLabel>
-				<DropdownSelect
-					value={skin ?? ""}
-					onValueChange={onSkinChange}
-					options={skins.map((name) => ({ value: name, label: name }))}
-					triggerClassName="self-start text-xs text-foreground"
-					aria-label={t("skin")}
-					data-testid="spine-skin-select"
-				/>
+				<div className="flex flex-wrap gap-1.5">
+					{skins.map((name) => (
+						<TagChip
+							key={name}
+							display="button"
+							active={skin === name}
+							onClick={() => onSkinChange(name)}
+							data-testid={`spine-skin-${name}`}
+						>
+							{name}
+						</TagChip>
+					))}
+				</div>
 			</section>,
 		)
 	}
@@ -85,17 +95,27 @@ export function SpineControlsTab(props: SpineControlsTabProps) {
 				<SectionLabel size="xs">
 					{t("overlays")} · {overlays.length}
 				</SectionLabel>
-				<DropdownSelect
-					value={overlay ?? ""}
-					onValueChange={onOverlayChange}
-					options={[
-						{ value: "", label: t("overlayNone") },
-						...overlays.map((name) => ({ value: name, label: name })),
-					]}
-					triggerClassName="self-start text-xs text-foreground"
-					aria-label={t("overlay")}
-					data-testid="spine-overlay-select"
-				/>
+				<div className="flex flex-wrap gap-1.5">
+					<TagChip
+						display="button"
+						active={overlay === undefined || overlay === ""}
+						onClick={() => onOverlayChange("")}
+						data-testid="spine-overlay-none"
+					>
+						{t("overlayNone")}
+					</TagChip>
+					{overlays.map((name) => (
+						<TagChip
+							key={name}
+							display="button"
+							active={overlay === name}
+							onClick={() => onOverlayChange(name)}
+							data-testid={`spine-overlay-${name}`}
+						>
+							{name}
+						</TagChip>
+					))}
+				</div>
 			</section>,
 		)
 	}
