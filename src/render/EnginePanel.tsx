@@ -75,7 +75,7 @@ export function EnginePanel(props: {
 	if (docked) {
 		return (
 			<aside
-				className="relative flex h-full w-[19rem] shrink-0 flex-col border-l border-border bg-background text-foreground gap-4"
+				className="relative flex h-full w-[19rem] shrink-0 flex-col bg-background text-foreground gap-4"
 				data-testid={testId}
 			>
 				{body}
@@ -93,7 +93,7 @@ export function EnginePanel(props: {
 			<SheetContent
 				side={below ? "bottom" : "right"}
 				showCloseButton={false}
-				className="flex max-[767px]:h-[65vh] flex-col border-border bg-background p-0 max-[767px]:w-full max-[767px]:max-w-none max-[767px]:border-t max-[767px]:border-l-0"
+				className="flex max-[767px]:h-[65vh] flex-col border-border bg-background p-0 max-[767px]:w-full max-[767px]:max-w-none max-[767px]:border-t max-[767px]:border-l-0 data-[side=right]:border-l-0"
 				data-testid={testId}
 			>
 				{body}
