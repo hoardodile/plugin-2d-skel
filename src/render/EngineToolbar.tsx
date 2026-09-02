@@ -35,7 +35,7 @@ export function EngineToolbar(props: EngineToolbarProps) {
 	return (
 		<TooltipProvider>
 			<div
-				className={`engine-fade strip-scroll absolute inset-x-0 bottom-0 z-30 flex max-w-full items-center gap-1.5 overflow-x-auto bg-background px-3 py-1.5 transition-opacity duration-200 max-[767px]:px-2 max-[767px]:pb-[calc(0.375rem+env(safe-area-inset-bottom))] ${onTransform(visible)}`}
+				className={`engine-fade strip-scroll absolute inset-x-0 bottom-0 z-30 flex max-w-full items-center gap-1.5 overflow-x-auto border-t border-border bg-background px-3 py-1.5 transition-opacity duration-200 max-[767px]:px-2 max-[767px]:pb-[calc(0.375rem+env(safe-area-inset-bottom))] ${onTransform(visible)}`}
 				data-testid="engine-toolbar"
 			>
 				<EngineIconButton
