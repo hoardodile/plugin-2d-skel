@@ -56,6 +56,7 @@ describe("engine settings codec", () => {
 			autoplay: true,
 			debug: false,
 			showHitAreas: false,
+			webpTextures: false,
 		})
 	})
 
@@ -108,5 +109,20 @@ describe("engine settings codec", () => {
 		})
 		expect(spine.background).toBe("checker")
 		expect(spine.autoplay).toBe(true)
+	})
+
+	test("defaults webpTextures off and threads it through the subsets", () => {
+		expect(ENGINE_SETTINGS_DEFAULT.webpTextures).toBe(false)
+		// A legacy payload without the field defaults to off.
+		expect(
+			decodeEngineSettings(JSON.stringify({ v: 5, loop: true }))?.webpTextures,
+		).toBe(false)
+		// An explicit on value round-trips and is present on both subsets.
+		const on = { ...ENGINE_SETTINGS_DEFAULT, webpTextures: true }
+		expect(decodeEngineSettings(encodeEngineSettings(on))?.webpTextures).toBe(
+			true,
+		)
+		expect(toLive2dSettings(on).webpTextures).toBe(true)
+		expect(toSpineSettings(on).webpTextures).toBe(true)
 	})
 })

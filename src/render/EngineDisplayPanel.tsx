@@ -148,6 +148,17 @@ export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
 							data-testid="engine-showhits-toggle"
 						/>
 					</div>
+					<div className={ROW}>
+						<span>{t("webpTextures")}</span>
+						<Switch
+							checked={settings.webpTextures}
+							onCheckedChange={(checked) =>
+								onSettingsChange({ webpTextures: checked })
+							}
+							aria-label={t("webpTextures")}
+							data-testid="engine-webp-toggle"
+						/>
+					</div>
 					{onSetRotation !== undefined ? (
 						<div className="flex flex-col gap-1">
 							<div className="flex items-center justify-between">

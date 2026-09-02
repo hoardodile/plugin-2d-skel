@@ -2,6 +2,7 @@ import { describe, expect, test, vi } from "vitest"
 import {
 	atlasUsesPremultipliedAlpha,
 	patchLegacyLoadingScreen,
+	prepareSpineAssets,
 	resolvePremultipliedAlpha,
 	suppressLegacySpineChrome,
 	suppressSpinePlayerError,
@@ -63,6 +64,53 @@ describe("worldPerPixel", () => {
 	test("returns 1 when neither dimension is usable", () => {
 		expect(worldPerPixel(undefined, undefined, 1483)).toBe(1)
 		expect(worldPerPixel(0, 800, 1483)).toBeCloseTo(800 / 1483)
+	})
+})
+
+describe("prepareSpineAssets", () => {
+	const SCENE = {
+		engine: "spine",
+		kind: "standard",
+		skeleton: "skeleton.json",
+		atlas: "atlas.txt",
+		textures: ["texture0.png"],
+		format: "json",
+		version: "4.1.24",
+		animations: ["idle"],
+		skins: [],
+	} as const
+
+	function readFileOf(contents: Readonly<Record<string, string>>) {
+		return async function readFile(path: string) {
+			return new TextEncoder().encode(contents[path] ?? "").buffer
+		}
+	}
+
+	const ATLAS = "texture0.png\nsize: 512,512\nformat: RGBA8888\n"
+
+	test("rewrites the atlas page to a WebP variant but keeps the skeleton URL original", async () => {
+		const urls = await prepareSpineAssets({
+			scene: SCENE,
+			readFile: readFileOf({ "atlas.txt": ATLAS }),
+			resolveFileUrl: (filename, variant) =>
+				variant === undefined
+					? `file:///${filename}`
+					: `file:///${filename}?fmt=${variant.format}&fit=${variant.fit}`,
+			imageVariant: { format: "webp", fit: "exact" },
+		})
+		expect(urls).toBeDefined()
+		expect(urls?.skeletonUrl).toBe("file:///skeleton.json")
+		expect(urls?.atlasText).toContain("file:///texture0.png?fmt=webp&fit=exact")
+	})
+
+	test("rewrites the atlas page to the original URL when no variant is given", async () => {
+		const urls = await prepareSpineAssets({
+			scene: SCENE,
+			readFile: readFileOf({ "atlas.txt": ATLAS }),
+			resolveFileUrl: (filename) => `file:///${filename}`,
+		})
+		expect(urls?.atlasText).toContain("file:///texture0.png")
+		expect(urls?.atlasText).not.toContain("?fmt=")
 	})
 })
 

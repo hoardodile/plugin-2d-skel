@@ -117,6 +117,7 @@ export default {
 	skin: "Skin",
 	debug: "Depurar",
 	showHitAreas: "Mostrar áreas interactivas",
+	webpTextures: "Texturas WebP",
 	licensing: "Licencia",
 	licensingBody:
 		"Spine es (c) Esoteric Software y se importa para la visualización interoperable de modelos; los motores de Spine se incluyen bajo sus propias licencias.",

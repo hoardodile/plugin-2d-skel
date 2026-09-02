@@ -45,6 +45,13 @@ export type EngineSettings = {
 	readonly debug: boolean
 	/** Draw the on-canvas hit-area regions over the model. */
 	readonly showHitAreas: boolean
+	/**
+	 * Transcode model textures to lossy WebP at the source's exact pixel
+	 * dimensions (via the host image-variant pipeline). Off by default so
+	 * the model always loads its original textures; when on the host
+	 * serves a smaller WebP re-encode.
+	 */
+	readonly webpTextures: boolean
 }
 
 /** The live2d subset, for the live2d player/panel. */
@@ -65,12 +72,19 @@ export type Live2dSettings = Pick<
 	| "autoPlayIntervalMs"
 	| "chrome"
 	| "live2dTab"
+	| "webpTextures"
 >
 
 /** The spine subset, for the spine player/panel. */
 export type SpineSettings = Pick<
 	EngineSettings,
-	"interactionMode" | "background" | "loop" | "speed" | "autoplay" | "debug"
+	| "interactionMode"
+	| "background"
+	| "loop"
+	| "speed"
+	| "autoplay"
+	| "debug"
+	| "webpTextures"
 >
 
 export const ENGINE_SETTINGS_DEFAULT: EngineSettings = {
@@ -94,6 +108,7 @@ export const ENGINE_SETTINGS_DEFAULT: EngineSettings = {
 	autoplay: true,
 	debug: false,
 	showHitAreas: false,
+	webpTextures: false,
 }
 
 /** Solid palette shown in the viewer's background picker. */
@@ -229,6 +244,10 @@ export function decodeEngineSettings(raw: string): EngineSettings | undefined {
 			typeof parsed.showHitAreas === "boolean"
 				? parsed.showHitAreas
 				: ENGINE_SETTINGS_DEFAULT.showHitAreas
+		const webpTextures =
+			typeof parsed.webpTextures === "boolean"
+				? parsed.webpTextures
+				: ENGINE_SETTINGS_DEFAULT.webpTextures
 
 		return {
 			v: 5,
@@ -251,6 +270,7 @@ export function decodeEngineSettings(raw: string): EngineSettings | undefined {
 			autoplay,
 			debug,
 			showHitAreas,
+			webpTextures,
 		}
 	} catch {
 		return undefined
@@ -284,6 +304,7 @@ export function toLive2dSettings(value: EngineSettings): Live2dSettings {
 		autoPlayIntervalMs: value.autoPlayIntervalMs,
 		chrome: value.chrome,
 		live2dTab: value.live2dTab,
+		webpTextures: value.webpTextures,
 	}
 }
 
@@ -295,6 +316,7 @@ export function toSpineSettings(value: EngineSettings): SpineSettings {
 		speed: value.speed,
 		autoplay: value.autoplay,
 		debug: value.debug,
+		webpTextures: value.webpTextures,
 	}
 }
 

@@ -113,6 +113,7 @@ export default {
 	overlayNone: "なし",
 	skin: "スキン",
 	debug: "デバッグ",
+	webpTextures: "WebPテクスチャ",
 	showHitAreas: "当たり判定を表示",
 	licensing: "ライセンス",
 	licensingBody:

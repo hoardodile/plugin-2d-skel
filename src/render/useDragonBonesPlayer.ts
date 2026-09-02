@@ -21,6 +21,7 @@ import { usePluginAPI } from "./hooks"
 import type { SpineSettings } from "./prefs"
 import { dragonBonesRuntimeVersion } from "./runtime-version"
 import { parseSpineBounds, parseSpineHitAreas } from "./spine-hit"
+import { textureVariant } from "./texture-format"
 import type { SpineExHitData } from "./useSpinePlayer"
 
 export type DragonBonesPlayerStatus = "idle" | "loading" | "ready" | "error"
@@ -53,7 +54,10 @@ type AtlasRefToLoad = {
 export function useDragonBonesPlayer(options: {
 	readonly containerRef: RefObject<HTMLDivElement | null>
 	readonly scene: (DragonBonesScene & { readonly index: number }) | undefined
-	readonly settings: Pick<SpineSettings, "loop" | "speed" | "autoplay">
+	readonly settings: Pick<
+		SpineSettings,
+		"loop" | "speed" | "autoplay" | "webpTextures"
+	>
 	readonly animationChoice: string | undefined
 	readonly armatureChoice: string | undefined
 	readonly onCommand: (command: string) => void
@@ -330,7 +334,12 @@ export function useDragonBonesPlayer(options: {
 					// The custom factory assigns the atlas renderTexture AFTER the
 					// sub-textures are parsed (fixing the 7.0.0 ordering bug), so
 					// every sub-texture is a real Pixi texture here.
-					const texture = Texture.from(api.resolveFileUrl(ref.texture))
+					const texture = Texture.from(
+						api.resolveFileUrl(
+							ref.texture,
+							textureVariant(settings.webpTextures),
+						),
+					)
 					const atlasName = `${dataName}-atlas-${index}`
 					atlasNames.push(atlasName)
 					factory.parseTextureAtlasData(ref.atlasData, texture, atlasName, 1)
@@ -454,6 +463,7 @@ export function useDragonBonesPlayer(options: {
 		scene,
 		sceneKey,
 		settings.autoplay,
+		settings.webpTextures,
 		reloadKey,
 		onCommand,
 	])

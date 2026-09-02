@@ -2,6 +2,7 @@ import spine40Url from "@esotericsoftware/spine-player-4.0/dist/iife/spine-playe
 import spine41Url from "@esotericsoftware/spine-player-4.1/dist/iife/spine-player.js?url"
 import spine42Url from "@esotericsoftware/spine-player-4.2/dist/iife/spine-player.js?url"
 import spine43Url from "@esotericsoftware/spine-player-4.3/dist/iife/spine-player.js?url"
+import type { ImageVariantSpec } from "@hoardodile/sdk-web"
 import { isRecord } from "@hoardodile/sdk-web"
 import { resolveAtlasPage, rewriteAtlas } from "../core/atlas"
 import {
@@ -237,10 +238,14 @@ export function sceneRuntime(scene: SpineScene): SpineRuntime | undefined {
 export async function prepareSpineAssets(options: {
 	readonly scene: SpineScene
 	readonly readFile: (path: string) => Promise<ArrayBuffer>
-	readonly resolveFileUrl: (filename: string) => string
+	readonly resolveFileUrl: (
+		filename: string,
+		variant?: ImageVariantSpec,
+	) => string
 	readonly pageUrls?: ReadonlyMap<string, string>
+	readonly imageVariant?: ImageVariantSpec
 }): Promise<SpineAssetUrls | undefined> {
-	const { scene, readFile, resolveFileUrl, pageUrls } = options
+	const { scene, readFile, resolveFileUrl, pageUrls, imageVariant } = options
 	const atlas = scene.atlas
 	if (atlas === undefined) return undefined
 
@@ -266,7 +271,7 @@ export async function prepareSpineAssets(options: {
 		const atlasBytes = await readFile(atlas)
 		const atlasText = new TextDecoder().decode(atlasBytes)
 		const rewritten = rewriteAtlas(atlasText, (page) =>
-			resolveFileUrl(resolveAtlasPage(atlas, page)),
+			resolveFileUrl(resolveAtlasPage(atlas, page), imageVariant),
 		)
 		if (rewritten.length === 0) return undefined
 		return {

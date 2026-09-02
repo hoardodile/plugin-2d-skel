@@ -138,6 +138,7 @@ const SETTINGS = {
 	autoplay: true,
 	debug: false,
 	showHitAreas: false,
+	webpTextures: false,
 } satisfies EngineSettings
 
 function renderTab(

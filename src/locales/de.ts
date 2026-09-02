@@ -114,6 +114,7 @@ export default {
 	overlayNone: "Keine",
 	skin: "Skin",
 	debug: "Debug",
+	webpTextures: "WebP-Texturen",
 	showHitAreas: "Trefferbereiche anzeigen",
 	licensing: "Lizenz",
 	licensingBody:

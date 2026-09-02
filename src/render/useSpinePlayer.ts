@@ -28,6 +28,7 @@ import {
 	type SpinePlayback,
 	sceneRuntime,
 } from "./spine-player"
+import { textureVariant } from "./texture-format"
 
 export type SpinePlayerStatus = "idle" | "loading" | "ready" | "error"
 
@@ -246,7 +247,12 @@ export function useSpinePlayer(options: {
 				pageUrls =
 					ref === undefined
 						? undefined
-						: buildExPageUrls(ref.texNames, ref.textures, api.resolveFileUrl)
+						: buildExPageUrls(
+								ref.texNames,
+								ref.textures,
+								api.resolveFileUrl,
+								textureVariant(settings.webpTextures),
+							)
 			}
 
 			setStatus("loading")
@@ -260,8 +266,10 @@ export function useSpinePlayer(options: {
 				const urls = await prepareSpineAssets({
 					scene,
 					readFile: (path) => api.readFile(path),
-					resolveFileUrl: (filename) => api.resolveFileUrl(filename),
+					resolveFileUrl: (filename, variant) =>
+						api.resolveFileUrl(filename, variant),
 					pageUrls,
+					imageVariant: textureVariant(settings.webpTextures),
 				})
 				if (disposed) {
 					if (urls !== undefined) releaseSpineAssetUrls(urls)
@@ -331,6 +339,7 @@ export function useSpinePlayer(options: {
 		settings.autoplay,
 		settings.loop,
 		settings.debug,
+		settings.webpTextures,
 		reloadKey,
 		onCommand,
 	])

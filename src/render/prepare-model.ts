@@ -1,3 +1,4 @@
+import type { ImageVariantSpec } from "@hoardodile/sdk-web"
 import { isRecord } from "@hoardodile/sdk-web"
 import type { Live2dScene } from "../shared"
 
@@ -23,8 +24,12 @@ export type PreparedLive2dModel = {
 export function prepareModel(options: {
 	readonly scene: Live2dScene
 	readonly readFile: (path: string) => Promise<ArrayBuffer>
-	readonly resolveFileUrl: (filename: string) => string
+	readonly resolveFileUrl: (
+		filename: string,
+		variant?: ImageVariantSpec,
+	) => string
 	readonly resolveBaseUrl: () => string
+	readonly imageVariant?: ImageVariantSpec
 }): Promise<PreparedLive2dModel | undefined> {
 	switch (options.scene.engine) {
 		case "live2d":
@@ -37,10 +42,15 @@ export function prepareModel(options: {
 export async function prepareLive2dModel(options: {
 	readonly scene: Live2dScene
 	readonly readFile: (path: string) => Promise<ArrayBuffer>
-	readonly resolveFileUrl: (filename: string) => string
+	readonly resolveFileUrl: (
+		filename: string,
+		variant?: ImageVariantSpec,
+	) => string
 	readonly resolveBaseUrl: () => string
+	readonly imageVariant?: ImageVariantSpec
 }): Promise<PreparedLive2dModel | undefined> {
-	const { scene, readFile, resolveFileUrl, resolveBaseUrl } = options
+	const { scene, readFile, resolveFileUrl, resolveBaseUrl, imageVariant } =
+		options
 	const bytes = await readFile(scene.modelJson)
 	let parsed: unknown
 	try {
@@ -56,6 +66,11 @@ export async function prepareLive2dModel(options: {
 	// a subdirectory keeps `REF` → `<dir>/REF`).
 	const modelRef = (ref: string): string =>
 		resolveFileUrl(joinRef(modelDir(scene.modelJson), ref))
+	// Textures may be served as an on-demand WebP variant (same pixel
+	// dimensions, `fit: "exact"`); every other reference (moc, motions,
+	// physics, expressions, pose) always resolves the original bytes.
+	const textureRef = (ref: string): string =>
+		resolveFileUrl(joinRef(modelDir(scene.modelJson), ref), imageVariant)
 
 	const url = resolveBaseUrl()
 	if (isRecord(parsed.FileReferences)) {
@@ -68,6 +83,7 @@ export async function prepareLive2dModel(options: {
 				FileReferences: rewriteCubismReferences(
 					parsed.FileReferences,
 					modelRef,
+					textureRef,
 				),
 			},
 		}
@@ -79,7 +95,7 @@ export async function prepareLive2dModel(options: {
 			...parsed,
 			url,
 			model: resolveRef(parsed.model, modelRef),
-			textures: rewriteList(parsed.textures, modelRef),
+			textures: rewriteList(parsed.textures, textureRef),
 			motions: rewriteExMotionTable(parsed.motions, modelRef),
 			expressions: rewriteExExpressions(parsed.expressions, modelRef),
 			physics_v2: rewritePhysics(parsed.physics_v2, modelRef),
@@ -157,11 +173,12 @@ function rewritePhysics(
 function rewriteCubismReferences(
 	refs: Record<string, unknown>,
 	resolveFileUrl: (filename: string) => string,
+	textureRef: (filename: string) => string,
 ): Record<string, unknown> {
 	const next: Record<string, unknown> = { ...refs }
 	if (typeof refs.Moc === "string") next.Moc = resolveFileUrl(refs.Moc)
 	if (Array.isArray(refs.Textures))
-		next.Textures = rewriteList(refs.Textures, resolveFileUrl)
+		next.Textures = rewriteList(refs.Textures, textureRef)
 	if (typeof refs.Physics === "string")
 		next.Physics = resolveFileUrl(refs.Physics)
 	if (refs.PhysicsV2 !== undefined) {

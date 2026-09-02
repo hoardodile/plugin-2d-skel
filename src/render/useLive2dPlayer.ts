@@ -28,6 +28,7 @@ import { prepareModel } from "./prepare-model"
 import { ensureLive2dRuntime, type Live2dRuntimeError } from "./runtime"
 import { live2dRuntimeVersion } from "./runtime-version"
 import { scaledSoundVolume } from "./sound"
+import { textureVariant } from "./texture-format"
 
 export type Live2dPlayerStatus = "idle" | "loading" | "ready" | "error"
 
@@ -209,8 +210,10 @@ export function useLive2dPlayer(options: {
 			const prepared = await prepareModel({
 				scene,
 				readFile: (path) => api.readFile(path),
-				resolveFileUrl: (filename) => api.resolveFileUrl(filename),
+				resolveFileUrl: (filename, variant) =>
+					api.resolveFileUrl(filename, variant),
 				resolveBaseUrl: () => api.resolveBaseUrl(),
+				imageVariant: textureVariant(settings.webpTextures),
 			})
 			if (disposed || prepared === undefined) return
 			if (containerRef.current === null) return
@@ -526,7 +529,15 @@ export function useLive2dPlayer(options: {
 				app.destroy(true, { children: true })
 			}
 		}
-	}, [api, containerRef, scene, sceneKey, reloadKey, onCommand])
+	}, [
+		api,
+		containerRef,
+		scene,
+		sceneKey,
+		reloadKey,
+		settings.webpTextures,
+		onCommand,
+	])
 
 	// Playback speed is applied to the shared Pixi ticker, which scales the
 	// deltaMS every frame drives (both Cubism 2 and Cubism 4 models).

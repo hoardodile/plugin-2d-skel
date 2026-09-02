@@ -27,4 +27,22 @@ describe("buildExPageUrls", () => {
 		)
 		expect(urls.size).toBe(0)
 	})
+
+	test("applies an image variant to each page URL", () => {
+		const urls = buildExPageUrls(
+			["specialillust64"],
+			["atlases_0_textures_0_0.png"],
+			(filename, variant) =>
+				variant === undefined
+					? `file:///${filename}`
+					: `file:///${filename}?fmt=${variant.format}&fit=${variant.fit}`,
+			{ format: "webp", fit: "exact" },
+		)
+		expect(urls.get("specialillust64")).toBe(
+			"file:///atlases_0_textures_0_0.png?fmt=webp&fit=exact",
+		)
+		expect(urls.get("specialillust64.png")).toBe(
+			"file:///atlases_0_textures_0_0.png?fmt=webp&fit=exact",
+		)
+	})
 })

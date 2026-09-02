@@ -1,3 +1,5 @@
+import type { ImageVariantSpec } from "@hoardodile/sdk-web"
+
 /**
  * Logical atlas page names → absolute texture URLs for EX descriptors.
  * The descriptor lists `tex_names` without extensions while the atlas
@@ -6,13 +8,14 @@
 export function buildExPageUrls(
 	texNames: readonly string[],
 	textures: readonly string[],
-	resolveFileUrl: (filename: string) => string,
+	resolveFileUrl: (filename: string, variant?: ImageVariantSpec) => string,
+	imageVariant?: ImageVariantSpec,
 ): ReadonlyMap<string, string> {
 	const map = new Map<string, string>()
 	for (const [index, name] of texNames.entries()) {
 		const texture = textures[index]
 		if (texture === undefined) continue
-		const url = resolveFileUrl(texture)
+		const url = resolveFileUrl(texture, imageVariant)
 		const logical = name.toLowerCase()
 		map.set(logical, url)
 		for (const extension of [".png", ".jpg", ".jpeg", ".webp"]) {

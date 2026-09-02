@@ -109,6 +109,7 @@ export default {
 	skin: "皮肤",
 	debug: "调试",
 	showHitAreas: "显示可交互区域",
+	webpTextures: "使用 WebP 纹理",
 	licensing: "许可",
 	licensingBody:
 		"Spine 是 Esoteric Software 的商标，为互操作模型显示而引入；Spine 运行时按其自身许可随附。",
