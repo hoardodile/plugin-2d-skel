@@ -446,6 +446,7 @@ export function EngineStageContent(props: EngineStageContentProps) {
 
 				<EngineToolbar
 					visible
+					showTopBorder={below}
 					paused={controller.paused}
 					ready={controller.status === "ready"}
 					onTogglePause={controller.togglePause}

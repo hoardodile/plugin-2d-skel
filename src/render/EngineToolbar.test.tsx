@@ -72,4 +72,35 @@ describe("EngineToolbar", () => {
 		// The model selector no longer lives in the toolbar.
 		expect(screen.queryByTestId("engine-scene-select")).not.toBeInTheDocument()
 	})
+
+	test("shows the top border only when showTopBorder is set", () => {
+		const { rerender } = render(
+			<EngineToolbar
+				visible
+				paused={false}
+				ready
+				onTogglePause={() => {}}
+				onRestart={() => {}}
+				onResetView={() => {}}
+			/>,
+		)
+		// Default (undefined): border shown.
+		expect(screen.getByTestId("engine-toolbar").className).toContain("border-t")
+
+		// Docked panel mode: border hidden.
+		rerender(
+			<EngineToolbar
+				visible
+				paused={false}
+				ready
+				onTogglePause={() => {}}
+				onRestart={() => {}}
+				onResetView={() => {}}
+				showTopBorder={false}
+			/>,
+		)
+		expect(screen.getByTestId("engine-toolbar").className).not.toContain(
+			"border-t",
+		)
+	})
 })

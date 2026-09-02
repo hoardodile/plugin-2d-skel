@@ -12,6 +12,9 @@ export type EngineToolbarProps = {
 	readonly onTogglePause: () => void
 	readonly onRestart: () => void
 	readonly onResetView: () => void
+	/** Show the top edge border. Defaults on; the viewer hides it when the
+	    right panel is docked (fixed column) and shows it in drawer mode. */
+	readonly showTopBorder?: boolean
 	/** Engine-specific controls (motion stepping / animation, skin, overlay). */
 	readonly children?: React.ReactNode
 }
@@ -25,6 +28,7 @@ export function EngineToolbar(props: EngineToolbarProps) {
 		onTogglePause,
 		onRestart,
 		onResetView,
+		showTopBorder = true,
 		children,
 	} = props
 	const { t } = useTranslation()
@@ -35,7 +39,7 @@ export function EngineToolbar(props: EngineToolbarProps) {
 	return (
 		<TooltipProvider>
 			<div
-				className={`engine-fade strip-scroll absolute inset-x-0 bottom-0 z-30 flex max-w-full items-center gap-1.5 overflow-x-auto border-t border-border bg-background px-3 py-1.5 transition-opacity duration-200 max-[767px]:px-2 max-[767px]:pb-[calc(0.375rem+env(safe-area-inset-bottom))] ${onTransform(visible)}`}
+				className={`engine-fade strip-scroll absolute inset-x-0 bottom-0 z-30 flex max-w-full items-center gap-1.5 overflow-x-auto bg-background px-3 py-1.5 transition-opacity duration-200 max-[767px]:px-2 max-[767px]:pb-[calc(0.375rem+env(safe-area-inset-bottom))] ${showTopBorder ? "border-t border-border" : ""} ${onTransform(visible)}`}
 				data-testid="engine-toolbar"
 			>
 				<EngineIconButton
@@ -65,7 +69,7 @@ export function EngineToolbar(props: EngineToolbarProps) {
 				<Separator
 					orientation="vertical"
 					size="hairline"
-					className="mx-1 h-5"
+					className="mx-1 h-8 max-[767px]:h-9"
 				/>
 				{children}
 			</div>
