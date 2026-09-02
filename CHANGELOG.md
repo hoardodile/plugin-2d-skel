@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.9](https://github.com/hoardodile/plugin-2d-skel/compare/v0.1.8...v0.1.9) (2026-09-02)
+
+### Features
+
+* **render:** always show toolbar buttons, drop fullscreen ([170cfb9](https://github.com/hoardodile/plugin-2d-skel/commit/170cfb96e29601a2729c2685d3e2126e67cf5f8a))
+* **render:** drop toolbar top border and panel left border ([99057c5](https://github.com/hoardodile/plugin-2d-skel/commit/99057c5160518a35189b5cb562d05c5185e70897))
+* **render:** show toolbar top border only in drawer mode ([47cfc42](https://github.com/hoardodile/plugin-2d-skel/commit/47cfc42c5d43c03d2851dc6cd3d689d0b8f8c44b))
+
+### Bug Fixes
+
+* **render:** keep bottom toolbar top border ([9c03d7f](https://github.com/hoardodile/plugin-2d-skel/commit/9c03d7f4214ad664f429b0099032a161a8ec8fa7))
+
 ## [0.1.8](https://github.com/hoardodile/plugin-2d-skel/compare/v0.1.7...v0.1.8) (2026-09-01)
 
 ### Features
