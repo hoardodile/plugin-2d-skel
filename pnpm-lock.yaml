@@ -21,20 +21,20 @@ importers:
         specifier: npm:@esotericsoftware/spine-player@4.3.13
         version: '@esotericsoftware/spine-player@4.3.13'
       '@hoardodile/sdk-react':
-        specifier: ^0.1.9
-        version: 0.1.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)(zod@4.5.4)
+        specifier: ^0.1.11
+        version: 0.1.11(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)(zod@4.5.4)
       '@hoardodile/sdk-server':
-        specifier: ^0.1.9
-        version: 0.1.9(zod@4.5.4)
+        specifier: ^0.1.11
+        version: 0.1.11(zod@4.5.4)
       '@hoardodile/sdk-types':
-        specifier: ^0.1.9
-        version: 0.1.9(zod@4.5.4)
+        specifier: ^0.1.11
+        version: 0.1.11(zod@4.5.4)
       '@hoardodile/sdk-web':
-        specifier: ^0.1.9
-        version: 0.1.9(zod@4.5.4)
+        specifier: ^0.1.11
+        version: 0.1.11(zod@4.5.4)
       '@hoardodile/ui':
-        specifier: ^0.1.9
-        version: 0.1.9(@types/react@19.2.18)(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react-i18next@17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2))(react@19.2.8)(shadcn@4.19.0(supports-color@7.2.0)(typescript@7.0.2))(tailwindcss@4.3.3)(tw-animate-css@1.4.0)(typescript@7.0.2)(zod@4.5.4)
+        specifier: ^0.1.11
+        version: 0.1.11(@types/react@19.2.18)(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react-i18next@17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2))(react@19.2.8)(shadcn@4.19.0(supports-color@7.2.0)(typescript@7.0.2))(tailwindcss@4.3.3)(tw-animate-css@1.4.0)(typescript@7.0.2)(zod@4.5.4)
       pixi-dragonbones-runtime:
         specifier: 7.0.0
         version: 7.0.0(pixi.js@7.4.3)
@@ -55,17 +55,17 @@ importers:
         specifier: 2.5.10
         version: 2.5.10
       '@hoardodile/cli':
-        specifier: ^0.1.9
-        version: 0.1.9(@babel/core@8.0.1)(@babel/runtime@7.29.7)(@types/node@26.4.0)(jiti@2.7.0)(rolldown@1.2.6)(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(yaml@2.9.0)(zod@4.5.4)
+        specifier: ^0.1.11
+        version: 0.1.11(@babel/core@8.0.1)(@babel/runtime@7.29.7)(@types/node@26.4.0)(jiti@2.7.0)(rolldown@1.2.6)(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(yaml@2.9.0)(zod@4.5.4)
       '@hoardodile/host':
-        specifier: ^0.1.9
-        version: 0.1.9(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)
+        specifier: ^0.1.11
+        version: 0.1.11(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)
       '@hoardodile/host-web':
-        specifier: ^0.1.9
-        version: 0.1.9(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))
+        specifier: ^0.1.11
+        version: 0.1.11(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))
       '@hoardodile/workbench':
-        specifier: ^0.1.9
-        version: 0.1.9
+        specifier: ^0.1.11
+        version: 0.1.11
       '@release-it/conventional-changelog':
         specifier: ^12.0.0
         version: 12.0.0(conventional-commits-filter@6.0.1)(conventional-commits-parser@7.1.2)(release-it@21.0.2(@types/node@26.4.0)(supports-color@7.2.0))
@@ -473,14 +473,6 @@ packages:
     resolution: {integrity: sha512-QxULHAm7cNu72w97JUNCBFODFaXpbDg+dP8b/oWFAZ2MTRppA3U00Y2L1HqaS4J6yBqxwa/Y3nMBaxVKbB/NsA==}
     engines: {node: '>=20.19.0'}
 
-  '@derhuerst/ffprobe-static@5.3.0':
-    resolution: {integrity: sha512-Ka4MiaFdO6xAWpyKWWE5sRAQ8kSl0ddrLnDKPJzLtg/yEkmCr+GV841GGFzfVYomwVbVvmemLlkL4uvTYpJIbQ==}
-    engines: {node: '>=16'}
-
-  '@derhuerst/http-basic@8.2.4':
-    resolution: {integrity: sha512-F9rL9k9Xjf5blCz8HsJRO4diy111cayL2vkY2XE4r4t3n0yPXVYy3KD3nJ1qbrSn9743UWSXH4IwuCa/HWlGFw==}
-    engines: {node: '>=6.0.0'}
-
   '@dnd-kit/accessibility@3.1.1':
     resolution: {integrity: sha512-2P+YgaXF+gRsIihwwY1gCsQSYnu9Zyj2py8kY5fFvUM1qm2WA2u639R6YNVfU4GWr+ZM5mqEsfHZZLoRONbemw==}
     peerDependencies:
@@ -581,17 +573,25 @@ packages:
     resolution: {integrity: sha512-JUQLLhmV0FnxLB9Wh26C0D+QBviAbXXe0bo4GC9hT6QRPVjzY9s8P164D2rEWtV9NqRs4+dBOBoB7T9/Vk+Jng==}
     engines: {node: '>=18'}
 
-  '@hoardodile/cli@0.1.9':
-    resolution: {integrity: sha512-ohF79rLaljcpECOv+PnBEcGPUFqFM+bQhRk04xV/u6DQOJ5A4D3A1DN1Dyz8zBh39OWD9S85e6FupuDVXKPL6w==}
+  '@hoardodile/cli@0.1.11':
+    resolution: {integrity: sha512-Co2BEFQ64JYnML6HTVeOEh6ZxLc8RRvW0QhTXRvUVvHVztpOvBRyQj8WVqRTa52PmJedNl31lCNJdE3huBGNeg==}
     engines: {node: '>=24'}
     hasBin: true
 
-  '@hoardodile/host-web@0.1.9':
-    resolution: {integrity: sha512-36rNxrwS0br0CZI3H61avD10NBoqd+5xibGZ7JrxRdQjVj1J2blLmJrM3JreTYy8Al6h1LRhxgiE3iE6VLyelg==}
+  '@hoardodile/ffmpeg-bin@1.0.0':
+    resolution: {integrity: sha512-pzJtKKglu7Mvvzk3bL7a9SRbkUjvQecsw6h4fnVNqJQWVB8a0F5N/UiJre8KKCQtoZxq52D1mFeG2R+YbRqH5A==}
+    engines: {node: '>=18'}
+
+  '@hoardodile/ffprobe-bin@1.0.0':
+    resolution: {integrity: sha512-jaNm15VAWt6lctAOJeuykITEwAKrRL1+PuG3msf8krF+wYN2149R0yjcPv3EkkFji87QhEo0j5o3ZfMTp9Baew==}
+    engines: {node: '>=18'}
+
+  '@hoardodile/host-web@0.1.11':
+    resolution: {integrity: sha512-VavNjFmWakWZc21Q1prGlNWu58mAAXT+6UoqZNk2fkKcXhMr2liqf+kmX09qMZUwrwkgm153twTrh5M4bjxAEQ==}
     engines: {node: '>=24'}
 
-  '@hoardodile/host@0.1.9':
-    resolution: {integrity: sha512-M76FLqrshsT7D3qPawY9RK2QXu7w92wTHISTbC86nCdbQc5nzrYDWP3fT6yLkS1eg5eUkHYfiVwv4gpWz+WNqQ==}
+  '@hoardodile/host@0.1.11':
+    resolution: {integrity: sha512-QPQTw9IUSf1FZzkzcAbbhdQJA0bEi0fXXmn9BF3U4CtGvCGNCzz7TNLTuyKORmVZ+Iep0oe/Izs5WT/+cAud6g==}
     engines: {node: '>=24'}
     peerDependencies:
       sharp: ^0.35.3
@@ -602,33 +602,33 @@ packages:
       vitest:
         optional: true
 
-  '@hoardodile/i18n@0.1.9':
-    resolution: {integrity: sha512-7f9CG3yd88sljoxzFS0FHAoVA4du9hvffInWBSAqiddAiLO7pwPFGhcdIsQ2+Y/+5ZULBYOloxcAyDbpv9Y7hA==}
+  '@hoardodile/i18n@0.1.11':
+    resolution: {integrity: sha512-vqpxWNUPngHSKAWBwJX0YZbXknKAvG3zW3tgAa9LL0j5xurX1Zts+1OCzteZEQaZjuD/XVJcMbMXhC9PiKqAFA==}
     engines: {node: '>=24'}
 
-  '@hoardodile/sdk-react@0.1.9':
-    resolution: {integrity: sha512-5b3d0VHaHfzEASKhdoVxiUuQ3hxB2KA5G11pi7aKloTJHDiAKmkt8QAWZaTBFhhG22qFcCHhPuy+uoc17texvg==}
+  '@hoardodile/sdk-react@0.1.11':
+    resolution: {integrity: sha512-Wj6h4slQuDagqAonpYtzZGi3oi8ZrwTu0JMG7RyPMG+zy6vXmjhR8+g0o3S2nph92UylyWVnsIyrYg0EYhWSCg==}
     engines: {node: '>=24'}
     peerDependencies:
       react: ^19.2.8
       react-dom: ^19.2.8
 
-  '@hoardodile/sdk-server@0.1.9':
-    resolution: {integrity: sha512-GJCRdDNgNZAz+AK4Uo+awIRwbfvP/Jc1FmByW5lVKAgjNP21W3L6/Mc1dykHgl1RoGkFniK7ZOisNBqiS8+azQ==}
+  '@hoardodile/sdk-server@0.1.11':
+    resolution: {integrity: sha512-cxSRk1SMDMzPjnWd1X4FtDhQzrVCQ7RX58kMbY2GnCoBe+xSgiOmzhd3QehkQ1xlx7taaTmhlN3KPXISIy3qkw==}
     engines: {node: '>=24'}
 
-  '@hoardodile/sdk-types@0.1.9':
-    resolution: {integrity: sha512-cfmh8cXNqTnkSKu/iOUHWFAhVHi1yJahAZ+A/4VhB/b1xhcKSfptM/OvRsIT+X3H+PSF+yNkF9Z+XB9phPI7Fg==}
+  '@hoardodile/sdk-types@0.1.11':
+    resolution: {integrity: sha512-O/sFNzurm1VnmnmWYs9E2SQYsVObh4leJg7bIp5iliHYygucT3FE26pIL82kfZ/G7bmWNybKTxkOh/PnhG++Ww==}
     engines: {node: '>=24'}
     peerDependencies:
       zod: ^4.4.3
 
-  '@hoardodile/sdk-web@0.1.9':
-    resolution: {integrity: sha512-tH2A2I+uWbqmLmEKSrRmwkm7eLfYut5TnSLakskBIMdRnVT940ks7IO5A6x3CBTCLccVoKkuXzjpYGsuVQ7d4A==}
+  '@hoardodile/sdk-web@0.1.11':
+    resolution: {integrity: sha512-7pxq1l23nO7YX/MMAEN8OUuEo06Mjd+unipRFCZ2vW94jgGmzvjKZSKJYsH72dftA3hHggMR5A1hp0gVvA+x1g==}
     engines: {node: '>=24'}
 
-  '@hoardodile/ui@0.1.9':
-    resolution: {integrity: sha512-Kr6/AmMeor1hNIx97XaF0XcmKkQSaWlRMxHSltSGvSjZBvplX0J8VEcpwTuNLZCmCT61vS6RkTL5k3+XE0mAAg==}
+  '@hoardodile/ui@0.1.11':
+    resolution: {integrity: sha512-GH+mAnMYEpEaA5nEdlxsjTolooEqylH2yTx9Ij6czznKcXCWms5i5sOeXW8omG+y3oDR8bL63YNi8x9uNplgdw==}
     engines: {node: '>=24'}
     peerDependencies:
       i18next: ^26.4.0
@@ -646,8 +646,8 @@ packages:
       tw-animate-css:
         optional: true
 
-  '@hoardodile/workbench@0.1.9':
-    resolution: {integrity: sha512-oGSXgNiqQaXHfOrlkUEqiVmVL1a0aSRwkUw+pxUZvlFumcOZaKkAmzY+8bBixNhJMUiLvGPkPjiRAjFARPkU/w==}
+  '@hoardodile/workbench@0.1.11':
+    resolution: {integrity: sha512-3isCSf4U65ubab9VrDWF+4LIc85zbxiHDTMtJCqOGIpKD1/F/U0Z+J2f6fdDUeDsyzNoyCo1jzQfruzpPW6y8w==}
     engines: {node: '>=24'}
 
   '@hono/node-server@2.1.1':
@@ -1673,9 +1673,6 @@ packages:
   '@types/jsesc@2.5.1':
     resolution: {integrity: sha512-9VN+6yxLOPLOav+7PwjZbxiID2bVaeq0ED4qSQmdQTdjnXJSaCVKTR58t15oqH1H5t8Ng2ZX1SabJVoN9Q34bw==}
 
-  '@types/node@10.17.60':
-    resolution: {integrity: sha512-F0KIgDJfy2nA3zMLmWGKxcH2ZVEtCZXHHdOQs2gSaQ27+lNeEfGxzkIw90aXswATX7AZ33tahPbzy6KAfUreVw==}
-
   '@types/node@26.4.0':
     resolution: {integrity: sha512-faiGnoIrLH/V8cibOMEAZ8pMw6oXqSukl29ra4mN8GdaB2ZewzeaLj+INpV5N+Z1eKWzY+IzaIZH2EIR6YZRNQ==}
 
@@ -1874,10 +1871,6 @@ packages:
     resolution: {integrity: sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng==}
     engines: {node: '>= 0.6'}
 
-  agent-base@6.0.2:
-    resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
-    engines: {node: '>= 6.0.0'}
-
   agent-base@7.1.4:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
@@ -2046,9 +2039,6 @@ packages:
 
   caniuse-lite@1.0.30001810:
     resolution: {integrity: sha512-TITQPUkaz+aVk5GL6NhOdwk1aEaNTSDPsGFWrTuhKGtjTF70jL/Oht2W4c6rXUe5fu7Ie19VIahAXHIIiWWNeg==}
-
-  caseless@0.12.0:
-    resolution: {integrity: sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==}
 
   chai@6.2.2:
     resolution: {integrity: sha512-NUPRluOfOiTKBKvWPtSD4PhFvWCqOi0BGStNWs57X9js7XGTprSmFoz5F0tWhR4WPjNeR9jXqdC7/UpSJTnlRg==}
@@ -2522,10 +2512,6 @@ packages:
   fflate@0.8.3:
     resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
 
-  ffmpeg-static@5.3.0:
-    resolution: {integrity: sha512-H+K6sW6TiIX6VGend0KQwthe+kaceeH/luE8dIZyOP35ik7ahYojDuqlTV1bOrtEwl01sy2HFNGQfi5IDJvotg==}
-    engines: {node: '>=16'}
-
   figures@6.1.0:
     resolution: {integrity: sha512-d+l3qxjSesT4V7v2fh+QnmFnUWv9lSpjarhShNTgBOfA0ttejbQUAlHLitbjkoRiDulW0OPoQPYIGhIC8ohejg==}
     engines: {node: '>=18'}
@@ -2671,13 +2657,6 @@ packages:
   http-proxy-agent@9.1.0:
     resolution: {integrity: sha512-2NxoveTT58mjYT4n3RPTEfCZGLMbidoO8XEieXfpSYxu+PQJ1qpx4ypwH6N+uF9twBPIvRRgvkvW5HUTYWENig==}
     engines: {node: '>= 20'}
-
-  http-response-object@3.0.2:
-    resolution: {integrity: sha512-bqX0XTF6fnXSQcEJ2Iuyr75yVakyjIDCqroJQ/aHfSdlM743Cwqoi2nDYMzLGWUcuTWGWy8AAvOKXTfiv6q9RA==}
-
-  https-proxy-agent@5.0.1:
-    resolution: {integrity: sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==}
-    engines: {node: '>= 6'}
 
   https-proxy-agent@7.0.6:
     resolution: {integrity: sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==}
@@ -3482,9 +3461,6 @@ packages:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
     engines: {node: '>=6'}
 
-  parse-cache-control@1.0.1:
-    resolution: {integrity: sha512-60zvsJReQPX5/QP0Kzfd/VrpjScIQ7SHBW6bFCYfEP+fp0Eppr1SHhIO5nd1PjZtvclzSzES9D/p5nFJurwfWg==}
-
   parse-conflict-json@5.0.1:
     resolution: {integrity: sha512-ZHEmNKMq1wyJXNwLxyHnluPfRAFSIliBvbK/UiOceROt4Xh9Pz0fq49NytIaeaCUf5VR86hwQ/34FCcNU5/LKQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
@@ -3612,10 +3588,6 @@ packages:
   proggy@4.0.0:
     resolution: {integrity: sha512-MbA4R+WQT76ZBm/5JUpV9yqcJt92175+Y0Bodg3HgiXzrmKu7Ggq+bpn6y6wHH+gN9NcyKn3yg1+d47VaKwNAQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
-
-  progress@2.0.3:
-    resolution: {integrity: sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==}
-    engines: {node: '>=0.4.0'}
 
   promise-all-reject-late@1.0.1:
     resolution: {integrity: sha512-vuf0Lf0lOxyQREH7GDIOUMLS7kz+gs8i6B+Yi8dC68a2sychGrHTJYghMBD6k7eUcH0H5P73EckCA48xijWqXw==}
@@ -4805,24 +4777,6 @@ snapshots:
 
   '@csstools/css-tokenizer@4.0.0': {}
 
-  '@derhuerst/ffprobe-static@5.3.0(supports-color@7.2.0)':
-    dependencies:
-      '@derhuerst/http-basic': 8.2.4
-      env-paths: 2.2.1
-      https-proxy-agent: 5.0.1(supports-color@7.2.0)
-      progress: 2.0.3
-    transitivePeerDependencies:
-      - supports-color
-    optional: true
-
-  '@derhuerst/http-basic@8.2.4':
-    dependencies:
-      caseless: 0.12.0
-      concat-stream: 2.0.0
-      http-response-object: 3.0.2
-      parse-cache-control: 1.0.1
-    optional: true
-
   '@dnd-kit/accessibility@3.1.1(react@19.2.8)':
     dependencies:
       react: 19.2.8
@@ -4940,10 +4894,10 @@ snapshots:
       tar: 7.5.22
     optional: true
 
-  '@hoardodile/cli@0.1.9(@babel/core@8.0.1)(@babel/runtime@7.29.7)(@types/node@26.4.0)(jiti@2.7.0)(rolldown@1.2.6)(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(yaml@2.9.0)(zod@4.5.4)':
+  '@hoardodile/cli@0.1.11(@babel/core@8.0.1)(@babel/runtime@7.29.7)(@types/node@26.4.0)(jiti@2.7.0)(rolldown@1.2.6)(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(yaml@2.9.0)(zod@4.5.4)':
     dependencies:
-      '@hoardodile/host': 0.1.9(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)
-      '@hoardodile/sdk-types': 0.1.9(zod@4.5.4)
+      '@hoardodile/host': 0.1.11(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)
+      '@hoardodile/sdk-types': 0.1.11(zod@4.5.4)
       '@rolldown/plugin-babel': 0.2.3(@babel/core@8.0.1)(@babel/runtime@7.29.7)(rolldown@1.2.6)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
       '@tailwindcss/vite': 4.3.3(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
       '@vitejs/plugin-react': 6.1.1(@rolldown/plugin-babel@0.2.3(@babel/core@8.0.1)(@babel/runtime@7.29.7)(rolldown@1.2.6)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(babel-plugin-react-compiler@1.0.0)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
@@ -4973,35 +4927,41 @@ snapshots:
       - yaml
       - zod
 
-  '@hoardodile/host-web@0.1.9(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))':
+  '@hoardodile/ffmpeg-bin@1.0.0':
+    optional: true
+
+  '@hoardodile/ffprobe-bin@1.0.0':
+    optional: true
+
+  '@hoardodile/host-web@0.1.11(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))':
     dependencies:
-      '@hoardodile/host': 0.1.9(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)
-      '@hoardodile/sdk-types': 0.1.9(zod@4.5.4)
-      '@hoardodile/sdk-web': 0.1.9(zod@4.5.4)
+      '@hoardodile/host': 0.1.11(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)
+      '@hoardodile/sdk-types': 0.1.11(zod@4.5.4)
+      '@hoardodile/sdk-web': 0.1.11(zod@4.5.4)
       zod: 4.5.4
     transitivePeerDependencies:
       - sharp
       - supports-color
       - vitest
 
-  '@hoardodile/host@0.1.9(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)':
+  '@hoardodile/host@0.1.11(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)':
     dependencies:
-      '@hoardodile/sdk-types': 0.1.9(zod@4.5.4)
+      '@hoardodile/sdk-types': 0.1.11(zod@4.5.4)
       execa: 10.0.1
       file-type: 22.0.2(supports-color@7.2.0)
       yauzl: 3.4.0
       yazl: 3.3.1
     optionalDependencies:
-      '@derhuerst/ffprobe-static': 5.3.0(supports-color@7.2.0)
       '@hoardodile/7z-bin': 1.1.3
-      ffmpeg-static: 5.3.0(supports-color@7.2.0)
+      '@hoardodile/ffmpeg-bin': 1.0.0
+      '@hoardodile/ffprobe-bin': 1.0.0
       sharp: 0.35.4(@types/node@26.4.0)
       vitest: 4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
     transitivePeerDependencies:
       - supports-color
       - zod
 
-  '@hoardodile/i18n@0.1.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)':
+  '@hoardodile/i18n@0.1.11(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)':
     dependencies:
       i18next: 26.4.0(typescript@7.0.2)
       react-i18next: 17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
@@ -5011,11 +4971,11 @@ snapshots:
       - react-native
       - typescript
 
-  '@hoardodile/sdk-react@0.1.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)(zod@4.5.4)':
+  '@hoardodile/sdk-react@0.1.11(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)(zod@4.5.4)':
     dependencies:
-      '@hoardodile/i18n': 0.1.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
-      '@hoardodile/sdk-types': 0.1.9(zod@4.5.4)
-      '@hoardodile/sdk-web': 0.1.9(zod@4.5.4)
+      '@hoardodile/i18n': 0.1.11(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
+      '@hoardodile/sdk-types': 0.1.11(zod@4.5.4)
+      '@hoardodile/sdk-web': 0.1.11(zod@4.5.4)
       i18next: 26.4.0(typescript@7.0.2)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
@@ -5025,30 +4985,30 @@ snapshots:
       - typescript
       - zod
 
-  '@hoardodile/sdk-server@0.1.9(zod@4.5.4)':
+  '@hoardodile/sdk-server@0.1.11(zod@4.5.4)':
     dependencies:
-      '@hoardodile/sdk-types': 0.1.9(zod@4.5.4)
+      '@hoardodile/sdk-types': 0.1.11(zod@4.5.4)
     transitivePeerDependencies:
       - zod
 
-  '@hoardodile/sdk-types@0.1.9(zod@4.5.4)':
+  '@hoardodile/sdk-types@0.1.11(zod@4.5.4)':
     dependencies:
       zod: 4.5.4
 
-  '@hoardodile/sdk-web@0.1.9(zod@4.5.4)':
+  '@hoardodile/sdk-web@0.1.11(zod@4.5.4)':
     dependencies:
-      '@hoardodile/sdk-types': 0.1.9(zod@4.5.4)
+      '@hoardodile/sdk-types': 0.1.11(zod@4.5.4)
     transitivePeerDependencies:
       - zod
 
-  '@hoardodile/ui@0.1.9(@types/react@19.2.18)(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react-i18next@17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2))(react@19.2.8)(shadcn@4.19.0(supports-color@7.2.0)(typescript@7.0.2))(tailwindcss@4.3.3)(tw-animate-css@1.4.0)(typescript@7.0.2)(zod@4.5.4)':
+  '@hoardodile/ui@0.1.11(@types/react@19.2.18)(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react-i18next@17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2))(react@19.2.8)(shadcn@4.19.0(supports-color@7.2.0)(typescript@7.0.2))(tailwindcss@4.3.3)(tw-animate-css@1.4.0)(typescript@7.0.2)(zod@4.5.4)':
     dependencies:
       '@base-ui/react': 1.7.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@dnd-kit/core': 6.3.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@dnd-kit/sortable': 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
       '@dnd-kit/utilities': 3.2.2(react@19.2.8)
-      '@hoardodile/i18n': 0.1.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
-      '@hoardodile/sdk-types': 0.1.9(zod@4.5.4)
+      '@hoardodile/i18n': 0.1.11(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
+      '@hoardodile/sdk-types': 0.1.11(zod@4.5.4)
       '@solar-icons/react': 2.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       class-variance-authority: 0.7.1
       clsx: 2.1.1
@@ -5073,7 +5033,7 @@ snapshots:
       - typescript
       - zod
 
-  '@hoardodile/workbench@0.1.9': {}
+  '@hoardodile/workbench@0.1.11': {}
 
   '@hono/node-server@2.1.1(hono@4.13.5)':
     dependencies:
@@ -6020,9 +5980,6 @@ snapshots:
 
   '@types/jsesc@2.5.1': {}
 
-  '@types/node@10.17.60':
-    optional: true
-
   '@types/node@26.4.0':
     dependencies:
       undici-types: 8.3.0
@@ -6160,13 +6117,6 @@ snapshots:
     dependencies:
       mime-types: 3.0.2
       negotiator: 1.1.0
-
-  agent-base@6.0.2(supports-color@7.2.0):
-    dependencies:
-      debug: 4.4.3(supports-color@7.2.0)
-    transitivePeerDependencies:
-      - supports-color
-    optional: true
 
   agent-base@7.1.4: {}
 
@@ -6332,9 +6282,6 @@ snapshots:
   callsites@3.1.0: {}
 
   caniuse-lite@1.0.30001810: {}
-
-  caseless@0.12.0:
-    optional: true
 
   chai@6.2.2: {}
 
@@ -6792,16 +6739,6 @@ snapshots:
 
   fflate@0.8.3: {}
 
-  ffmpeg-static@5.3.0(supports-color@7.2.0):
-    dependencies:
-      '@derhuerst/http-basic': 8.2.4
-      env-paths: 2.2.1
-      https-proxy-agent: 5.0.1(supports-color@7.2.0)
-      progress: 2.0.3
-    transitivePeerDependencies:
-      - supports-color
-    optional: true
-
   figures@6.1.0:
     dependencies:
       is-unicode-supported: 2.1.0
@@ -6966,19 +6903,6 @@ snapshots:
     transitivePeerDependencies:
       - kerberos
       - supports-color
-
-  http-response-object@3.0.2:
-    dependencies:
-      '@types/node': 10.17.60
-    optional: true
-
-  https-proxy-agent@5.0.1(supports-color@7.2.0):
-    dependencies:
-      agent-base: 6.0.2(supports-color@7.2.0)
-      debug: 4.4.3(supports-color@7.2.0)
-    transitivePeerDependencies:
-      - supports-color
-    optional: true
 
   https-proxy-agent@7.0.6(supports-color@7.2.0):
     dependencies:
@@ -7718,9 +7642,6 @@ snapshots:
     dependencies:
       callsites: 3.1.0
 
-  parse-cache-control@1.0.1:
-    optional: true
-
   parse-conflict-json@5.0.1:
     dependencies:
       json-parse-even-better-errors: 5.0.0
@@ -7861,9 +7782,6 @@ snapshots:
   proc-log@6.1.0: {}
 
   proggy@4.0.0: {}
-
-  progress@2.0.3:
-    optional: true
 
   promise-all-reject-late@1.0.1: {}
 
