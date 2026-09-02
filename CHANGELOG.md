@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.10](https://github.com/hoardodile/plugin-2d-skel/compare/v0.1.9...v0.1.10) (2026-09-02)
+
+### Features
+
+* **render:** add opt-in WebP texture option ([52ad083](https://github.com/hoardodile/plugin-2d-skel/commit/52ad083ca6d42f743620b130ff0a706c5cf84ee5))
+
 ## [0.1.9](https://github.com/hoardodile/plugin-2d-skel/compare/v0.1.8...v0.1.9) (2026-09-02)
 
 ### Features
