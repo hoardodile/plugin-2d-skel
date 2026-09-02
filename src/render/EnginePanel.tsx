@@ -64,7 +64,9 @@ export function EnginePanel(props: {
 				}))}
 			/>
 			<ScrollArea className="min-h-0 flex-1">
-				<div className="flex min-h-full flex-col px-4 pb-3">{children}</div>
+				<div className="flex min-h-full flex-col px-4 pb-6 md:pb-4">
+					{children}
+				</div>
 				<ScrollBar orientation="vertical" />
 			</ScrollArea>
 		</>

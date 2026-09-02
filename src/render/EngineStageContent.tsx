@@ -205,16 +205,6 @@ export function EngineStageContent(props: EngineStageContentProps) {
 
 	if (scenes.length === 0) return <EngineEmptyState />
 
-	function toggleFullscreen() {
-		const root = rootRef.current
-		if (root === null) return
-		if (document.fullscreenElement === null) {
-			void root.requestFullscreen().catch(() => {})
-		} else {
-			void document.exitFullscreen().catch(() => {})
-		}
-	}
-
 	function downloadScreenshot() {
 		const dataUrl = controller.capture()
 		if (dataUrl === undefined) return
@@ -461,7 +451,6 @@ export function EngineStageContent(props: EngineStageContentProps) {
 					onTogglePause={controller.togglePause}
 					onRestart={controller.restart}
 					onResetView={viewport.reset}
-					onToggleFullscreen={toggleFullscreen}
 				>
 					{plugin.stepControls}
 					{below ? (
@@ -479,8 +468,8 @@ export function EngineStageContent(props: EngineStageContentProps) {
 							aria-label={t("settings")}
 							data-testid="engine-open-panel"
 						>
-							<Icon icon={Settings} size="sm" />
-							{t("settings")}
+							<Icon icon={Settings} size="md" />
+							<span className="max-[767px]:hidden">{t("settings")}</span>
 						</Button>
 					) : null}
 				</EngineToolbar>

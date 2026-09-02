@@ -36,10 +36,6 @@ vi.mock("@hoardodile/ui/components/tooltip", () => ({
 	),
 }))
 
-vi.mock("@hoardodile/ui/hooks/use-mobile", () => ({
-	useBelowMd: () => false,
-}))
-
 vi.mock("@hoardodile/ui/components/button", () => ({
 	Button: function Button(
 		props: Record<string, unknown> & { readonly children?: ReactNode },
@@ -63,12 +59,16 @@ describe("EngineToolbar", () => {
 				onTogglePause={() => {}}
 				onRestart={() => {}}
 				onResetView={() => {}}
-				onToggleFullscreen={() => {}}
 			/>,
 		)
 
 		expect(screen.getByTestId("engine-toolbar")).toBeInTheDocument()
 		expect(screen.getByTestId("engine-play-toggle")).toBeInTheDocument()
+		expect(screen.getByTestId("engine-restart")).toBeInTheDocument()
+		// Transport buttons are shown on every viewport (not just md+).
+		expect(screen.getByTestId("engine-reset-view")).toBeInTheDocument()
+		// Fullscreen was removed from the viewer chrome.
+		expect(screen.queryByTestId("engine-fullscreen")).not.toBeInTheDocument()
 		// The model selector no longer lives in the toolbar.
 		expect(screen.queryByTestId("engine-scene-select")).not.toBeInTheDocument()
 	})
