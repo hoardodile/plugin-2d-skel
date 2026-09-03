@@ -10,6 +10,12 @@ import {
 import type { SpineScene } from "../shared"
 import { HOME, type ViewportTransform } from "./canvas-view"
 import { baseAnimationNames, effectiveChoice } from "./choices"
+import {
+	applySkinCommand,
+	fallbackSkinStack,
+	parseSkinCommand,
+	skinStackFromMotionGraph,
+} from "./commands"
 import type { SpineController } from "./engine"
 import { buildHitMap } from "./hit-areas"
 import { usePluginAPI } from "./hooks"
@@ -90,6 +96,9 @@ export function useSpinePlayer(options: {
 	const playbackRef = useRef<SpinePlayback | null>(null)
 	const graphRef = useRef<MotionGraph>({})
 	const hitMapRef = useRef<ReadonlyMap<string, MotionRef>>(new Map())
+	/** The Live2DViewerEX composite skin stack, seeded at mount and refined by
+	 *  `set_skins`/`add_skins`/`remove_skins` commands. */
+	const skinStackRef = useRef<readonly string[]>([])
 	const playMotionRefImplRef = useRef<(ref: MotionRef) => void>(() => {})
 	const hitImplRef = useRef<(names: readonly string[]) => void>(() => {})
 	const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -115,6 +124,7 @@ export function useSpinePlayer(options: {
 	const [runtimeVersion, setRuntimeVersion] = useState<string | undefined>(
 		undefined,
 	)
+	const [isCompositeSkin, setIsCompositeSkin] = useState(false)
 
 	const sceneKey = `${scene?.skeleton ?? ""}\u0000${scene?.atlas ?? ""}`
 
@@ -124,6 +134,7 @@ export function useSpinePlayer(options: {
 		playbackRef.current = null
 		graphRef.current = {}
 		hitMapRef.current = new Map()
+		skinStackRef.current = []
 		playMotionRefImplRef.current = () => {}
 		hitImplRef.current = () => {}
 		setPaused(false)
@@ -132,6 +143,7 @@ export function useSpinePlayer(options: {
 		setExHit(undefined)
 		setErrorDetail(undefined)
 		setRuntimeVersion(undefined)
+		setIsCompositeSkin(false)
 
 		function clearTimer() {
 			if (timerRef.current !== null) window.clearTimeout(timerRef.current)
@@ -158,6 +170,18 @@ export function useSpinePlayer(options: {
 					const ref = parseMotionRef(motionName)
 					if (ref !== undefined) playMotionRefImpl(ref)
 				}
+				return
+			}
+			// Live2DViewerEX `type:9` Spine models assemble their appearance
+			// from a `set_skins`/`add_skins`/`remove_skins` stack; apply it to
+			// the live player rather than forwarding it to the host.
+			const skinCommand = parseSkinCommand(command)
+			if (skinCommand.kind !== "unknown") {
+				skinStackRef.current = applySkinCommand(
+					skinStackRef.current,
+					skinCommand,
+				)
+				playbackRef.current?.setSkinStack(skinStackRef.current)
 				return
 			}
 			onCommand(command)
@@ -262,6 +286,23 @@ export function useSpinePlayer(options: {
 				skins: scene.skins,
 			})
 
+			// Live2DViewerEX `type:9` Spine models are composite: their full
+			// look is a base skin plus additive layer skins declared by a
+			// motion's `set_skins`/`add_skins`. Seed the player with that stack
+			// (falling back to a sensible single base) so the character renders
+			// whole instead of one alphabetically-first layer skin.
+			let mountSkins: readonly string[] | undefined
+			if (scene.modelJson !== undefined) {
+				mountSkins =
+					skinStackFromMotionGraph(graphRef.current) ??
+					fallbackSkinStack(scene.skins)
+				if (mountSkins.length > 0) skinStackRef.current = mountSkins
+				// Composite (layered) models hide the meaningless single-select
+				// skin chips; a base-only stack keeps them, since `skin_base`
+				// is the whole-body root and safe to pick.
+				setIsCompositeSkin(mountSkins.length > 1)
+			}
+
 			try {
 				const urls = await prepareSpineAssets({
 					scene,
@@ -285,7 +326,10 @@ export function useSpinePlayer(options: {
 					urls,
 					runtime,
 					animation: mountAnimation,
-					skin: mountSkin,
+					skin: mountSkins?.length ? mountSkins[0] : mountSkin,
+					...(mountSkins !== undefined && mountSkins.length > 0
+						? { skins: mountSkins }
+						: {}),
 					autoplay: settings.autoplay,
 					loop: settings.loop,
 					debug: settings.debug,
@@ -480,6 +524,7 @@ export function useSpinePlayer(options: {
 		applyViewport,
 		getAppliedViewport,
 		capture,
+		isCompositeSkin,
 	}
 }
 

@@ -60,6 +60,7 @@ export type SpinePlayback = {
 	readonly setAnimation: (name: string) => void
 	readonly setOverlayAnimation: (name: string | undefined) => void
 	readonly setSkin: (name: string) => void
+	readonly setSkinStack: (skins: readonly string[]) => void
 	readonly setPaused: (paused: boolean) => void
 	readonly setSpeed: (speed: number) => void
 	readonly applyViewport: (transform: ViewportTransform) => void
@@ -82,6 +83,8 @@ export type MountSpinePlayerOptions = {
 	readonly runtime: SpineRuntime
 	readonly animation: string | undefined
 	readonly skin: string | undefined
+	/** A Live2DViewerEX composite skin stack; when set, supersedes `skin`. */
+	readonly skins?: readonly string[]
 	readonly autoplay: boolean
 	readonly loop: boolean
 	readonly debug: boolean
@@ -359,25 +362,32 @@ export function atlasUsesPremultipliedAlpha(
 	atlasText: string | undefined,
 ): boolean {
 	if (atlasText === undefined) return false
-	const match = /^pma:\s*(true|false)\s*$/m.exec(atlasText)
+	// Spine atlases indent page-level properties (`\tpma: true`), so the
+	// header must be matched after optional leading whitespace.
+	const match = /^\s*pma:\s*(true|false)\s*$/m.exec(atlasText)
 	return match?.[1]?.toLowerCase() === "true"
 }
 
 /**
  * Resolve the premultiplied-alpha flag a runtime should render with. An
- * explicit `pma:true`/`pma:false` header always wins. When the flag is
- * absent, the legacy 3.8 runtime defaults to **premultiplied** because the
- * game-export atlases it serves (Live2DViewerEX `type:9`) are premultiplied
- * but omit the header — rendering them non-premultiplied is what leaves the
- * dark fringe at region seams. The 4.x builds default to non-premultiplied
- * (their atlases carry the header when premultiplied).
+ * explicit `pma:true`/`pma:false` header always wins (that header is the
+ * model's own config). When the flag is absent we fall back to the runtime
+ * default: the legacy 3.8 build defaults to **premultiplied** (the
+ * Live2DViewerEX game-export atlases it serves are premultiplied but omit
+ * the header), while the 4.x build defaults to non-premultiplied. We do NOT
+ * blanket-force EX exports to premultiplied: some `type:9` exports carry no
+ * `pma` header and are genuinely non-premultiplied, so a shared setting would
+ * be wrong — each model's own atlas is the source of truth.
  */
 export function resolvePremultipliedAlpha(
 	atlasText: string | undefined,
 	runtime: SpineRuntime,
 ): boolean {
 	if (atlasText === undefined) return false
-	const match = /^pma:\s*(true|false)\s*$/m.exec(atlasText)
+	// Spine atlases indent page-level properties (`\tpma: true`), so match the
+	// header after optional leading whitespace — otherwise a premultiplied
+	// model is silently rendered non-premultiplied and shows a dark fringe.
+	const match = /^\s*pma:\s*(true|false)\s*$/m.exec(atlasText)
 	if (match !== null) return match[1]?.toLowerCase() === "true"
 	return runtime === "legacy"
 }
@@ -464,6 +474,7 @@ export async function mountSpinePlayer(
 		runtime,
 		animation,
 		skin,
+		skins,
 		autoplay,
 		loop,
 		debug,
@@ -664,6 +675,11 @@ export async function mountSpinePlayer(
 		success: () => {
 			ready = true
 			if (skeletonViewport) configureSkeletonViewport(player)
+			// A composite skin stack supersedes the single `skin` the player
+			// constructed with (only one skin can be handed to the constructor).
+			if (skins !== undefined && skins.length > 0) {
+				applySkinStack(player, skins)
+			}
 			refreshSkeletonBase()
 			onReady(readNamesOf(player))
 			if (!autoplay) setPaused(player, true)
@@ -708,6 +724,9 @@ export async function mountSpinePlayer(
 		},
 		setSkin(name) {
 			setSkin(player, name)
+		},
+		setSkinStack(skins) {
+			applySkinStack(player, skins)
 		},
 		setPaused(paused) {
 			if (ready) setPaused(player, paused)
@@ -810,6 +829,84 @@ function setSkin(player: NativePlayer, name: string) {
 	if (typeof player.setSkin === "function") {
 		player.setSkin(skeleton, name)
 	}
+}
+
+/**
+ * A surface over the runtime's skeleton methods that `applySkinStack` needs.
+ * The bundled runs expose only the single-skin `setSkin(skin)` API, so a
+ * stack is reproduced by merging (copying) each resolved skin into a fresh
+ * composite `Skin` and setting that — the shared data skins are never
+ * mutated, letting a later `set_skins`/`remove_skins` rebuild a clean stack.
+ */
+type SkinSurface = {
+	readonly setSkin?: (skin: unknown) => void
+	readonly setSkinByName?: (name: string) => void
+	readonly data?: { readonly findSkin?: (name: string) => unknown }
+}
+
+/**
+ * Apply a Live2DViewerEX composite skin stack. A stack of one falls back to
+ * the existing single-skin path; a longer stack is merged into a composite
+ * `Skin` and set. When the runtime cannot build a composite (no name lookup,
+ * no Skin constructor, or no copyable attachments) it degrades to the last
+ * skin in the stack so the model still renders something.
+ */
+export function applySkinStack(player: NativePlayer, stack: readonly string[]) {
+	const skeleton = player.skeleton as SkinSurface | undefined
+	if (skeleton === undefined || stack.length === 0) return
+
+	if (stack.length === 1) {
+		setSkin(player, stack[0]!)
+		return
+	}
+
+	const data = skeleton.data
+	if (data === undefined || typeof data.findSkin !== "function") {
+		if (typeof skeleton.setSkinByName === "function") {
+			skeleton.setSkinByName(stack[stack.length - 1]!)
+		}
+		return
+	}
+	// Call `findSkin` with the SkeletonData as its receiver (an extracted
+	// reference called bare loses `this` and throws `Cannot read properties of
+	// undefined (reading 'skins')`).
+	const findSkin = data.findSkin
+	const resolved = stack
+		.map((name) => findSkin.call(data, name))
+		.filter((skin): skin is unknown => skin !== undefined)
+	if (resolved.length === 0) return
+
+	// Build a pristine composite skin by merging each resolved skin into it.
+	const ctor = (resolved[0] as { readonly constructor?: unknown }).constructor
+	let composite: unknown
+	if (typeof ctor === "function") {
+		try {
+			composite = new (ctor as new (name: string) => unknown)(
+				"__hdo_composite_skin",
+			)
+		} catch {
+			composite = undefined
+		}
+	} else {
+		composite = undefined
+	}
+	const compositeAsSkin = composite as {
+		readonly addSkin?: (skin: unknown) => void
+	}
+	if (
+		composite === undefined ||
+		typeof compositeAsSkin.addSkin !== "function"
+	) {
+		if (typeof skeleton.setSkinByName === "function") {
+			skeleton.setSkinByName(stack[stack.length - 1]!)
+		}
+		return
+	}
+	// `Skin.addSkin` copies attachments/bones/constraints from its argument
+	// into `this` — call it with the composite as receiver so `this` points
+	// at the fresh skin, leaving the shared data skins pristine.
+	for (const skin of resolved) compositeAsSkin.addSkin(skin)
+	if (typeof skeleton.setSkin === "function") skeleton.setSkin(composite)
 }
 
 /** Read the animation/skin name tables off a loaded native player. */

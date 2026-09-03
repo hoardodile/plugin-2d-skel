@@ -1,5 +1,6 @@
 import { describe, expect, test, vi } from "vitest"
 import {
+	applySkinStack,
 	atlasUsesPremultipliedAlpha,
 	patchLegacyLoadingScreen,
 	prepareSpineAssets,
@@ -18,6 +19,13 @@ describe("atlasUsesPremultipliedAlpha", () => {
 		expect(atlasUsesPremultipliedAlpha("pma:false\nsize:2048,2048")).toBe(false)
 	})
 
+	test("reads an indented pma header (Spine indents page properties)", () => {
+		expect(atlasUsesPremultipliedAlpha("\tpma: true\n")).toBe(true)
+		expect(atlasUsesPremultipliedAlpha(" \tpma: false\nsize:2048,2048")).toBe(
+			false,
+		)
+	})
+
 	test("defaults to false when the flag is absent or malformed", () => {
 		expect(atlasUsesPremultipliedAlpha("size:2048,2048")).toBe(false)
 		expect(atlasUsesPremultipliedAlpha("pma:maybe")).toBe(false)
@@ -29,6 +37,13 @@ describe("resolvePremultipliedAlpha", () => {
 	test("an explicit pma:true wins for any runtime", () => {
 		expect(resolvePremultipliedAlpha("pma:true\nsize:1,1", "legacy")).toBe(true)
 		expect(resolvePremultipliedAlpha("pma:true\nsize:1,1", "4.1")).toBe(true)
+	})
+
+	test("reads an indented pma:true header (Spine indents page properties)", () => {
+		// A premultiplied `type:9` export whose atlas indents its header must
+		// be recognised as premultiplied — otherwise it renders non-premultiplied
+		// and shows a dark fringe at region seams.
+		expect(resolvePremultipliedAlpha("\tpma: true\n", "4.2")).toBe(true)
 	})
 
 	test("an explicit pma:false wins for any runtime", () => {
@@ -45,6 +60,13 @@ describe("resolvePremultipliedAlpha", () => {
 	test("the 4.x default is non-premultiplied when the header is absent", () => {
 		expect(resolvePremultipliedAlpha("size:1,1", "4.0")).toBe(false)
 		expect(resolvePremultipliedAlpha("size:1,1", "4.3")).toBe(false)
+	})
+
+	test("an absent header keeps the runtime default even for EX scenes (per-model)", () => {
+		// Different Spine models carry different configs; a `type:9` export with
+		// no `pma` header must NOT be blanket-forced to premultiplied — each
+		// model's own atlas decides.
+		expect(resolvePremultipliedAlpha("size:1,1", "4.2")).toBe(false)
 	})
 
 	test("an absent atlas resolves to false", () => {
@@ -217,5 +239,91 @@ describe("suppressLegacySpineChrome", () => {
 	test("tolerates a container without the legacy chrome", () => {
 		const container = document.createElement("div")
 		expect(() => suppressLegacySpineChrome(container)).not.toThrow()
+	})
+})
+
+describe("applySkinStack", () => {
+	class FakeSkin {
+		name: string
+		added: unknown[] = []
+		constructor(name: string) {
+			this.name = name
+		}
+		addSkin(skin: unknown) {
+			this.added.push(skin)
+		}
+	}
+
+	function fakeSkeleton(skinNames: readonly string[]) {
+		const skins = skinNames.map((name) => new FakeSkin(name))
+		const setSkinCalls: FakeSkin[] = []
+		const setSkinByNameCalls: string[] = []
+		const skeleton = {
+			setSkin(skin: FakeSkin) {
+				setSkinCalls.push(skin)
+			},
+			setSkinByName(name: string) {
+				setSkinByNameCalls.push(name)
+			},
+			data: {
+				skins,
+				// Reads `this.skins` like the runtime, so a call that drops the
+				// receiver (an extracted reference) fails this test.
+				findSkin(name: string) {
+					return this.skins.find((skin) => skin.name === name)
+				},
+			},
+		}
+		return {
+			player: {
+				skeleton,
+			} as unknown as Parameters<typeof applySkinStack>[0],
+			setSkinCalls,
+			setSkinByNameCalls,
+		}
+	}
+
+	test("a single skin follows the existing single-skin path", () => {
+		const { player, setSkinByNameCalls } = fakeSkeleton(["skin_base"])
+		applySkinStack(player, ["skin_base"])
+		expect(setSkinByNameCalls).toEqual(["skin_base"])
+	})
+
+	test("merges a stack into a pristine composite Skin and sets it", () => {
+		const { player, setSkinCalls } = fakeSkeleton([
+			"skin_base",
+			"breast/Unedited",
+			"decorations/acc",
+		])
+		applySkinStack(player, ["skin_base", "breast/Unedited", "decorations/acc"])
+		expect(setSkinCalls).toHaveLength(1)
+		const composite = setSkinCalls[0]!
+		// The composite is fresh, holding every resolved skin (the shared data
+		// skins are not mutated), so a later set_skins/remove_skins can rebuild.
+		expect(composite.name).toBe("__hdo_composite_skin")
+		expect((composite.added as FakeSkin[]).map((s) => s.name)).toEqual([
+			"skin_base",
+			"breast/Unedited",
+			"decorations/acc",
+		])
+	})
+
+	test("degrades to the last skin when the skeleton has no findSkin", () => {
+		const setSkinByNameCalls: string[] = []
+		const player = {
+			skeleton: {
+				setSkinByName(name: string) {
+					setSkinByNameCalls.push(name)
+				},
+			},
+		} as unknown as Parameters<typeof applySkinStack>[0]
+		applySkinStack(player, ["skin_base", "face/idle"])
+		expect(setSkinByNameCalls).toEqual(["face/idle"])
+	})
+
+	test("a stack with no resolvable skins leaves the skeleton alone", () => {
+		const { player, setSkinCalls } = fakeSkeleton([])
+		applySkinStack(player, ["skin_base", "missing"])
+		expect(setSkinCalls).toHaveLength(0)
 	})
 })

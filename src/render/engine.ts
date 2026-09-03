@@ -76,6 +76,12 @@ export type SpineController = PlayerCommon<"spine"> & {
 	readonly exHit: SpineExHitData | undefined
 	readonly errorDetail?: string
 	readonly runtimeVersion?: string
+	/**
+	 * True for Live2DViewerEX `type:9` models that assemble their appearance
+	 * from a composite (`set_skins`/`add_skins`) skin stack; the single-select
+	 * skin chips in the Controls tab are meaningless for these and are hidden.
+	 */
+	readonly isCompositeSkin: boolean
 }
 
 export type DragonBonesPlayerNames = {

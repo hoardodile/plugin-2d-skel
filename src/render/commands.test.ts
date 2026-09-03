@@ -1,5 +1,13 @@
 import { describe, expect, test } from "vitest"
-import { nextExpressionName, parseExCommand } from "./commands"
+import { parseMotionGraph } from "../core/motion-graph"
+import {
+	applySkinCommand,
+	fallbackSkinStack,
+	nextExpressionName,
+	parseExCommand,
+	parseSkinCommand,
+	skinStackFromMotionGraph,
+} from "./commands"
 
 describe("parseExCommand", () => {
 	test("parses start_mtn with a group and group:entry ref", () => {
@@ -68,5 +76,130 @@ describe("nextExpressionName", () => {
 
 	test("returns undefined for an empty list", () => {
 		expect(nextExpressionName([], undefined)).toBeUndefined()
+	})
+})
+
+describe("parseSkinCommand", () => {
+	test("parses set_skins / add_skins / remove_skins lists", () => {
+		expect(parseSkinCommand("set_skins skin_base")).toEqual({
+			kind: "setSkins",
+			skins: ["skin_base"],
+		})
+		expect(
+			parseSkinCommand("add_skins breast/Unedited,decorations/acc,face/idle"),
+		).toEqual({
+			kind: "addSkins",
+			skins: ["breast/Unedited", "decorations/acc", "face/idle"],
+		})
+		expect(parseSkinCommand("remove_skins face/a, face/b,face/c ")).toEqual({
+			kind: "removeSkins",
+			skins: ["face/a", "face/b", "face/c"],
+		})
+	})
+
+	test("leaves unrelated commands to the caller", () => {
+		expect(parseSkinCommand("start_mtn Idle")).toEqual({
+			kind: "unknown",
+			raw: "start_mtn Idle",
+		})
+	})
+
+	test("is case-insensitive", () => {
+		expect(parseSkinCommand("SET_SKINS base")).toEqual({
+			kind: "setSkins",
+			skins: ["base"],
+		})
+	})
+})
+
+describe("applySkinCommand", () => {
+	const base = ["skin_base", "breast/Unedited", "decorations/acc"]
+
+	test("set_skins replaces the stack", () => {
+		expect(
+			applySkinCommand(base, { kind: "setSkins", skins: ["other"] }),
+		).toEqual(["other"])
+	})
+
+	test("add_skins appends missing names without duplicating", () => {
+		expect(
+			applySkinCommand(base, {
+				kind: "addSkins",
+				skins: ["face/idle", "decorations/acc"],
+			}),
+		).toEqual(["skin_base", "breast/Unedited", "decorations/acc", "face/idle"])
+	})
+
+	test("remove_skins drops the named layers", () => {
+		expect(
+			applySkinCommand(base, {
+				kind: "removeSkins",
+				skins: ["breast/Unedited"],
+			}),
+		).toEqual(["skin_base", "decorations/acc"])
+	})
+
+	test("an unknown command leaves the stack unchanged", () => {
+		const stack: readonly string[] = ["a"]
+		expect(applySkinCommand(stack, { kind: "unknown", raw: "x" })).toBe(stack)
+	})
+})
+
+describe("skinStackFromMotionGraph", () => {
+	test("derives the composite stack from a start entry's set_skins+add_skins", () => {
+		const graph = parseMotionGraph({
+			start: [
+				{
+					command:
+						"set_skins skin_base;add_skins breast/Unedited,decorations/acc,face/idle",
+				},
+			],
+			idle: [{ file: "idle" }],
+		})
+		expect(skinStackFromMotionGraph(graph)).toEqual([
+			"skin_base",
+			"breast/Unedited",
+			"decorations/acc",
+			"face/idle",
+		])
+	})
+
+	test("prefers start, then idles, then any other group", () => {
+		const withStart = parseMotionGraph({
+			start: [{ command: "set_skins baseStart" }],
+			idle: [{ command: "set_skins baseIdle" }],
+		})
+		expect(skinStackFromMotionGraph(withStart)).toEqual(["baseStart"])
+
+		const withoutStart = parseMotionGraph({
+			tap: [{ command: "set_skins baseTap" }],
+			idle: [{ command: "set_skins baseIdle" }],
+		})
+		expect(skinStackFromMotionGraph(withoutStart)).toEqual(["baseIdle"])
+	})
+
+	test("ignores an orphan add_skins (no set_skins seeds the stack)", () => {
+		const graph = parseMotionGraph({
+			idle: [{ command: "add_skins decorations/acc" }],
+		})
+		expect(skinStackFromMotionGraph(graph)).toBeUndefined()
+	})
+
+	test("returns undefined when no group declares a skin stack", () => {
+		expect(
+			skinStackFromMotionGraph(parseMotionGraph({ idle: [{ file: "idle" }] })),
+		).toBeUndefined()
+	})
+})
+
+describe("fallbackSkinStack", () => {
+	test("prefers skin_base, then default, then the first scene skin", () => {
+		expect(fallbackSkinStack(["default", "skin_base"])).toEqual(["skin_base"])
+		expect(fallbackSkinStack(["default", "face/idle"])).toEqual(["default"])
+		expect(fallbackSkinStack(["face/a", "face/b"])).toEqual(["face/a"])
+	})
+
+	test("returns an empty stack for an empty scene skin list", () => {
+		expect(fallbackSkinStack([])).toEqual([])
 	})
 })

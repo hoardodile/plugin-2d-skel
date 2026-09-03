@@ -99,7 +99,9 @@ export function SpineHost({
 		animationChoice,
 		scene?.modelJson !== undefined,
 	)
-	const skin = effectiveChoice(player.names.skins, skinChoice)
+	const skin = player.isCompositeSkin
+		? undefined
+		: effectiveChoice(player.names.skins, skinChoice)
 	const overlay = effectiveChoice(player.names.overlays, overlayChoice)
 
 	function stepAnimation(dir: 1 | -1) {
@@ -155,7 +157,7 @@ export function SpineHost({
 				return (
 					<SpineControlsTab
 						animations={baseNames}
-						skins={player.names.skins}
+						skins={player.isCompositeSkin ? [] : player.names.skins}
 						overlays={player.names.overlays}
 						animation={animation}
 						skin={skin}
