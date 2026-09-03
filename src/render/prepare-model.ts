@@ -150,8 +150,14 @@ function rewriteList(
 	resolveFileUrl: (filename: string) => string,
 ): string[] | undefined {
 	if (!Array.isArray(value)) return undefined
+	// Live2DViewerEX exports often carry empty placeholder texture entries
+	// (`["Textures_0_0.png", ""]`); resolving an empty ref yields a broken
+	// `<path>//` URL the host can't serve (the `近江` model fails to open on
+	// this). Drop empty entries, mirroring `readTextureNames` in `model-json`.
 	return value
-		.filter((entry): entry is string => typeof entry === "string")
+		.filter(
+			(entry): entry is string => typeof entry === "string" && entry.length > 0,
+		)
 		.map(resolveFileUrl)
 }
 

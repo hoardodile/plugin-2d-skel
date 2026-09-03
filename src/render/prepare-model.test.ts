@@ -247,4 +247,60 @@ describe("prepareLive2dModel", () => {
 		expect(settings.physics_v2).toEqual({ File: "/file/physics.json" })
 		expect(settings.pose).toBe("/file/pose.json")
 	})
+
+	test("drops empty texture placeholders from a Cubism descriptor", async () => {
+		// Live2DViewerEX exports carry `["Textures_0_0.png", ""]`; resolving the
+		// empty ref yields a broken `<path>//` URL the host cannot serve, so the
+		// model fails to open (the `近江` model). It must be dropped.
+		const prepared = await prepareLive2dModel({
+			scene: {
+				modelJson: "hero.model3.json",
+				kind: "cubism",
+				engine: "live2d",
+				moc: "Moc_0.moc3",
+				textures: ["Textures_0_0.png"],
+				motionGroups: [],
+				expressions: [],
+			},
+			readFile: readFileOf({
+				"hero.model3.json": JSON.stringify({
+					Version: 3,
+					FileReferences: {
+						Moc: "Moc_0.moc3",
+						Textures: ["Textures_0_0.png", ""],
+					},
+				}),
+			}),
+			resolveFileUrl,
+			resolveBaseUrl,
+		})
+		const settings = prepared?.settings as Record<string, unknown>
+		const refs = settings.FileReferences as Record<string, unknown>
+		expect(refs.Textures).toEqual(["/file/Textures_0_0.png"])
+	})
+
+	test("drops empty texture placeholders from an EX descriptor", async () => {
+		const prepared = await prepareLive2dModel({
+			scene: {
+				modelJson: "model0.json",
+				kind: "ex",
+				engine: "live2d",
+				moc: "model_0.moc",
+				textures: ["textures_0_0.png"],
+				motionGroups: [],
+				expressions: [],
+			},
+			readFile: readFileOf({
+				"model0.json": JSON.stringify({
+					type: 0,
+					model: "model_0.moc",
+					textures: ["textures_0_0.png", ""],
+				}),
+			}),
+			resolveFileUrl,
+			resolveBaseUrl,
+		})
+		const settings = prepared?.settings as Record<string, unknown>
+		expect(settings.textures).toEqual(["/file/textures_0_0.png"])
+	})
 })
