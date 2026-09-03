@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.11](https://github.com/hoardodile/plugin-2d-skel/compare/v0.1.10...v0.1.11) (2026-09-03)
+
+### Features
+
+* **render:** apply EX composite skin stacks and detect indented pma ([bc40e95](https://github.com/hoardodile/plugin-2d-skel/commit/bc40e95de3ed225f5b0c68845a3539bef56b4c51))
+
+### Bug Fixes
+
+* **render:** drop empty Live2D texture placeholders ([a384ac6](https://github.com/hoardodile/plugin-2d-skel/commit/a384ac6062686ce010b5b29fdc90de476d2486db))
+
 ## [0.1.10](https://github.com/hoardodile/plugin-2d-skel/compare/v0.1.9...v0.1.10) (2026-09-02)
 
 ### Features
