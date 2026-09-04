@@ -110,6 +110,14 @@
 					"key": "dragonbones",
 					"label": "{{t('dragonbonesEngineLabel')}}",
 					"icon": "{{icon('Walking')}}"
+				},
+				{
+					"key": "standard",
+					"label": "{{t('standardKindLabel')}}"
+				},
+				{
+					"key": "ex",
+					"label": "{{t('exKindLabel')}}"
 				}
 			]
 		}
