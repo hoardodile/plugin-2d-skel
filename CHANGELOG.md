@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.12](https://github.com/hoardodile/plugin-2d-skel/compare/v0.1.11...v0.1.12) (2026-09-04)
+
+### Features
+
+* **manifest:** declare standard/ex search facet kinds ([ef64bc2](https://github.com/hoardodile/plugin-2d-skel/commit/ef64bc20fa27f67cd4b2699c65e7ce325fbbcf53))
+
 ## [0.1.11](https://github.com/hoardodile/plugin-2d-skel/compare/v0.1.10...v0.1.11) (2026-09-03)
 
 ### Features
