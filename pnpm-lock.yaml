@@ -58,8 +58,8 @@ importers:
         specifier: ^0.1.13
         version: 0.1.13(@babel/core@8.0.1)(@babel/runtime@7.29.7)(@types/node@26.4.0)(jiti@2.7.0)(rolldown@1.2.6)(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(yaml@2.9.0)(zod@4.5.4)
       '@hoardodile/host':
-        specifier: ^0.1.13
-        version: 0.1.13(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)
+        specifier: ^0.1.14
+        version: 0.1.14(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)
       '@hoardodile/host-web':
         specifier: ^0.1.13
         version: 0.1.13(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))
@@ -602,6 +602,18 @@ packages:
       vitest:
         optional: true
 
+  '@hoardodile/host@0.1.14':
+    resolution: {integrity: sha512-3hBAZoGHY7h2Q4idZu0ygsjjDVKqduem6ZE6u688iVKdcW97uawzyQR/buNLMIJMn9kxZXhO8tdydlk64XwC2g==}
+    engines: {node: '>=24'}
+    peerDependencies:
+      sharp: ^0.35.3
+      vitest: ^4.1.11
+    peerDependenciesMeta:
+      sharp:
+        optional: true
+      vitest:
+        optional: true
+
   '@hoardodile/i18n@0.1.13':
     resolution: {integrity: sha512-jZq/PdxHydRd9X48yq1WvcjayKqFbW/iMQq5w74yxNk2PffsRRlzZIymEBTHEVYIpPy9aA7ddvZdaw34g7fBNw==}
     engines: {node: '>=24'}
@@ -619,6 +631,12 @@ packages:
 
   '@hoardodile/sdk-types@0.1.13':
     resolution: {integrity: sha512-ccWV+dVevdtFyzPVk1zP4y/WgouT8swfVA1h4ZwklHTIgz2mgmcTMa5J6PejMI16UoUsDwFaBf3DA3LgsKDZZQ==}
+    engines: {node: '>=24'}
+    peerDependencies:
+      zod: ^4.4.3
+
+  '@hoardodile/sdk-types@0.1.14':
+    resolution: {integrity: sha512-/txUhHXYHXO2Nb3ktE6DcE+MyS5UJdaH/iJIPjbXyJIq31Qc15IpkXBIRHAHk+h7JHVEHxxRCcjR54HY2jKk3Q==}
     engines: {node: '>=24'}
     peerDependencies:
       zod: ^4.4.3
@@ -4961,6 +4979,23 @@ snapshots:
       - supports-color
       - zod
 
+  '@hoardodile/host@0.1.14(sharp@0.35.4(@types/node@26.4.0))(supports-color@7.2.0)(vitest@4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)))(zod@4.5.4)':
+    dependencies:
+      '@hoardodile/sdk-types': 0.1.14(zod@4.5.4)
+      execa: 10.0.1
+      file-type: 22.0.2(supports-color@7.2.0)
+      yauzl: 3.4.0
+      yazl: 3.3.1
+    optionalDependencies:
+      '@hoardodile/7z-bin': 1.1.3
+      '@hoardodile/ffmpeg-bin': 1.0.0
+      '@hoardodile/ffprobe-bin': 1.0.0
+      sharp: 0.35.4(@types/node@26.4.0)
+      vitest: 4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
+    transitivePeerDependencies:
+      - supports-color
+      - zod
+
   '@hoardodile/i18n@0.1.13(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)':
     dependencies:
       i18next: 26.4.0(typescript@7.0.2)
@@ -4992,6 +5027,10 @@ snapshots:
       - zod
 
   '@hoardodile/sdk-types@0.1.13(zod@4.5.4)':
+    dependencies:
+      zod: 4.5.4
+
+  '@hoardodile/sdk-types@0.1.14(zod@4.5.4)':
     dependencies:
       zod: 4.5.4
 
