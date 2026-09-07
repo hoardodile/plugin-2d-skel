@@ -21,8 +21,8 @@ importers:
         specifier: npm:@esotericsoftware/spine-player@4.3.13
         version: '@esotericsoftware/spine-player@4.3.13'
       '@hoardodile/sdk-react':
-        specifier: ^0.1.13
-        version: 0.1.13(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)(zod@4.5.4)
+        specifier: ^0.1.14
+        version: 0.1.14(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)(zod@4.5.4)
       '@hoardodile/sdk-server':
         specifier: ^0.1.13
         version: 0.1.13(zod@4.5.4)
@@ -34,7 +34,7 @@ importers:
         version: 0.1.13(zod@4.5.4)
       '@hoardodile/ui':
         specifier: ^0.1.13
-        version: 0.1.13(@types/react@19.2.18)(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react-i18next@17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2))(react@19.2.8)(shadcn@4.19.0(supports-color@7.2.0)(typescript@7.0.2))(tailwindcss@4.3.3)(tw-animate-css@1.4.0)(typescript@7.0.2)(zod@4.5.4)
+        version: 0.1.13(@types/react@19.2.18)(i18next@26.4.2(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react-i18next@17.0.13(i18next@26.4.2(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2))(react@19.2.8)(shadcn@4.19.0(supports-color@7.2.0)(typescript@7.0.2))(tailwindcss@4.3.3)(tw-animate-css@1.4.0)(typescript@7.0.2)(zod@4.5.4)
       pixi-dragonbones-runtime:
         specifier: 7.0.0
         version: 7.0.0(pixi.js@7.4.3)
@@ -606,8 +606,12 @@ packages:
     resolution: {integrity: sha512-jZq/PdxHydRd9X48yq1WvcjayKqFbW/iMQq5w74yxNk2PffsRRlzZIymEBTHEVYIpPy9aA7ddvZdaw34g7fBNw==}
     engines: {node: '>=24'}
 
-  '@hoardodile/sdk-react@0.1.13':
-    resolution: {integrity: sha512-0IkvyDJWl/zRB0wFi4r1ZxBBfhx4qB/mEr4AFgT+SU7Xa0mVkBYjH+gCVmTlmxv2gamcvUOYi0uq1CoGchF+mQ==}
+  '@hoardodile/i18n@0.1.14':
+    resolution: {integrity: sha512-jhMxAgG1EWpsanOknLz4RCyouUQ7BHeb2n+SHQczOGJaa3SkWUVXpV3K8yGOLmgWbenStzgcbOciImxB6BGdTg==}
+    engines: {node: '>=24'}
+
+  '@hoardodile/sdk-react@0.1.14':
+    resolution: {integrity: sha512-5kNJczwySP8WdkEWh6yTTE7bxdblw4oaubIcmJeJBFfhgQzIrUaua5PhgpAOcFIce3ghmiCfESMrfvxpKXyDHA==}
     engines: {node: '>=24'}
     peerDependencies:
       react: ^19.2.8
@@ -623,8 +627,18 @@ packages:
     peerDependencies:
       zod: ^4.4.3
 
+  '@hoardodile/sdk-types@0.1.14':
+    resolution: {integrity: sha512-/txUhHXYHXO2Nb3ktE6DcE+MyS5UJdaH/iJIPjbXyJIq31Qc15IpkXBIRHAHk+h7JHVEHxxRCcjR54HY2jKk3Q==}
+    engines: {node: '>=24'}
+    peerDependencies:
+      zod: ^4.4.3
+
   '@hoardodile/sdk-web@0.1.13':
     resolution: {integrity: sha512-5ng/CTBHkF0lQZlt6miu+g7ZVHlPcoVMV2Jjv4JrJEmKx2ePNR1j22rO7CRsYqP/NGjiSx1TV/RoDjLIKDP1Mw==}
+    engines: {node: '>=24'}
+
+  '@hoardodile/sdk-web@0.1.14':
+    resolution: {integrity: sha512-tPxM5Hu5wakcC1seDklLDnyoFxeUhryvO3Mit+/xl3eFEjqyQD3PedGRKQ378qnMsf+vWi6dGgKpNmcBbFYRZA==}
     engines: {node: '>=24'}
 
   '@hoardodile/ui@0.1.13':
@@ -2677,8 +2691,8 @@ packages:
   hyphenate-style-name@1.1.0:
     resolution: {integrity: sha512-WDC/ui2VVRrz3jOVi+XtjqkDjiVjTtFaAGiW37k6b+ohyQ5wYDOGkvCZa8+H0nx3gyvv0+BST9xuOgIyGQ00gw==}
 
-  i18next@26.4.0:
-    resolution: {integrity: sha512-rsmK5bFqsD1AetSFSIa43wtNR4WpvvH4p0tLEsTxkC7QTrfdFm06nbQ95bh8Og4wwaCnUEcm9DVYL2cgxitiQg==}
+  i18next@26.4.2:
+    resolution: {integrity: sha512-RX+R0VLg13IbvRuJSxnqykUFS9vQZTl8wYpWPCIUDWVrSGjsQywB5Y+pjzrkboxGAuYfJZVH1InFTdgBdxq6ug==}
     peerDependencies:
       typescript: ^5 || ^6 || ^7
     peerDependenciesMeta:
@@ -3662,8 +3676,8 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
 
-  react-i18next@17.0.12:
-    resolution: {integrity: sha512-lFWPEGkxQ6RhusdUkysFBD58VHfSSzvHBzqMgN0SvfVpdQGfwtNkStTqdy08/sJd7s807qqutgx93fRpD0DJ3Q==}
+  react-i18next@17.0.13:
+    resolution: {integrity: sha512-Cc1PscmblIHA1kljTqDwrcVMI21ydgmUzw0UAeQBe7pAOgfuRLfzXze4EUBQoeDiICzFIXXhHFoZxuetNg5D0Q==}
     peerDependencies:
       i18next: '>= 26.2.0'
       react: '>= 16.8.0'
@@ -4963,23 +4977,33 @@ snapshots:
 
   '@hoardodile/i18n@0.1.13(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)':
     dependencies:
-      i18next: 26.4.0(typescript@7.0.2)
-      react-i18next: 17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
+      i18next: 26.4.2(typescript@7.0.2)
+      react-i18next: 17.0.13(i18next@26.4.2(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
     transitivePeerDependencies:
       - react
       - react-dom
       - react-native
       - typescript
 
-  '@hoardodile/sdk-react@0.1.13(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)(zod@4.5.4)':
+  '@hoardodile/i18n@0.1.14(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)':
     dependencies:
-      '@hoardodile/i18n': 0.1.13(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
-      '@hoardodile/sdk-types': 0.1.13(zod@4.5.4)
-      '@hoardodile/sdk-web': 0.1.13(zod@4.5.4)
-      i18next: 26.4.0(typescript@7.0.2)
+      i18next: 26.4.2(typescript@7.0.2)
+      react-i18next: 17.0.13(i18next@26.4.2(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
+    transitivePeerDependencies:
+      - react
+      - react-dom
+      - react-native
+      - typescript
+
+  '@hoardodile/sdk-react@0.1.14(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)(zod@4.5.4)':
+    dependencies:
+      '@hoardodile/i18n': 0.1.14(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
+      '@hoardodile/sdk-types': 0.1.14(zod@4.5.4)
+      '@hoardodile/sdk-web': 0.1.14(zod@4.5.4)
+      i18next: 26.4.2(typescript@7.0.2)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
-      react-i18next: 17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
+      react-i18next: 17.0.13(i18next@26.4.2(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
     transitivePeerDependencies:
       - react-native
       - typescript
@@ -4995,13 +5019,23 @@ snapshots:
     dependencies:
       zod: 4.5.4
 
+  '@hoardodile/sdk-types@0.1.14(zod@4.5.4)':
+    dependencies:
+      zod: 4.5.4
+
   '@hoardodile/sdk-web@0.1.13(zod@4.5.4)':
     dependencies:
       '@hoardodile/sdk-types': 0.1.13(zod@4.5.4)
     transitivePeerDependencies:
       - zod
 
-  '@hoardodile/ui@0.1.13(@types/react@19.2.18)(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react-i18next@17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2))(react@19.2.8)(shadcn@4.19.0(supports-color@7.2.0)(typescript@7.0.2))(tailwindcss@4.3.3)(tw-animate-css@1.4.0)(typescript@7.0.2)(zod@4.5.4)':
+  '@hoardodile/sdk-web@0.1.14(zod@4.5.4)':
+    dependencies:
+      '@hoardodile/sdk-types': 0.1.14(zod@4.5.4)
+    transitivePeerDependencies:
+      - zod
+
+  '@hoardodile/ui@0.1.13(@types/react@19.2.18)(i18next@26.4.2(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react-i18next@17.0.13(i18next@26.4.2(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2))(react@19.2.8)(shadcn@4.19.0(supports-color@7.2.0)(typescript@7.0.2))(tailwindcss@4.3.3)(tw-animate-css@1.4.0)(typescript@7.0.2)(zod@4.5.4)':
     dependencies:
       '@base-ui/react': 1.7.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@dnd-kit/core': 6.3.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -5012,12 +5046,12 @@ snapshots:
       '@solar-icons/react': 2.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       class-variance-authority: 0.7.1
       clsx: 2.1.1
-      i18next: 26.4.0(typescript@7.0.2)
+      i18next: 26.4.2(typescript@7.0.2)
       pretty-bytes: 7.1.2
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       react-hook-form: 7.87.0(react@19.2.8)
-      react-i18next: 17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
+      react-i18next: 17.0.13(i18next@26.4.2(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)
       react-image-crop: 11.1.2(react@19.2.8)
       react-use: 17.6.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       tailwind-merge: 3.6.0
@@ -6926,7 +6960,7 @@ snapshots:
 
   hyphenate-style-name@1.1.0: {}
 
-  i18next@26.4.0(typescript@7.0.2):
+  i18next@26.4.2(typescript@7.0.2):
     optionalDependencies:
       typescript: 7.0.2
 
@@ -7853,11 +7887,11 @@ snapshots:
     dependencies:
       react: 19.2.8
 
-  react-i18next@17.0.12(i18next@26.4.0(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2):
+  react-i18next@17.0.13(i18next@26.4.2(typescript@7.0.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2):
     dependencies:
       '@babel/runtime': 7.29.7
       html-parse-stringify: 4.0.1
-      i18next: 26.4.0(typescript@7.0.2)
+      i18next: 26.4.2(typescript@7.0.2)
       react: 19.2.8
       use-sync-external-store: 1.6.0(react@19.2.8)
     optionalDependencies:
