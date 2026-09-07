@@ -64,7 +64,7 @@
 		"@esotericsoftware/spine-player-4.3": "npm:@esotericsoftware/spine-player@4.3.13",
 		"@hoardodile/sdk-react": "^0.1.13",
 		"@hoardodile/sdk-server": "^0.1.13",
-		"@hoardodile/sdk-types": "^0.1.13",
+		"@hoardodile/sdk-types": "^0.1.14",
 		"@hoardodile/sdk-web": "^0.1.13",
 		"@hoardodile/ui": "^0.1.13",
 		"pixi-dragonbones-runtime": "7.0.0",
