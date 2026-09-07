@@ -24,8 +24,8 @@ importers:
         specifier: ^0.1.13
         version: 0.1.13(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@7.0.2)(zod@4.5.4)
       '@hoardodile/sdk-server':
-        specifier: ^0.1.13
-        version: 0.1.13(zod@4.5.4)
+        specifier: ^0.1.14
+        version: 0.1.14(zod@4.5.4)
       '@hoardodile/sdk-types':
         specifier: ^0.1.13
         version: 0.1.13(zod@4.5.4)
@@ -613,12 +613,18 @@ packages:
       react: ^19.2.8
       react-dom: ^19.2.8
 
-  '@hoardodile/sdk-server@0.1.13':
-    resolution: {integrity: sha512-4Vv8DLkB6lmS9bjM/hDorXY21Bz19eiFxzD7bDtd49aXmuQKnLyQhqn1AGUdzsGC9+LwZdjh0wR/yPV5Y9DPvA==}
+  '@hoardodile/sdk-server@0.1.14':
+    resolution: {integrity: sha512-QtRXGy3S0qom117++QkRqv9eKcluXkUKPR6W+Eaj7FBMWesNCgU/83sH3bgLizZJna5DRua4tjNYY6nVyjt+Ew==}
     engines: {node: '>=24'}
 
   '@hoardodile/sdk-types@0.1.13':
     resolution: {integrity: sha512-ccWV+dVevdtFyzPVk1zP4y/WgouT8swfVA1h4ZwklHTIgz2mgmcTMa5J6PejMI16UoUsDwFaBf3DA3LgsKDZZQ==}
+    engines: {node: '>=24'}
+    peerDependencies:
+      zod: ^4.4.3
+
+  '@hoardodile/sdk-types@0.1.14':
+    resolution: {integrity: sha512-/txUhHXYHXO2Nb3ktE6DcE+MyS5UJdaH/iJIPjbXyJIq31Qc15IpkXBIRHAHk+h7JHVEHxxRCcjR54HY2jKk3Q==}
     engines: {node: '>=24'}
     peerDependencies:
       zod: ^4.4.3
@@ -4985,13 +4991,17 @@ snapshots:
       - typescript
       - zod
 
-  '@hoardodile/sdk-server@0.1.13(zod@4.5.4)':
+  '@hoardodile/sdk-server@0.1.14(zod@4.5.4)':
     dependencies:
-      '@hoardodile/sdk-types': 0.1.13(zod@4.5.4)
+      '@hoardodile/sdk-types': 0.1.14(zod@4.5.4)
     transitivePeerDependencies:
       - zod
 
   '@hoardodile/sdk-types@0.1.13(zod@4.5.4)':
+    dependencies:
+      zod: 4.5.4
+
+  '@hoardodile/sdk-types@0.1.14(zod@4.5.4)':
     dependencies:
       zod: 4.5.4
 
