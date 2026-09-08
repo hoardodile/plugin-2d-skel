@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.1.13](https://github.com/hoardodile/plugin-2d-skel/compare/v0.1.12...v0.1.13) (2026-09-08)
+
 ## [0.1.12](https://github.com/hoardodile/plugin-2d-skel/compare/v0.1.11...v0.1.12) (2026-09-04)
 
 ### Features
