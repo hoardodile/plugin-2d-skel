@@ -10,7 +10,12 @@ import {
 import { parseSkinStackConfig } from "../core/skin-stack-config"
 import type { SpineScene } from "../shared"
 import { HOME, type ViewportTransform } from "./canvas-view"
-import { baseAnimationNames, defaultSkin, effectiveChoice } from "./choices"
+import {
+	baseAnimationNames,
+	defaultSkin,
+	effectiveChoice,
+	shouldApplyPlainSkin,
+} from "./choices"
 import {
 	applySkinCommand,
 	parseSkinCommand,
@@ -478,13 +483,22 @@ export function useSpinePlayer(options: {
 	}, [settings.speed, status])
 
 	useEffect(() => {
+		// A scene that composes layers owns its skin through the stack: applying
+		// the single `skin` choice on top would replace the composite with one
+		// layer. That is the "a layer is missing on first entry, and comes back
+		// the moment anything else re-composes" report — the fallback skin is
+		// usually the body skin the composite is built on.
 		if (
-			status !== "ready" ||
-			skin === undefined ||
-			scene?.modelJson !== undefined
-		)
+			!shouldApplyPlainSkin({
+				ready: status === "ready",
+				skin,
+				modelJson: scene?.modelJson,
+				composedLayers: skinStackRef.current.length,
+			})
+		) {
 			return
-		playbackRef.current?.setSkin(skin)
+		}
+		if (skin !== undefined) playbackRef.current?.setSkin(skin)
 	}, [skin, status, scene?.modelJson])
 
 	const togglePause = useCallback(() => {
