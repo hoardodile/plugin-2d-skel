@@ -98,4 +98,44 @@ describe("EngineDisplayPanel", () => {
 		fireEvent.click(screen.getByTestId("engine-webp-toggle"))
 		expect(onSettingsChange).toHaveBeenCalledWith({ webpTextures: true })
 	})
+
+	test("offers the zoom slider and both resets once the viewer wires them", () => {
+		const onSetScale = vi.fn()
+		const onResetPosition = vi.fn()
+		const onResetScale = vi.fn()
+		render(
+			<EngineDisplayPanel
+				engine="spine"
+				settings={ENGINE_SETTINGS_DEFAULT}
+				onSettingsChange={vi.fn()}
+				scale={1.5}
+				onSetScale={onSetScale}
+				onResetPosition={onResetPosition}
+				onResetScale={onResetScale}
+			/>,
+		)
+		expect(screen.getByTestId("engine-zoom-value")).toHaveTextContent("150%")
+		fireEvent.click(screen.getByTestId("engine-reset-scale"))
+		expect(onResetScale).toHaveBeenCalledTimes(1)
+		// The reset is the viewer's job (it also forgets the stored view), so the
+		// button never drives the slider callback itself.
+		expect(onSetScale).not.toHaveBeenCalled()
+		fireEvent.click(screen.getByTestId("engine-reset-position"))
+		expect(onResetPosition).toHaveBeenCalledTimes(1)
+	})
+
+	test("hides the position/zoom controls when the viewer offers none", () => {
+		render(
+			<EngineDisplayPanel
+				engine="spine"
+				settings={ENGINE_SETTINGS_DEFAULT}
+				onSettingsChange={vi.fn()}
+			/>,
+		)
+		expect(screen.queryByTestId("engine-zoom-slider")).not.toBeInTheDocument()
+		expect(
+			screen.queryByTestId("engine-reset-position"),
+		).not.toBeInTheDocument()
+		expect(screen.queryByTestId("engine-reset-scale")).not.toBeInTheDocument()
+	})
 })

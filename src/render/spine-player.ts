@@ -13,6 +13,14 @@ import {
 } from "../core/spine-format"
 import type { SpineScene } from "../shared"
 import { HOME, type ViewportTransform } from "./canvas-view"
+import {
+	applySkeletonViewport,
+	captureBase,
+	type SkeletonBase,
+	type SkeletonSurface,
+	withFrame,
+	worldPerPixel,
+} from "./spine-viewport"
 import { textureVariantFor } from "./texture-format"
 
 /** The small surface every bundled SpinePlayer build exposes. */
@@ -94,6 +102,12 @@ export type SpinePlayback = {
 	readonly setOverlayAnimation: (name: string | undefined) => void
 	readonly setSkin: (name: string) => void
 	readonly setSkinStack: (skins: readonly string[]) => void
+	/**
+	 * Re-apply the stack currently in use. An animation's attachment timeline
+	 * clears the slots a skin filled, so the host calls this after switching
+	 * animations (and on restart) to keep every layer attached.
+	 */
+	readonly reapplySkinStack: () => void
 	readonly setPaused: (paused: boolean) => void
 	readonly setSpeed: (speed: number) => void
 	readonly applyViewport: (transform: ViewportTransform) => void
@@ -126,6 +140,13 @@ export type MountSpinePlayerOptions = {
 	readonly skin: string | undefined
 	/** A Live2DViewerEX composite skin stack; when set, supersedes `skin`. */
 	readonly skins?: readonly string[]
+	/**
+	 * The viewport transform to mount on (a restored view). It seeds the frame
+	 * measurement so the base is captured against the requested view rather than
+	 * the engine's default fit — otherwise the first re-measure inverts the
+	 * wrong transform and the applied zoom reads back as 1.
+	 */
+	readonly viewport?: ViewportTransform
 	readonly autoplay: boolean
 	readonly loop: boolean
 	readonly debug: boolean
@@ -229,6 +250,15 @@ function loadLegacyRuntime(): SpinePlayerModule {
 }
 
 /**
+ * Forget the captured legacy runtime. Only for tests: the real client loads the
+ * 3.8 script once from `index.html` and must keep the same module, but a test
+ * that installs its own `window.spine` fake needs the next mount to re-capture.
+ */
+export function resetLegacySpineRuntime(): void {
+	legacyRuntime = undefined
+}
+
+/**
  * Load one official runtime's IIFE build. Each build publishes the same
  * global `spine` namespace, so only the active runtime's script is
  * loaded and a later scene that needs a different version simply loads
@@ -258,7 +288,12 @@ function loadStandardRuntime(
 
 declare global {
 	interface Window {
-		readonly spine?: { readonly SpinePlayer: SpinePlayerConstructor }
+		/**
+		 * The `spine` namespace the bundled runtimes publish. Deliberately
+		 * mutable: each runtime build replaces it when it loads, and a test
+		 * installs its own fake before mounting.
+		 */
+		spine?: { SpinePlayer: SpinePlayerConstructor }
 	}
 }
 
@@ -610,24 +645,6 @@ export function supersampleSpineCanvas(player: NativePlayer): void {
 	}
 }
 
-/**
- * World units per screen pixel for the pan. The camera's pinned viewport
- * (`viewWorld`, set by `configureSkeletonViewport` when the skeleton
- * declares a setup canvas) is the true scale; falling back to the model's
- * `getBounds()` keeps the path for a skeleton without one. `1` when neither
- * yields a positive width.
- */
-export function worldPerPixel(
-	viewWorld: number | undefined,
-	boundsWorld: number | undefined,
-	canvasPx: number,
-): number {
-	if (viewWorld !== undefined && viewWorld > 0) return viewWorld / canvasPx
-	if (boundsWorld !== undefined && boundsWorld > 0)
-		return boundsWorld / canvasPx
-	return 1
-}
-
 function bytesToBase64(bytes: Uint8Array): string {
 	let binary = ""
 	for (let offset = 0; offset < bytes.length; offset += 0x8000) {
@@ -693,6 +710,7 @@ export async function mountSpinePlayer(
 		animation,
 		skin,
 		skins,
+		viewport: mountedViewport,
 		autoplay,
 		loop,
 		debug,
@@ -739,37 +757,20 @@ export async function mountSpinePlayer(
 	// re-applied after a re-fit so it never snaps back. Zoom is pivoted on the
 	// model's bounds center so it mirrors the viewer's center-origin transform
 	// (zoom-out doesn't drift the "wrong way").
-	type SkeletonBase = {
-		readonly x: number
-		readonly y: number
-		readonly scaleX: number
-		readonly scaleY: number
-		readonly worldPerX: number
-		readonly worldPerY: number
-		readonly pivotX: number
-		readonly pivotY: number
-	}
+	//
+	// The base is re-measured whenever the frame changes, and the re-measure
+	// The base is captured ONCE, on the first re-measure (when the engine's fit
+	// is still the only transform in effect) and only its framing — world units
+	// per pixel — is refreshed afterwards. Re-capturing the whole base from the
+	// live pose would fold the user's pan/zoom into it and apply it again, so
+	// every animation switch (which re-measures) compounded the offset.
 	let skeletonBase: SkeletonBase | undefined
-	const viewportRef = { current: { ...HOME } }
+	const viewportRef = { current: { ...HOME, ...(mountedViewport ?? {}) } }
 
-	function skeletonSurface():
-		| {
-				x: number
-				y: number
-				scaleX: number
-				scaleY: number
-				updateWorldTransform: () => void
-		  }
-		| undefined {
+	function skeletonSurface(): SkeletonSurface | undefined {
 		const skeleton = player?.skeleton
 		if (skeleton === undefined) return undefined
-		return skeleton as unknown as {
-			x: number
-			y: number
-			scaleX: number
-			scaleY: number
-			updateWorldTransform: () => void
-		}
+		return skeleton as unknown as SkeletonSurface
 	}
 
 	function refreshSkeletonBase(): void {
@@ -813,67 +814,48 @@ export async function mountSpinePlayer(
 			typeof viewport?.height === "number" ? viewport.height : undefined
 		const worldPerX = worldPerPixel(viewWidth, bounds?.width, sw)
 		const worldPerY = worldPerPixel(viewHeight, bounds?.height, sh)
-		skeletonBase = {
-			x: surface.x,
-			y: surface.y,
-			scaleX: surface.scaleX,
-			scaleY: surface.scaleY,
-			worldPerX,
-			worldPerY,
-			pivotX: bounds !== undefined ? bounds.x + bounds.width / 2 : surface.x,
-			pivotY: bounds !== undefined ? bounds.y + bounds.height / 2 : surface.y,
-		}
+		const pivotX =
+			bounds !== undefined ? bounds.x + bounds.width / 2 : surface.x
+		const pivotY =
+			bounds !== undefined ? bounds.y + bounds.height / 2 : surface.y
+		skeletonBase =
+			skeletonBase === undefined
+				? captureBase({ surface, worldPerX, worldPerY, pivotX, pivotY })
+				: withFrame(skeletonBase, { worldPerX, worldPerY, pivotX, pivotY })
 	}
 
 	function applyViewport(transform: ViewportTransform): void {
 		const surface = skeletonSurface()
 		if (surface === undefined || skeletonBase === undefined) return
 		viewportRef.current = transform
-		const base = skeletonBase
-		const tz = transform.scale
-		surface.scaleX = base.scaleX * tz
-		surface.scaleY = base.scaleY * tz
-		// Scale around the model's bounds center (keeps the canvas point fixed),
-		// then translate by the screen-px pan.
-		surface.x =
-			base.pivotX + (base.x - base.pivotX) * tz + transform.x * base.worldPerX
-		surface.y =
-			base.pivotY + (base.y - base.pivotY) * tz - transform.y * base.worldPerY
-		// Whole-skeleton rotation isn't a field on the Skeleton in every runtime; set
-		// it when present (some 4.x builds expose it), else it's a no-op.
-		if ("rotation" in surface) {
-			;(surface as unknown as { rotation: number }).rotation =
-				transform.rotation
-		}
 		// The player runs `updateWorldTransform` each frame, so setting the
 		// skeleton transform here is enough — calling it manually can throw
 		// ("offset cannot be null") for some skeletons mid-load.
+		applySkeletonViewport({ surface, base: skeletonBase, transform })
 	}
 
+	/** The transform the engine currently has applied. */
 	function getAppliedViewport(): ViewportTransform {
-		const surface = skeletonSurface()
-		if (
-			surface === undefined ||
-			skeletonBase === undefined ||
-			skeletonBase.worldPerX <= 0 ||
-			skeletonBase.worldPerY <= 0
-		) {
-			return { ...HOME }
-		}
-		const base = skeletonBase
-		const tz = base.scaleX > 0 ? surface.scaleX / base.scaleX : 1
-		const anchoredX = base.pivotX + (base.x - base.pivotX) * tz
-		const anchoredY = base.pivotY + (base.y - base.pivotY) * tz
-		const rotation =
-			"rotation" in surface
-				? (surface as unknown as { rotation: number }).rotation
-				: viewportRef.current.rotation
-		return {
-			x: (surface.x - anchoredX) / base.worldPerX,
-			y: (anchoredY - surface.y) / base.worldPerY,
-			scale: tz,
-			rotation,
-		}
+		return { ...viewportRef.current }
+	}
+
+	/**
+	 * The stack currently composed into the skeleton. Tracked here so a later
+	 * animation change can re-apply it: only one skin can go through the
+	 * constructor, and every other layer has to be re-composed whenever the new
+	 * animation's attachment timeline clears the slots it filled.
+	 */
+	let stacked: readonly string[] = Array.isArray(skins) ? skins : []
+
+	/**
+	 * Re-apply the live skin stack. `Skeleton.setSkin` only swaps attachments the
+	 * previous skin had already attached and an animation's attachment timeline
+	 * clears those it keys, so re-composing (skin set + slots to setup pose)
+	 * is what keeps the layers attached across an animation change.
+	 */
+	function reapplySkins(): void {
+		if (stacked.length === 0) return
+		applySkinStack(player, stacked)
 	}
 
 	const premultipliedAlpha = resolvePremultipliedAlpha(urls.atlasText, runtime)
@@ -904,10 +886,10 @@ export async function mountSpinePlayer(
 			// A composite skin stack supersedes the single `skin` the player
 			// constructed with (only one skin can be handed to the constructor),
 			// and it adds slots — so it must be applied before the frame is
-			// measured from the posed skeleton.
-			if (skins !== undefined && skins.length > 0) {
-				applySkinStack(player, skins)
-			}
+			// measured from the posed skeleton. Re-applying it also lands the
+			// setup-pose slot fill the constructor's own `skin` assignment cannot
+			// do (the old skin is empty there, so it attaches nothing).
+			reapplySkins()
 			// Pin the frame to the skeleton's setup canvas. The runtime
 			// otherwise derives the frame from the current animation's bounds
 			// and reports `Animation bounds are invalid` for attachment-only
@@ -955,6 +937,12 @@ export async function mountSpinePlayer(
 		canvas: player.canvas,
 		setAnimation(name) {
 			setAnimation(player, name, loop)
+			// An animation carries its own attachment timeline, which clears the
+			// slots the body skin filled (these exports move the face onto a
+			// second set of `*2` slots inside `Idle` and blank the body's own).
+			// Re-composing the live stack refills them before the next frame, so
+			// switching animations no longer drops overlay layers.
+			reapplySkins()
 			// A re-fit (per-animation viewport on EX scenes) cancels the camera
 			// pan/zoom; re-apply the current viewport so it never snaps back.
 			refreshSkeletonBase()
@@ -962,6 +950,7 @@ export async function mountSpinePlayer(
 		},
 		setOverlayAnimation(name) {
 			setOverlayAnimation(player, name)
+			reapplySkins()
 			refreshSkeletonBase()
 			applyViewport(viewportRef.current)
 		},
@@ -969,6 +958,7 @@ export async function mountSpinePlayer(
 			setSkin(player, name)
 		},
 		setSkinStack(skins) {
+			stacked = [...skins]
 			applySkinStack(player, skins)
 			// A layer adds slots and can extend the painted area well past the
 			// authored canvas (props, the second face rig), so the frame is
@@ -980,6 +970,7 @@ export async function mountSpinePlayer(
 			refreshSkeletonBase()
 			applyViewport(viewportRef.current)
 		},
+		reapplySkinStack: reapplySkins,
 		setPaused(paused) {
 			if (ready) setPaused(player, paused)
 		},
@@ -1221,7 +1212,7 @@ type SkinSurface = {
 	 * `setSkin`: see `applySkinStack`.
 	 */
 	readonly setSlotsToSetupPose?: () => void
-	/** The skin currently in use, used to detect leaving a composite. */
+	/** The skin currently in use (the host reads its name to tell a composite). */
 	readonly skin?: { readonly name?: string } | null
 	readonly data?: { readonly findSkin?: (name: string) => unknown }
 }
@@ -1236,27 +1227,33 @@ const COMPOSITE_SKIN_NAME = "__hdo_composite_skin"
  * no Skin constructor, or no copyable attachments) it degrades to the last
  * skin in the stack so the model still renders something.
  *
- * Setting the composite is not enough on its own. `Skeleton.setSkin` routes
- * through `Skin.attachAll`, which attaches an attachment from the new skin
- * *only where the old skin already had one attached* — so every slot the
- * composite adds (a layer's second face rig, suit or props) stays empty, which
- * is the headless / missing-pieces render. The source sites follow `setSkin`
- * with `setSlotsToSetupPose()`, and the runtime documents that as the way to
- * reset the visible attachments to the ones the setup pose names in the *new*
- * skin. The next animation frame re-applies the animation's own attachment
- * timelines on top, so this only fills the gaps.
+ * Setting the skin is not enough on its own. `Skeleton.setSkin` routes through
+ * `Skin.attachAll`, which attaches an attachment from the new skin *only where
+ * the old skin already had one attached* — so every slot the composite adds (a
+ * layer's second face rig, suit or props) stays empty, which is the headless /
+ * missing-pieces render. The source sites follow `setSkin` with
+ * `setSlotsToSetupPose()`, and the runtime documents that as the way to reset
+ * the visible attachments to the ones the setup pose names in the *new* skin.
+ * The next animation frame re-applies the animation's own attachment timelines
+ * on top, so this only fills the gaps.
+ *
+ * Every path resets the slots — including the single-skin one, because a skin
+ * set through the player's constructor attaches nothing when the skeleton had
+ * no skin then, and because an animation that keys a slot's attachment leaves it
+ * empty until the stack is re-applied (`SpinePlayback.reapplySkinStack`).
  */
 export function applySkinStack(player: NativePlayer, stack: readonly string[]) {
 	const skeleton = player.skeleton as SkinSurface | undefined
 	if (skeleton === undefined || stack.length === 0) return
 
-	// A stack of one is the plain single-skin path — except when it replaces a
-	// composite, where the slots the composite filled must be reset to the
-	// setup pose as well or the dropped layers stay painted on the body.
-	const wasComposed = skeleton.skin?.name === COMPOSITE_SKIN_NAME
+	// A stack of one is the plain single-skin path — but it still resets the
+	// slots: the skin handed to the player's constructor attaches nothing when
+	// the skeleton had no skin yet (Spine only walks the setup pose's attachment
+	// names in that branch), so without the reset the body skin's own slots stay
+	// empty. It is also what clears the layers a previous composite filled.
 	if (stack.length === 1) {
 		setSkin(player, stack[0]!)
-		if (wasComposed) skeleton.setSlotsToSetupPose?.()
+		resetSlots(skeleton)
 		return
 	}
 
@@ -1265,6 +1262,7 @@ export function applySkinStack(player: NativePlayer, stack: readonly string[]) {
 		if (typeof skeleton.setSkinByName === "function") {
 			skeleton.setSkinByName(stack[stack.length - 1]!)
 		}
+		resetSlots(skeleton)
 		return
 	}
 	// Call `findSkin` with the SkeletonData as its receiver (an extracted
@@ -1300,6 +1298,7 @@ export function applySkinStack(player: NativePlayer, stack: readonly string[]) {
 		if (typeof skeleton.setSkinByName === "function") {
 			skeleton.setSkinByName(stack[stack.length - 1]!)
 		}
+		resetSlots(skeleton)
 		return
 	}
 	// `Skin.addSkin` copies attachments/bones/constraints from its argument
@@ -1308,9 +1307,20 @@ export function applySkinStack(player: NativePlayer, stack: readonly string[]) {
 	for (const skin of resolved) compositeAsSkin.addSkin(skin)
 	if (typeof skeleton.setSkin === "function") skeleton.setSkin(composite)
 	// `setSkin` only swapped the attachments the previous skin had already
-	// attached, so reset the slots to the setup pose to pull in everything the
-	// composite adds. Runs before the frame is measured, so the viewport sees
-	// the full layered body.
+	// attached, so reset the slots to pull in everything the composite adds.
+	// Runs before the frame is measured, so the viewport sees the full layered
+	// body.
+	resetSlots(skeleton)
+}
+
+/**
+ * Pull every slot back to the setup pose against the skin now installed. This
+ * is the step the runtime's own docs pair with `setSkin` (and what the source
+ * sites do): the visible attachments become the ones the setup pose names in
+ * the *new* skin, and a later animation frame re-applies its own attachment
+ * timelines on top.
+ */
+function resetSlots(skeleton: SkinSurface): void {
 	if (typeof skeleton.setSlotsToSetupPose === "function") {
 		skeleton.setSlotsToSetupPose()
 	}

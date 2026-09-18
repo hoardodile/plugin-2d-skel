@@ -80,6 +80,12 @@ export function useSpinePlayer(options: {
 	readonly onCommand: (command: string) => void
 	readonly reloadKey?: number
 	/**
+	 * The view transform the scene should mount on (a restored view). It is
+	 * handed to the frame measurement, so the base is captured against the
+	 * requested view instead of the engine's default fit.
+	 */
+	readonly viewport?: ViewportTransform
+	/**
 	 * Called when a tap hits no interactive hit area (or the model exposes
 	 * none) — the host advances to the next animation so even models without
 	 * hotspots respond to a click.
@@ -95,6 +101,7 @@ export function useSpinePlayer(options: {
 		skinChoice,
 		onCommand,
 		reloadKey = 0,
+		viewport: mountedViewport,
 		onFallbackTap,
 	} = options
 	const api = usePluginAPI()
@@ -377,6 +384,9 @@ export function useSpinePlayer(options: {
 					animation: mountAnimation,
 					skin: layers[0] ?? mountSkin,
 					...(layers.length > 0 ? { skins: layers } : {}),
+					...(mountedViewport !== undefined
+						? { viewport: mountedViewport }
+						: {}),
 					autoplay: settings.autoplay,
 					loop: settings.loop,
 					debug: settings.debug,
@@ -436,7 +446,16 @@ export function useSpinePlayer(options: {
 
 	useEffect(() => {
 		if (status !== "ready") return
-		if (animation !== undefined) playbackRef.current?.setAnimation(animation)
+		if (animation !== undefined) {
+			playbackRef.current?.setAnimation(animation)
+			// The new animation's attachment timeline clears the slots the
+			// composite skin filled (these exports blank the body's face slots
+			// and re-supply them from `face/*`), so the stack is re-applied right
+			// after the switch — otherwise a layer or two goes missing each time.
+			if (skinStackRef.current.length > 1) {
+				playbackRef.current?.reapplySkinStack()
+			}
+		}
 		if (scene?.modelJson !== undefined) {
 			playbackRef.current?.setOverlayAnimation(overlay)
 		} else {
@@ -479,6 +498,9 @@ export function useSpinePlayer(options: {
 	const restart = useCallback(() => {
 		if (animation === undefined) return
 		playbackRef.current?.setAnimation(animation)
+		if (skinStackRef.current.length > 1) {
+			playbackRef.current?.reapplySkinStack()
+		}
 		if (scene?.modelJson !== undefined) {
 			playbackRef.current?.setOverlayAnimation(overlay)
 		}

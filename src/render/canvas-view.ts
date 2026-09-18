@@ -49,6 +49,9 @@ export type CanvasViewOptions = ZoomLimits & PanLimits
 /** The neutral "home" transform: fit at the container center, no offset. */
 export const HOME: ViewportTransform = { x: 0, y: 0, scale: 1, rotation: 0 }
 
+/** The transform a viewer starts on, before any cached/gesture transform. */
+export const DEFAULT_VIEWPORT: ViewportTransform = { ...HOME }
+
 /** Pan a transform by screen-space pixels (rotation carried through). */
 export function panViewport(
 	transform: ViewportTransform,
@@ -90,6 +93,20 @@ export function wheelScaleFromDelta(
 ): number {
 	const factor = Math.exp(-deltaY * 0.0008)
 	return clampViewportScale(scale * factor, options)
+}
+
+/**
+ * Set the zoom precisely, keeping rotation and pan. The scale is clamped to the
+ * viewer's zoom range, so a slider (or a stale cached value) can never push it
+ * outside what the gesture paths allow.
+ */
+export function scaleViewport(
+	transform: ViewportTransform,
+	scale: number,
+	options: ZoomLimits,
+): ViewportTransform {
+	if (!Number.isFinite(scale)) return transform
+	return { ...transform, scale: clampViewportScale(scale, options) }
 }
 
 /** Clamp the pan so the model's center can't leave the canvas interior. */

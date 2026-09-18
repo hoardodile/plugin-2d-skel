@@ -21,6 +21,20 @@ export type EngineDisplayPanelProps = {
 	readonly rotation?: number
 	/** Set the view rotation (radians) precisely. */
 	readonly onSetRotation?: (rad: number) => void
+	/** Current view zoom, as a multiple of the engine's fit. */
+	readonly scale?: number
+	/** Set the view zoom precisely (clamped by the viewer). */
+	readonly onSetScale?: (scale: number) => void
+	/**
+	 * Center the model again (position only). The viewer also forgets the stored
+	 * view, so the next visit starts from the fitted position.
+	 */
+	readonly onResetPosition?: () => void
+	/**
+	 * Return the zoom to 100% and forget the stored view, so the next visit
+	 * starts fitted.
+	 */
+	readonly onResetScale?: () => void
 	/** Capture the current frame as a screenshot download. */
 	readonly onScreenshot?: () => void
 	/** Open the crop dialog to capture and set as the resource cover. */
@@ -29,6 +43,11 @@ export type EngineDisplayPanelProps = {
 
 const ROW =
 	"flex h-control items-center justify-between gap-3 text-ui text-foreground"
+
+/** Zoom slider range: the everyday zoom band, inside the viewer's own clamp. */
+const ZOOM_MIN = 0.5
+const ZOOM_MAX = 4
+const ZOOM_STEP = 0.05
 
 /**
  * Shared viewer settings, shown in the Display tab for both engines. The
@@ -43,6 +62,10 @@ export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
 		onSettingsChange,
 		rotation = 0,
 		onSetRotation,
+		scale = 1,
+		onSetScale,
+		onResetPosition,
+		onResetScale,
 		onScreenshot,
 		onCropCover,
 	} = props
@@ -53,6 +76,7 @@ export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
 	const rawDeg = Math.round((rotation * 180) / Math.PI)
 	const rotationDeg =
 		rawDeg % 360 === 0 && rotation > 0.001 ? 360 : ((rawDeg % 360) + 360) % 360
+	const zoomPercent = `${Math.round(scale * 100)}%`
 
 	const isLive2d = engine === "live2d"
 	const backgroundOptions = isLive2d
@@ -193,6 +217,71 @@ export function EngineDisplayPanel(props: EngineDisplayPanelProps) {
 								aria-label={t("rotation")}
 								data-testid="engine-rotation-slider"
 							/>
+						</div>
+					) : null}
+					{/* Position and zoom are the two transform parts a viewer gets
+					    wrong when a stale view is restored, so they are the two the
+					    Display tab can set back precisely. A reset also forgets the
+					    stored view, or it would return on the next visit. */}
+					{onSetScale !== undefined ||
+					onResetPosition !== undefined ||
+					onResetScale !== undefined ? (
+						<div className="flex flex-col gap-1">
+							<div className="flex items-center justify-between">
+								<Label className="text-xs text-muted-foreground">
+									{t("positionScale")}
+								</Label>
+								<div className="flex items-center gap-1">
+									{onResetScale !== undefined ? (
+										<Button
+											type="button"
+											variant="secondary"
+											size="xs"
+											onClick={onResetScale}
+											className="text-xs text-secondary-foreground hover:text-foreground"
+											aria-label={t("resetScale")}
+											data-testid="engine-reset-scale"
+										>
+											{t("resetScale")}
+										</Button>
+									) : null}
+									{onResetPosition !== undefined ? (
+										<Button
+											type="button"
+											variant="secondary"
+											size="xs"
+											onClick={onResetPosition}
+											className="text-xs text-secondary-foreground hover:text-foreground"
+											aria-label={t("resetPosition")}
+											data-testid="engine-reset-position"
+										>
+											{t("resetPosition")}
+										</Button>
+									) : null}
+								</div>
+							</div>
+							{onSetScale !== undefined ? (
+								<div className="flex items-center gap-2">
+									<Slider
+										min={ZOOM_MIN}
+										max={ZOOM_MAX}
+										step={ZOOM_STEP}
+										value={scale}
+										onValueChange={(value) =>
+											onSetScale(Array.isArray(value) ? (value[0] ?? 1) : value)
+										}
+										className="w-full"
+										aria-label={t("scale")}
+										data-testid="engine-zoom-slider"
+									/>
+									<span
+										className="shrink-0 text-xs tabular-nums text-muted-foreground"
+										data-testid="engine-zoom-value"
+									>
+										{zoomPercent}
+									</span>
+								</div>
+							) : null}
 						</div>
 					) : null}
 				</div>

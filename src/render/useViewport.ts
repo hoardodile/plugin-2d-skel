@@ -6,6 +6,7 @@ import {
 	HOME,
 	panViewport,
 	rotateViewport,
+	scaleViewport,
 	type ViewportPoint,
 	type ViewportTransform,
 	type ViewportView,
@@ -34,6 +35,13 @@ export type ViewportOptions = {
 	readonly tapThreshold?: number
 	/** When this value changes, the viewport returns to `initial`. */
 	readonly resetKey?: string | number
+	/**
+	 * The stage size the restored transform was captured on, when known. A
+	 * restored pan is clamped against it so a transform written on a much larger
+	 * stage cannot frame the model off-screen while the live container is still
+	 * unmeasured.
+	 */
+	readonly initialView?: ViewportView
 	/** Pan bound as a fraction of the canvas size (lets the model travel far
 	 *  before the boundary so a drag stays "under the hand"). */
 	readonly panExtent?: number
@@ -41,6 +49,8 @@ export type ViewportOptions = {
 	 *  (drag repositions the model). */
 	readonly mode?: InteractionMode
 	readonly onChange?: (next: ViewportTransform) => void
+	/** Called when the viewport returns to home (a reset button/gesture). */
+	readonly onReset?: () => void
 	readonly onTap?: (point: ViewportPoint) => void
 	/** In "interact" mode, a one-pointer drag forwards the pointer here (the
 	 *  engine applies its own interaction — e.g. Live2D gaze). */
@@ -72,10 +82,17 @@ type GestureSession = {
 
 export function useViewport(options: ViewportOptions): {
 	readonly transform: ViewportTransform
+	/** Home transform, keeping the current rotation (a full view reset). */
 	readonly reset: () => void
+	/** Center the model again, keeping the current zoom and rotation. */
+	readonly resetPosition: () => void
+	/** Zoom back to 100%, keeping the current position and rotation. */
+	readonly resetScale: () => void
 	readonly dragging: boolean
 	/** Set the rotation (radians) precisely. */
 	readonly setRotation: (rad: number) => void
+	/** Set the zoom precisely (clamped to the viewer's range). */
+	readonly setScale: (scale: number) => void
 } {
 	const {
 		target,
@@ -84,6 +101,7 @@ export function useViewport(options: ViewportOptions): {
 		maxScale = 8,
 		tapThreshold = 8,
 		resetKey,
+		initialView,
 		panExtent = 3,
 		mode = "interact",
 	} = options
@@ -91,6 +109,8 @@ export function useViewport(options: ViewportOptions): {
 	const [dragging, setDragging] = useState(false)
 	const initialRef = useRef(initial)
 	initialRef.current = initial
+	const initialViewRef = useRef(initialView)
+	initialViewRef.current = initialView
 	const transformRef = useRef(transform)
 	transformRef.current = transform
 	const sessionRef = useRef<GestureSession | null>(null)
@@ -109,6 +129,8 @@ export function useViewport(options: ViewportOptions): {
 	modeRef.current = mode
 	const onChangeRef = useRef(options.onChange)
 	onChangeRef.current = options.onChange
+	const onResetRef = useRef(options.onReset)
+	onResetRef.current = options.onReset
 	const onTapRef = useRef(options.onTap)
 	onTapRef.current = options.onTap
 	const onDragRef = useRef(options.onDrag)
@@ -123,13 +145,13 @@ export function useViewport(options: ViewportOptions): {
 		return { width: rect.width, height: rect.height }
 	}
 
-	function update(next: ViewportTransform) {
-		const view = currentView()
+	function update(next: ViewportTransform, view?: ViewportView) {
+		const size = view ?? currentView()
 		// Before the container has a layout size, leave the transform alone so
 		// it isn't clamped to the origin on the first mount.
 		const bounded =
-			view.width > 0 && view.height > 0
-				? clampZoomTransform(next, view, boundsRef.current)
+			size.width > 0 && size.height > 0
+				? clampZoomTransform(next, size, boundsRef.current)
 				: next
 		setTransform(bounded)
 		onChangeRef.current?.(bounded)
@@ -154,15 +176,32 @@ export function useViewport(options: ViewportOptions): {
 		clearSession()
 		setDragging(false)
 		update({ ...HOME })
+		onResetRef.current?.()
+	}
+
+	function resetPosition() {
+		const current = transformRef.current
+		update({ x: 0, y: 0, scale: current.scale, rotation: current.rotation })
+	}
+
+	function resetScale() {
+		const current = transformRef.current
+		update({ ...current, scale: 1 })
 	}
 
 	function setRotation(rad: number) {
 		update({ ...transformRef.current, rotation: rad })
 	}
 
+	function setScale(scale: number) {
+		update(scaleViewport(transformRef.current, scale, boundsRef.current))
+	}
+
 	useEffect(() => {
 		if (resetKey === undefined) return
-		update({ ...initialRef.current })
+		// The restored entry was captured on a stage of its own size; clamp
+		// against that when the live container has not been laid out yet.
+		update({ ...initialRef.current }, initialViewRef.current)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [resetKey])
 
@@ -339,7 +378,15 @@ export function useViewport(options: ViewportOptions): {
 		}
 	}, [target])
 
-	return { transform, reset, dragging, setRotation }
+	return {
+		transform,
+		reset,
+		resetPosition,
+		resetScale,
+		dragging,
+		setRotation,
+		setScale,
+	}
 }
 
 function activePointer(

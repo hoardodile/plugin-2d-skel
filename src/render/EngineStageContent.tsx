@@ -1,4 +1,3 @@
-import { isRecord } from "@hoardodile/sdk-web"
 import { Button } from "@hoardodile/ui/components/button"
 import { Icon } from "@hoardodile/ui/components/icon"
 import { Label } from "@hoardodile/ui/components/label"
@@ -11,6 +10,7 @@ import {
 	type ReactNode,
 	type RefObject,
 	useEffect,
+	useMemo,
 	useRef,
 	useState,
 } from "react"
@@ -31,32 +31,12 @@ import { HitAreaOverlay } from "./HitAreaOverlay"
 import { usePluginAPI } from "./hooks"
 import type { EngineSettings } from "./prefs"
 import { useViewport } from "./useViewport"
-
-const DEFAULT_VIEWPORT: ViewportTransform = {
-	x: 0,
-	y: 0,
-	scale: 1,
-	rotation: 0,
-}
-
-function readCachedViewport(raw: string | undefined): ViewportTransform {
-	if (raw === undefined) return DEFAULT_VIEWPORT
-	try {
-		const parsed: unknown = JSON.parse(raw)
-		if (!isRecord(parsed)) return DEFAULT_VIEWPORT
-		if (
-			typeof parsed.x !== "number" ||
-			typeof parsed.y !== "number" ||
-			typeof parsed.scale !== "number"
-		) {
-			return DEFAULT_VIEWPORT
-		}
-		const rotation = typeof parsed.rotation === "number" ? parsed.rotation : 0
-		return { x: parsed.x, y: parsed.y, scale: parsed.scale, rotation }
-	} catch {
-		return DEFAULT_VIEWPORT
-	}
-}
+import {
+	clearViewportCache,
+	decodeViewportEntry,
+	encodeViewportEntry,
+	viewportCacheKeyFor,
+} from "./viewport-cache"
 
 /** Shared tab keys rendered by the shell; other tabs come from the plugin.
     The hit tab is shared for Spine (its own media-internal hit areas); Live2D
@@ -120,6 +100,18 @@ export function EngineStageContent(props: EngineStageContentProps) {
 	const api = usePluginAPI()
 	const engine = controller.engine
 	const rootRef = useRef<HTMLDivElement>(null)
+	// The stored view is decoded once per scene: it is handed back to the host
+	// (so a Spine mount measures its frame against the requested view) and seeds
+	// this shell's gesture hook with the same transform.
+	const viewportCacheKey = viewportCacheKeyFor(scene)
+	const viewportKey = viewportCacheKey.slice("viewport:".length)
+	const viewportEntry = useMemo(
+		() => decodeViewportEntry(api.getCache(viewportCacheKey)),
+		// The scene identity is the cache key; re-decoding on every render would
+		// also re-seed the viewport mid-gesture.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[viewportCacheKey],
+	)
 	const [panelOpen, setPanelOpen] = useState(false)
 	const [panelTab, setPanelTab] = useState<string>(() =>
 		engine === "live2d" ? settings.live2dTab : settings.spineTab,
@@ -136,14 +128,6 @@ export function EngineStageContent(props: EngineStageContentProps) {
 		setPanelTab(engine === "live2d" ? settings.live2dTab : settings.spineTab)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [sceneIndex, engine])
-
-	const viewportKey =
-		scene === undefined
-			? ""
-			: scene.engine === "spine"
-				? `${scene.modelJson ?? ""}:${scene.skeleton}`
-				: scene.modelJson
-	const viewportCacheKey = `viewport:${viewportKey}`
 	const mode = settings.interactionMode
 	// Spine/DragonBones models with no hit areas rely on the click-advances
 	// animation fallback, so the interact hint should say so instead of the
@@ -152,14 +136,42 @@ export function EngineStageContent(props: EngineStageContentProps) {
 		(engine === "spine" || engine === "dragonbones") &&
 		controller.exHit === undefined
 
+	/**
+	 * Remember the view a scene was left on. The stage size is captured with it
+	 * so a restore can clamp against the canvas the entry was written on.
+	 */
+	function storeViewport(transform: ViewportTransform) {
+		const rect = containerRef.current?.getBoundingClientRect()
+		api.setCache(
+			viewportCacheKey,
+			encodeViewportEntry({
+				transform,
+				...(rect !== undefined
+					? { canvas: { width: rect.width, height: rect.height } }
+					: {}),
+			}),
+		)
+	}
+
 	const viewport = useViewport({
 		target: containerRef,
-		initial: readCachedViewport(api.getCache(viewportCacheKey)),
+		initial: viewportEntry.transform,
+		...(viewportEntry.canvas !== undefined
+			? { initialView: viewportEntry.canvas }
+			: {}),
 		resetKey: viewportKey,
 		mode,
 		onChange(next) {
 			controller.applyViewport(next)
-			api.setCache(viewportCacheKey, JSON.stringify(next))
+			storeViewport(next)
+		},
+		onReset() {
+			// A reset that only moved the model back home would come back on the
+			// next visit: the stored entry is what `initial` restores. Clear this
+			// model's views, so "reset" means the model really starts fitted
+			// again (the reported stale offset). Runs after the reset's own write,
+			// so no entry is left behind.
+			clearViewportCache(api, scenes)
 		},
 		onTap(point) {
 			// A tap drives the engine's pointer interaction: a spine/dragonbones
@@ -312,6 +324,27 @@ export function EngineStageContent(props: EngineStageContentProps) {
 					onSettingsChange={updateSettings}
 					rotation={viewport.transform.rotation}
 					onSetRotation={viewport.setRotation}
+					scale={viewport.transform.scale}
+					onSetScale={(scale) => {
+						// Forgetting the stale entry BEFORE setting the new zoom matters:
+						// the write `onChange` makes for the new value would otherwise be
+						// the entry a later visit restores (or be wiped by the clear,
+						// leaving no memory of the adjustment at all).
+						clearViewportCache(api, scenes)
+						viewport.setScale(scale)
+					}}
+					onResetPosition={() => {
+						// Position only — zoom and rotation keep their own controls.
+						// Clearing first drops the stale entry (of every scene), then
+						// the position reset itself stores the centered view.
+						clearViewportCache(api, scenes)
+						viewport.resetPosition()
+					}}
+					onResetScale={() => {
+						// Zoom back to 100% without touching position or rotation.
+						clearViewportCache(api, scenes)
+						viewport.resetScale()
+					}}
 					onScreenshot={downloadScreenshot}
 					onCropCover={openCrop}
 				/>
@@ -404,6 +437,10 @@ export function EngineStageContent(props: EngineStageContentProps) {
 					data-testid={`${engine}-canvas-host`}
 					data-mode={mode}
 					data-viewport={JSON.stringify(appliedViewport)}
+					// The transform the viewer asked for, next to the one the engine
+					// actually has applied — the pair makes a silent snap-back (or a
+					// fit that overrode the requested view) visible from outside.
+					data-viewport-requested={JSON.stringify(viewport.transform)}
 				>
 					<div ref={containerRef} className="relative h-full w-full">
 						<HitAreaOverlay

@@ -1,6 +1,6 @@
 import { Icon } from "@hoardodile/ui/components/icon"
 import { AltArrowLeft, AltArrowRight } from "@hoardodile/ui/icons/registry"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "../i18n"
 import type { SpineScene } from "../shared"
 import { baseAnimationNames, defaultSkin, effectiveChoice } from "./choices"
@@ -17,6 +17,7 @@ import {
 import { SpineControlsTab } from "./SpineControlsTab"
 import { skinStackConfigTemplate } from "./spine-stack"
 import { useSpinePlayer } from "./useSpinePlayer"
+import { decodeViewportEntry, viewportCacheKeyFor } from "./viewport-cache"
 
 export type SpineHostProps = {
 	readonly scene: (SpineScene & { readonly index: number }) | undefined
@@ -55,6 +56,16 @@ export function SpineHost({
 		setSkinChoice(undefined)
 	}, [sceneIndex])
 
+	// The stored view of this scene, read once per scene identity: the player
+	// measures its frame against it at mount, so a restored pan/zoom is not
+	// mistaken for the engine's own fit.
+	const mountViewport = useMemo(
+		() =>
+			decodeViewportEntry(api.getCache(viewportCacheKeyFor(scene))).transform,
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[viewportCacheKeyFor(scene)],
+	)
+
 	const handleCommand = useCallback(
 		(command: string) => {
 			const changeCos = command.match(/^change_cos\s+(.+)$/)
@@ -86,6 +97,7 @@ export function SpineHost({
 		skinChoice,
 		onCommand: handleCommand,
 		reloadKey,
+		viewport: mountViewport,
 		// A tap that hits no hotspot advances to the next animation, so
 		// hotspot-less models still respond to a click.
 		onFallbackTap: () => stepAnimation(1),

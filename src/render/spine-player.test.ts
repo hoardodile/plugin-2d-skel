@@ -1,17 +1,20 @@
 import { describe, expect, test, vi } from "vitest"
+import type { SpineScene } from "../shared"
 import {
 	applySkinStack,
 	atlasUsesPremultipliedAlpha,
 	clampPremultipliedRgba,
+	mountSpinePlayer,
 	patchLegacyLoadingScreen,
 	prepareSpineAssets,
+	resetLegacySpineRuntime,
 	resolvePremultipliedAlpha,
 	supersampleSpineCanvas,
 	suppressLegacySpineChrome,
 	suppressSpinePlayerError,
 	viewportFrame,
-	worldPerPixel,
 } from "./spine-player"
+import { worldPerPixel } from "./spine-viewport"
 
 describe("clampPremultipliedRgba", () => {
 	test("zeroes the colour lossy WebP leaves under transparent pixels", () => {
@@ -425,13 +428,19 @@ describe("applySkinStack", () => {
 		expect(setSkinByNameCalls).toEqual(["body_base"])
 	})
 
-	test("a plain single skin leaves the setup pose alone", () => {
-		// The compatibility guarantee: a scene that composes nothing (no
-		// composite is ever installed) keeps byte-for-byte the old single-skin
-		// behaviour.
-		const { player, setupPoseResets } = fakeSkeleton(["default"], "default")
+	test("a single skin still resets the slots to the setup pose", () => {
+		// A skin handed to the player's constructor attaches nothing when the
+		// skeleton had no skin at that point (Spine only walks the setup pose's
+		// attachment names in that branch), and an animation that keys a slot's
+		// attachment leaves it empty until the stack is re-applied. The reset is
+		// therefore unconditional, single skin or composite.
+		const { player, setSkinByNameCalls, setupPoseResets } = fakeSkeleton(
+			["default"],
+			"default",
+		)
 		applySkinStack(player, ["default"])
-		expect(setupPoseResets()).toBe(0)
+		expect(setSkinByNameCalls).toEqual(["default"])
+		expect(setupPoseResets()).toBe(1)
 	})
 
 	test("a composite resets the slots to the setup pose", () => {
@@ -551,5 +560,186 @@ describe("viewportFrame", () => {
 		expect(
 			viewportFrame(canvas, { x: -120, y: 10, width: 100, height: 100 }),
 		).toEqual({ x: -120, y: 0, width: 420, height: 600 })
+	})
+})
+
+describe("mountSpinePlayer skin re-application", () => {
+	/**
+	 * The legacy 3.8 build is the one runtime `mountSpinePlayer` takes from a
+	 * global, so a fake `window.spine` is enough to exercise the mount wiring
+	 * (which is where the skin stack has to be re-applied).
+	 */
+	function installFakeRuntime() {
+		const calls = {
+			setSkinByName: [] as string[],
+			setSkin: 0,
+			slotsToSetupPose: 0,
+			setAnimation: [] as string[],
+			clearedTracks: [] as number[],
+			composites: 0,
+		}
+		class FakeSkin {
+			name: string
+			added: string[] = []
+			constructor(name: string) {
+				this.name = name
+				if (name === "__hdo_composite_skin") calls.composites++
+			}
+			addSkin(skin: FakeSkin) {
+				this.added.push(skin.name)
+			}
+		}
+		const dataSkins = ["body_base", "face/one_Idle", "layers/acc"].map(
+			(name) => new FakeSkin(name),
+		)
+		const skeleton = {
+			x: 0,
+			y: 0,
+			scaleX: 1,
+			scaleY: 1,
+			rotation: 0,
+			skin: { name: "constructor_skin" },
+			data: {
+				animations: [],
+				skins: dataSkins,
+				findSkin(name: string) {
+					return dataSkins.find((skin) => skin.name === name)
+				},
+				x: 0,
+				y: 0,
+				width: 400,
+				height: 600,
+			},
+			setSkinByName(name: string) {
+				calls.setSkinByName.push(name)
+			},
+			setSkin() {
+				calls.setSkin++
+			},
+			setSlotsToSetupPose() {
+				calls.slotsToSetupPose++
+			},
+			updateWorldTransform() {},
+			getBounds() {
+				return { x: 0, y: 0, width: 100, height: 100 }
+			},
+		}
+		const player = {
+			skeleton,
+			config: {},
+			canvas: undefined,
+			animationState: {
+				setAnimation(track: number, name: string) {
+					calls.setAnimation.push(`${track}:${name}`)
+				},
+				clearTrack(track: number) {
+					calls.clearedTracks.push(track)
+				},
+			},
+			dispose() {},
+		}
+		let config: Record<string, unknown> | undefined
+		class FakeSpinePlayer {
+			constructor(_container: HTMLElement, options: Record<string, unknown>) {
+				config = options
+				Object.assign(this, player)
+			}
+		}
+		window.spine = { SpinePlayer: FakeSpinePlayer }
+		return {
+			calls,
+			skeleton,
+			success: () => {
+				const hook = config?.success
+				if (typeof hook === "function") (hook as () => void)()
+			},
+		}
+	}
+
+	const SCENE = {
+		engine: "spine",
+		kind: "standard",
+		skeleton: "skeleton.json",
+		atlas: "atlas.txt",
+		textures: ["texture0.png"],
+		format: "json",
+		version: "3.8.75",
+		animations: ["idle"],
+		skins: ["body_base", "face/one_Idle"],
+	} as const satisfies SpineScene
+
+	async function mount(stack: readonly string[]) {
+		// The legacy runtime is captured once per module instance, so a fresh fake
+		// has to be re-captured for every case.
+		resetLegacySpineRuntime()
+		const fake = installFakeRuntime()
+		const urls = await prepareSpineAssets({
+			scene: SCENE,
+			// The legacy branch reads and rewrites the skeleton JSON, so both
+			// files have to answer with something usable.
+			readFile: async (path: string) =>
+				new TextEncoder().encode(
+					path === SCENE.skeleton
+						? '{"skeleton":{"spine":"3.8.75"}}'
+						: "texture0.png\nsize: 512,512\n",
+				).buffer,
+			resolveFileUrl: (filename) => `file:///${filename}`,
+		})
+		if (urls === undefined) throw new Error("expected asset urls")
+		const playback = await mountSpinePlayer({
+			container: document.createElement("div"),
+			scene: SCENE,
+			urls,
+			runtime: "legacy",
+			animation: "idle",
+			skin: stack[0],
+			skins: stack,
+			autoplay: true,
+			loop: true,
+			debug: false,
+			onReady: () => {},
+			onError: () => {},
+		})
+		fake.success()
+		return { playback, calls: fake.calls }
+	}
+
+	test("re-applies the stack on mount, so the constructor's single skin is filled in", async () => {
+		const { calls } = await mount(["body_base", "face/one_Idle"])
+		// A composite is built and set (not `setSkinByName`), and its slots are
+		// filled from the setup pose — the step that used to be skipped, which is
+		// why entering these layered exports dropped a layer or two.
+		expect(calls.setSkin).toBe(1)
+		expect(calls.setSkinByName).toEqual([])
+		expect(calls.slotsToSetupPose).toBe(1)
+	})
+
+	test("re-applies the stack after an animation switch", async () => {
+		const { playback, calls } = await mount(["body_base", "face/one_Idle"])
+		expect(calls.slotsToSetupPose).toBe(1)
+		expect(calls.composites).toBe(1)
+		playback.setAnimation("touch")
+		expect(calls.setAnimation).toEqual(["0:touch"])
+		// The new animation's attachment timeline clears the slots the stack
+		// filled, so the stack is put back before the next frame.
+		expect(calls.slotsToSetupPose).toBe(2)
+		expect(calls.composites).toBe(2)
+	})
+
+	test("re-applies the stack on an explicit reapply and on a layer toggle", async () => {
+		const { playback, calls } = await mount(["body_base", "face/one_Idle"])
+		playback.reapplySkinStack()
+		expect(calls.slotsToSetupPose).toBe(2)
+		playback.setSkinStack(["body_base", "face/one_Idle", "layers/acc"])
+		expect(calls.setSkin).toBe(3)
+		expect(calls.slotsToSetupPose).toBe(3)
+	})
+
+	test("an empty stack never touches the skeleton", async () => {
+		const { playback, calls } = await mount([])
+		playback.reapplySkinStack()
+		playback.setAnimation("touch")
+		expect(calls.setSkinByName).toEqual([])
+		expect(calls.slotsToSetupPose).toBe(0)
 	})
 })
