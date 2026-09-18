@@ -1,6 +1,7 @@
 import type { ImageVariantSpec } from "@hoardodile/sdk-web"
 import { isRecord } from "@hoardodile/sdk-web"
 import type { Live2dScene } from "../shared"
+import { textureVariantFor } from "./texture-format"
 
 /**
  * Rewrite a model descriptor so every referenced file is an absolute
@@ -68,9 +69,14 @@ export async function prepareLive2dModel(options: {
 		resolveFileUrl(joinRef(modelDir(scene.modelJson), ref))
 	// Textures may be served as an on-demand WebP variant (same pixel
 	// dimensions, `fit: "exact"`); every other reference (moc, motions,
-	// physics, expressions, pose) always resolves the original bytes.
+	// physics, expressions, pose) always resolves the original bytes. A
+	// texture that is already WebP keeps its original bytes too — see
+	// `textureVariantFor`.
 	const textureRef = (ref: string): string =>
-		resolveFileUrl(joinRef(modelDir(scene.modelJson), ref), imageVariant)
+		resolveFileUrl(
+			joinRef(modelDir(scene.modelJson), ref),
+			textureVariantFor(ref, imageVariant),
+		)
 
 	const url = resolveBaseUrl()
 	if (isRecord(parsed.FileReferences)) {

@@ -2,12 +2,12 @@ import { describe, expect, test } from "vitest"
 import { parseMotionGraph } from "../core/motion-graph"
 import {
 	applySkinCommand,
-	fallbackSkinStack,
 	nextExpressionName,
 	parseExCommand,
 	parseSkinCommand,
 	skinStackFromMotionGraph,
 } from "./commands"
+import { defaultSpineSkinStack } from "./spine-stack"
 
 describe("parseExCommand", () => {
 	test("parses start_mtn with a group and group:entry ref", () => {
@@ -81,15 +81,15 @@ describe("nextExpressionName", () => {
 
 describe("parseSkinCommand", () => {
 	test("parses set_skins / add_skins / remove_skins lists", () => {
-		expect(parseSkinCommand("set_skins skin_base")).toEqual({
+		expect(parseSkinCommand("set_skins body_base")).toEqual({
 			kind: "setSkins",
-			skins: ["skin_base"],
+			skins: ["body_base"],
 		})
 		expect(
-			parseSkinCommand("add_skins breast/Unedited,decorations/acc,face/idle"),
+			parseSkinCommand("add_skins variant/edited,layers/acc,face/one_Idle"),
 		).toEqual({
 			kind: "addSkins",
-			skins: ["breast/Unedited", "decorations/acc", "face/idle"],
+			skins: ["variant/edited", "layers/acc", "face/one_Idle"],
 		})
 		expect(parseSkinCommand("remove_skins face/a, face/b,face/c ")).toEqual({
 			kind: "removeSkins",
@@ -113,7 +113,7 @@ describe("parseSkinCommand", () => {
 })
 
 describe("applySkinCommand", () => {
-	const base = ["skin_base", "breast/Unedited", "decorations/acc"]
+	const base = ["body_base", "variant/edited", "layers/acc"]
 
 	test("set_skins replaces the stack", () => {
 		expect(
@@ -125,18 +125,18 @@ describe("applySkinCommand", () => {
 		expect(
 			applySkinCommand(base, {
 				kind: "addSkins",
-				skins: ["face/idle", "decorations/acc"],
+				skins: ["face/one_Idle", "layers/acc"],
 			}),
-		).toEqual(["skin_base", "breast/Unedited", "decorations/acc", "face/idle"])
+		).toEqual(["body_base", "variant/edited", "layers/acc", "face/one_Idle"])
 	})
 
 	test("remove_skins drops the named layers", () => {
 		expect(
 			applySkinCommand(base, {
 				kind: "removeSkins",
-				skins: ["breast/Unedited"],
+				skins: ["variant/edited"],
 			}),
-		).toEqual(["skin_base", "decorations/acc"])
+		).toEqual(["body_base", "layers/acc"])
 	})
 
 	test("an unknown command leaves the stack unchanged", () => {
@@ -151,16 +151,16 @@ describe("skinStackFromMotionGraph", () => {
 			start: [
 				{
 					command:
-						"set_skins skin_base;add_skins breast/Unedited,decorations/acc,face/idle",
+						"set_skins body_base;add_skins variant/edited,layers/acc,face/one_Idle",
 				},
 			],
 			idle: [{ file: "idle" }],
 		})
 		expect(skinStackFromMotionGraph(graph)).toEqual([
-			"skin_base",
-			"breast/Unedited",
-			"decorations/acc",
-			"face/idle",
+			"body_base",
+			"variant/edited",
+			"layers/acc",
+			"face/one_Idle",
 		])
 	})
 
@@ -180,7 +180,7 @@ describe("skinStackFromMotionGraph", () => {
 
 	test("ignores an orphan add_skins (no set_skins seeds the stack)", () => {
 		const graph = parseMotionGraph({
-			idle: [{ command: "add_skins decorations/acc" }],
+			idle: [{ command: "add_skins layers/acc" }],
 		})
 		expect(skinStackFromMotionGraph(graph)).toBeUndefined()
 	})
@@ -193,13 +193,16 @@ describe("skinStackFromMotionGraph", () => {
 })
 
 describe("fallbackSkinStack", () => {
-	test("prefers skin_base, then default, then the first scene skin", () => {
-		expect(fallbackSkinStack(["default", "skin_base"])).toEqual(["skin_base"])
-		expect(fallbackSkinStack(["default", "face/idle"])).toEqual(["default"])
-		expect(fallbackSkinStack(["face/a", "face/b"])).toEqual(["face/a"])
+	// Composition now lives in the model's own declaration; the scene-level
+	// policy (and its priority) is covered by `spine-stack.test.ts`.
+	test("an unannotated scene composes nothing", () => {
+		expect(defaultSpineSkinStack(["default", "face/one"])).toEqual([])
+		expect(defaultSpineSkinStack([])).toEqual([])
 	})
 
-	test("returns an empty stack for an empty scene skin list", () => {
-		expect(fallbackSkinStack([])).toEqual([])
+	test("a declared stack wins", () => {
+		expect(
+			defaultSpineSkinStack(["default", "face/one"], undefined, ["face/one"]),
+		).toEqual(["face/one"])
 	})
 })

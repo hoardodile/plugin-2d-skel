@@ -121,6 +121,10 @@ export default {
 		"DragonBones is (c) the DragonBones project and the Pixi adapter is MIT licensed; the runtime is bundled under its own licenses for model display.",
 	animations: "Animations",
 	skins: "Skins",
+	skinConfigHint:
+		"This model ships no layering declaration, so one skin is shown as-is. Save the following as “<model>.skins.json” in the model folder to state how its skins compose:",
+	skinConfigCopy: "Copy template",
+	skinConfigCopied: "Copied",
 	overlays: "Overlays",
 	standard: "Standard",
 	format: "Format",

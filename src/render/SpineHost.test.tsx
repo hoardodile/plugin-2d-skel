@@ -1,8 +1,14 @@
 import { render, screen } from "@testing-library/react"
 import type { ReactNode } from "react"
-import { describe, expect, test, vi } from "vitest"
+import { beforeEach, describe, expect, test, vi } from "vitest"
 import type { SpineScene } from "../shared"
 import { SpineHost } from "./SpineHost"
+
+/** The player stub the host reads; tests override per case. */
+const playerStub = vi.hoisted(() => ({
+	toggleSkin: vi.fn(),
+	value: {} as Record<string, unknown>,
+}))
 
 vi.mock("../i18n", () => ({
 	useTranslation: () => ({ t: (key: string) => key, language: "en" }),
@@ -31,7 +37,12 @@ vi.mock("./hooks", () => {
 })
 
 vi.mock("./useSpinePlayer", () => ({
-	useSpinePlayer: () => ({
+	useSpinePlayer: () => playerStub.value,
+}))
+
+/** A ready single-skin player; a layered case overrides `skinStack`. */
+function player(overrides: Record<string, unknown> = {}) {
+	return {
 		engine: "spine",
 		status: "ready",
 		names: {
@@ -51,8 +62,16 @@ vi.mock("./useSpinePlayer", () => ({
 		capture: () => "data:image/png;base64,x",
 		applyViewport: () => {},
 		getAppliedViewport: () => ({ x: 0, y: 0, scale: 1 }),
-	}),
-}))
+		skinStack: [],
+		toggleSkin: playerStub.toggleSkin,
+		...overrides,
+	}
+}
+
+beforeEach(() => {
+	playerStub.toggleSkin.mockClear()
+	playerStub.value = player()
+})
 
 vi.mock("./EngineToolbar", () => ({
 	EngineToolbar: ({ children }: { readonly children?: ReactNode }) => (
@@ -177,5 +196,70 @@ describe("SpineHost", () => {
 		expect(screen.getByTestId("engine-model-1")).toBeInTheDocument()
 		// The old dropdown surface is gone.
 		expect(screen.queryByTestId("engine-scene-select")).not.toBeInTheDocument()
+	})
+
+	test("composed scenes toggle layers instead of replacing the skin", () => {
+		playerStub.value = player({
+			names: {
+				animations: ["idle"],
+				overlays: [],
+				skins: ["body_base", "layers/one", "face/one_Idle"],
+			},
+			skinStack: ["body_base", "face/one_Idle"],
+		})
+		renderHost()
+		expect(screen.getByTestId("spine-skin-body_base")).toHaveAttribute(
+			"aria-pressed",
+			"true",
+		)
+		expect(screen.getByTestId("spine-skin-layers/one")).toHaveAttribute(
+			"aria-pressed",
+			"false",
+		)
+		screen.getByTestId("spine-skin-layers/one").click()
+		expect(playerStub.toggleSkin).toHaveBeenCalledWith("layers/one")
+	})
+
+	test("offers the layering template when the scene declares none", () => {
+		// A scene with no `<model>.skins.json` composes nothing: the panel says
+		// so and hands the user a starter file naming this model's own skins.
+		playerStub.value = player({
+			names: {
+				animations: ["idle"],
+				overlays: [],
+				skins: ["body", "cloth"],
+			},
+			skinStack: ["body"],
+		})
+		renderHost()
+		expect(screen.getByTestId("spine-skin-config-hint")).toBeInTheDocument()
+		const template = screen.getByTestId(
+			"spine-skin-config-template",
+		).textContent
+		expect(template).toContain('"v": 1')
+		expect(template).toContain('"body"')
+		expect(template).toContain('"cloth"')
+	})
+
+	test("hides the template once the scene carries a declaration", () => {
+		playerStub.value = player({
+			names: {
+				animations: ["idle"],
+				overlays: [],
+				skins: ["body", "cloth"],
+			},
+			skinStack: ["body"],
+		})
+		render(
+			<SpineHost
+				scene={{ ...SCENE, skinStack: "model0.skins.json" }}
+				scenes={[{ ...SCENE, index: 0 }]}
+				sceneIndex={0}
+				selectScene={() => {}}
+			/>,
+		)
+		expect(
+			screen.queryByTestId("spine-skin-config-hint"),
+		).not.toBeInTheDocument()
 	})
 })

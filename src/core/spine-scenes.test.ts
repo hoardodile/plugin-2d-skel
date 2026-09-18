@@ -82,4 +82,50 @@ describe("groupSpineScenes", () => {
 			{ filename: "hero.png", role: "texture", scene: 0 },
 		])
 	})
+
+	test("picks the model's own layering declaration", () => {
+		const scenes = groupSpineScenes(
+			["hero.json", "hero.atlas", "hero.png", "hero.skins.json"],
+			DOCS,
+		)
+		expect(scenes[0]?.skinStack).toBe("hero.skins.json")
+	})
+
+	test("falls back to a plain skins.json beside the skeleton", () => {
+		const scenes = groupSpineScenes(
+			["hero.json", "hero.atlas", "hero.png", "skins.json"],
+			DOCS,
+		)
+		expect(scenes[0]?.skinStack).toBe("skins.json")
+	})
+
+	test("leaves skinStack unset for a model that declares nothing", () => {
+		const scenes = groupSpineScenes(
+			["hero.json", "hero.atlas", "hero.png", "other.skins.json"],
+			DOCS,
+		)
+		expect(scenes[0]?.skinStack).toBeUndefined()
+	})
+
+	test("resolves the declaration inside the skeleton's directory", () => {
+		const scenes = groupSpineScenes(
+			[
+				"spine/hero.json",
+				"spine/hero.atlas",
+				"spine/hero.png",
+				"spine/hero.skins.json",
+			],
+			new Map([
+				[
+					"spine/hero.json",
+					{
+						version: { raw: "4.0.0", major: 4, minor: 0, patch: 0 },
+						animations: [],
+						skins: [],
+					},
+				],
+			]),
+		)
+		expect(scenes[0]?.skinStack).toBe("spine/hero.skins.json")
+	})
 })

@@ -3,7 +3,7 @@
 hoardodile 内容插件：Live2D、Spine 与 DragonBones 动画查看器，用同一查看器从单个资源渲染这三种格式的动画角色：
 
 - **Live2D** — 官方 Cubism `*.model3.json` 模型与 Live2DViewerEX 配置（`model0.json` + `.moc3`/`.moc`，多变体）：动作组、表情、EX 对话/选项菜单、声音、命中区与模型变体。
-- **Spine** — 直接 `.json`/`.skel` + `.atlas` 导出与 Live2DViewerEX `type: 9` 配置（`model0.json` + `skeleton_N` + `atlases_*`）：动画/皮肤/覆盖层选择、EX 命中检测、对话、声音、模型变体。
+- **Spine** — 直接 `.json`/`.skel` + `.atlas` 导出与 Live2DViewerEX `type: 9` 配置（`model0.json` + `skeleton_N` + `atlases_*`）：动画/皮肤/覆盖层选择、EX 命中检测、对话、声音、模型变体；分层导出的各层会合并为一个皮肤，并逐层提供开关标签，分层规则由模型自带的 `<模型>.skins.json` 声明。
 - **DragonBones** — 直接 `*_ske.json`/`*_dbbin` + `*_tex.json` 图集导出与 Live2DViewerEX `type: 10` 配置：动画、骨架、皮肤选择与模型变体。
 
 查看器通过类型安全适配器按场景的 `engine` 分发；共享界面（场景选择器、播放控制、对话、状态）只写一次，各引擎的专属控件位于各引擎组件之后。

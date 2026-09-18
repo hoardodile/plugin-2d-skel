@@ -4,7 +4,7 @@ import spine42Url from "@esotericsoftware/spine-player-4.2/dist/iife/spine-playe
 import spine43Url from "@esotericsoftware/spine-player-4.3/dist/iife/spine-player.js?url"
 import type { ImageVariantSpec } from "@hoardodile/sdk-web"
 import { isRecord } from "@hoardodile/sdk-web"
-import { resolveAtlasPage, rewriteAtlas } from "../core/atlas"
+import { atlasPagePaths, resolveAtlasPage, rewriteAtlas } from "../core/atlas"
 import {
 	isLegacyRejectedVersion,
 	parseSpineVersion,
@@ -13,6 +13,7 @@ import {
 } from "../core/spine-format"
 import type { SpineScene } from "../shared"
 import { HOME, type ViewportTransform } from "./canvas-view"
+import { textureVariantFor } from "./texture-format"
 
 /** The small surface every bundled SpinePlayer build exposes. */
 type NativePlayer = {
@@ -31,8 +32,19 @@ type NativePlayer = {
 	readonly skeleton?: Record<string, unknown>
 	readonly config?: Record<string, unknown>
 	readonly canvas?: HTMLCanvasElement
+	/** The runtime's WebGL context wrapper, for pre-upload pixel settings. */
+	readonly context?: { readonly gl?: WebGLRenderingContext }
 	readonly sceneRenderer?: {
 		readonly skeletonRenderer?: { premultipliedAlpha?: boolean }
+		/**
+		 * The renderer sizes the canvas backing store as
+		 * `clientWidth * this ratio` every frame; `supersampleSpineCanvas`
+		 * takes it over to render above the CSS resolution.
+		 */
+		getSafeDevicePixelRatio?: (cssWidth: number, cssHeight: number) => number
+		/** GL size limits the runtime caches on its first ratio call. */
+		maxCanvasWidth?: number
+		maxCanvasHeight?: number
 	}
 	readonly play?: () => void
 	readonly pause?: () => void
@@ -49,6 +61,27 @@ type SpinePlayerConstructor = new (
 
 type SpinePlayerModule = {
 	readonly SpinePlayer: SpinePlayerConstructor
+	/**
+	 * The runtime's own vector class: `Skeleton.getBounds` fills the vectors it
+	 * is handed (and rejects plain objects), so the frame measurement needs it.
+	 */
+	readonly Vector2?: Vector2Constructor
+	/**
+	 * The 4.x `Physics` enum: `updateWorldTransform` requires its `update`
+	 * member (it throws `physics is undefined` without it), and the measurement
+	 * needs a current pose. The legacy 3.8 build takes no argument.
+	 */
+	readonly Physics?: { readonly update?: unknown }
+}
+
+type Vector2Constructor = new () => { x: number; y: number }
+
+/** Everything the frame measurement needs from the loaded runtime. */
+type ViewportContext = {
+	readonly vector: Vector2Constructor | undefined
+	readonly physics: unknown
+	/** A composite skin stack composes the scene's props into the frame. */
+	readonly composed: boolean
 }
 
 function isSpinePlayerModule(value: unknown): value is SpinePlayerModule {
@@ -74,6 +107,14 @@ export type SpineAssetUrls = {
 	readonly atlasText?: string
 	readonly skeletonText?: string
 	readonly skeletonBinary?: Uint8Array
+	/**
+	 * Clamped atlas pages, keyed by the page URL the atlas text names. The
+	 * runtime swaps a texture path for its `rawDataURIs` entry, which is the
+	 * only channel that survives the sandbox (a `blob:` URL is created under an
+	 * opaque origin, and a page name that is not an `http` URL gets resolved as
+	 * a relative path).
+	 */
+	readonly pageOverrides?: ReadonlyMap<string, string>
 }
 
 export type MountSpinePlayerOptions = {
@@ -88,7 +129,6 @@ export type MountSpinePlayerOptions = {
 	readonly autoplay: boolean
 	readonly loop: boolean
 	readonly debug: boolean
-	readonly skeletonViewport?: boolean
 	readonly onReady: (info: {
 		readonly animations: readonly string[]
 		readonly overlays: readonly string[]
@@ -247,8 +287,14 @@ export async function prepareSpineAssets(options: {
 	) => string
 	readonly pageUrls?: ReadonlyMap<string, string>
 	readonly imageVariant?: ImageVariantSpec
+	/**
+	 * Clamp/resolve one atlas page URL (see {@link premultiplyAtlasPage}).
+	 * Injected so tests can exercise the wiring without decoding images.
+	 */
+	readonly premultiplyPage?: (url: string) => Promise<string | undefined>
 }): Promise<SpineAssetUrls | undefined> {
 	const { scene, readFile, resolveFileUrl, pageUrls, imageVariant } = options
+	const premultiplyPage = options.premultiplyPage ?? premultiplyAtlasPage
 	const atlas = scene.atlas
 	if (atlas === undefined) return undefined
 
@@ -273,14 +319,23 @@ export async function prepareSpineAssets(options: {
 	if (pageUrls === undefined) {
 		const atlasBytes = await readFile(atlas)
 		const atlasText = new TextDecoder().decode(atlasBytes)
-		const rewritten = rewriteAtlas(atlasText, (page) =>
-			resolveFileUrl(resolveAtlasPage(atlas, page), imageVariant),
+		const resolvePage = (page: string) =>
+			resolveFileUrl(
+				resolveAtlasPage(atlas, page),
+				textureVariantFor(page, imageVariant),
+			)
+		const clamped = await clampedPageUrls(
+			atlasText,
+			resolvePage,
+			premultiplyPage,
 		)
+		const rewritten = rewriteAtlas(atlasText, resolvePage)
 		if (rewritten.length === 0) return undefined
 		return {
 			skeletonUrl,
 			atlasUrl: "__hoardodile.atlas",
 			atlasText: rewritten,
+			...(clamped.size > 0 ? { pageOverrides: clamped } : {}),
 			...(skeletonText !== undefined ? { skeletonText } : {}),
 			...(skeletonBinary !== undefined ? { skeletonBinary } : {}),
 		}
@@ -288,18 +343,44 @@ export async function prepareSpineAssets(options: {
 
 	const atlasBytes = await readFile(atlas)
 	const atlasText = new TextDecoder().decode(atlasBytes)
-	const rewritten = rewriteAtlas(atlasText, (page) =>
-		pageUrls.get(page.toLowerCase()),
+	const resolveExPage = (page: string) => pageUrls.get(page.toLowerCase())
+	const clamped = await clampedPageUrls(
+		atlasText,
+		resolveExPage,
+		premultiplyPage,
 	)
+	const rewritten = rewriteAtlas(atlasText, resolveExPage)
 	if (rewritten.length === 0) return undefined
 
 	return {
 		skeletonUrl,
 		atlasUrl: "__hoardodile_ex.atlas",
 		atlasText: rewritten,
+		...(clamped.size > 0 ? { pageOverrides: clamped } : {}),
 		...(skeletonText !== undefined ? { skeletonText } : {}),
 		...(skeletonBinary !== undefined ? { skeletonBinary } : {}),
 	}
+}
+
+/**
+ * Clamp the pixels of every page of a `pma: true` atlas, keyed by the page URL
+ * the atlas text will point at. A non-premultiplied atlas is left alone: its
+ * pages are composited as stored, so touching them would change the render.
+ */
+async function clampedPageUrls(
+	atlasText: string,
+	resolvePage: (page: string) => string | undefined,
+	premultiplyPage: (url: string) => Promise<string | undefined>,
+): Promise<Map<string, string>> {
+	const clamped = new Map<string, string>()
+	if (!atlasUsesPremultipliedAlpha(atlasText)) return clamped
+	for (const page of atlasPagePaths(atlasText)) {
+		const url = resolvePage(page)
+		if (url === undefined) continue
+		const blobUrl = await premultiplyPage(url)
+		if (blobUrl !== undefined) clamped.set(url, blobUrl)
+	}
+	return clamped
 }
 
 /**
@@ -393,11 +474,148 @@ export function resolvePremultipliedAlpha(
 }
 
 /**
+ * Clamp decoded RGBA samples to the premultiplied form a `pma: true` atlas
+ * promises. Returns whether anything had to change.
+ *
+ * The delivered pages are WebP, whose *lossy* colour plane smears the
+ * neighbouring artwork into fully transparent texels (measured on one such
+ * page: about 140k of 2.17M transparent pixels carry colour, e.g. RGB
+ * (84,82,83) at alpha 0). A premultiplied composite adds the colour of those
+ * texels at full strength while their alpha contributes nothing, so every mesh
+ * edge that filters across them gains a pale fringe — hence the clamp to
+ * `min(channel, alpha)` (a no-op for the pixels that are already premultiplied,
+ * which almost all of them are) plus zeroing the transparent ones. This is
+ * exactly what the source sites do to each decoded page before uploading it.
+ */
+export function clampPremultipliedRgba(data: Uint8ClampedArray): boolean {
+	let changed = false
+	for (let i = 0; i < data.length; i += 4) {
+		const alpha = data[i + 3] ?? 0
+		if (alpha === 0) {
+			if (data[i] !== 0 || data[i + 1] !== 0 || data[i + 2] !== 0) {
+				data[i] = 0
+				data[i + 1] = 0
+				data[i + 2] = 0
+				changed = true
+			}
+			continue
+		}
+		for (let channel = 0; channel < 3; channel++) {
+			if ((data[i + channel] ?? 0) > alpha) {
+				data[i + channel] = alpha
+				changed = true
+			}
+		}
+	}
+	return changed
+}
+
+/**
+ * Clamped pages, keyed by their source URL: the transform is deterministic and
+ * costs a full decode plus PNG encode, so switching back to a model must not
+ * pay for it twice. Bounded because each entry is a multi-megabyte string.
+ */
+const clampedPageCache = new Map<string, string>()
+const CLAMPED_PAGE_CACHE_LIMIT = 6
+
+/**
+ * Fetch one atlas page, clamp it (see {@link clampPremultipliedRgba}) and
+ * return a PNG data URI the runtime can load instead. `undefined` keeps the
+ * original file: when nothing had to change — the common case for a page that
+ * really is premultiplied — or when this environment cannot decode/re-encode.
+ *
+ * A data URI rather than a blob URL: the plugin client runs in a sandboxed
+ * iframe, and `URL.createObjectURL` there hands back a `blob:null/…` URL the
+ * image loader cannot resolve.
+ */
+export async function premultiplyAtlasPage(
+	url: string,
+): Promise<string | undefined> {
+	const cached = clampedPageCache.get(url)
+	if (cached !== undefined) return cached
+	try {
+		const response = await fetch(url)
+		if (!response.ok) return undefined
+		const blob = await response.blob()
+		// Same decode options the runtime uses, so the samples we read are the
+		// file's own (no decoder-side premultiplication).
+		const bitmap = await createImageBitmap(blob, {
+			premultiplyAlpha: "none",
+			colorSpaceConversion: "none",
+		})
+		const canvas = document.createElement("canvas")
+		canvas.width = bitmap.width
+		canvas.height = bitmap.height
+		const context = canvas.getContext("2d", { willReadFrequently: true })
+		if (context === null) {
+			bitmap.close()
+			return undefined
+		}
+		context.drawImage(bitmap, 0, 0)
+		bitmap.close()
+		const image = context.getImageData(0, 0, canvas.width, canvas.height)
+		if (!clampPremultipliedRgba(image.data)) return undefined
+		context.putImageData(image, 0, 0)
+		// PNG is the only lossless encoding available here; a second lossy pass
+		// would undo the clamp it carries.
+		const encoded = canvas.toDataURL("image/png")
+		if (!encoded.startsWith("data:image/png")) return undefined
+		if (clampedPageCache.size >= CLAMPED_PAGE_CACHE_LIMIT) {
+			const oldest = clampedPageCache.keys().next().value
+			if (oldest !== undefined) clampedPageCache.delete(oldest)
+		}
+		clampedPageCache.set(url, encoded)
+		return encoded
+	} catch {
+		return undefined
+	}
+}
+
+/** Backing-store pixels per CSS pixel the canvas is rendered at. */
+const SUPERSAMPLE_SCALE = 2
+
+/**
+ * Render the canvas at (at least) 2× the CSS resolution and let the browser
+ * scale the result back down.
+ *
+ * These game exports pack their atlas into a small lossy WebP (2048² for an
+ * atlas that declares a 4344² page), so sampling it straight at CSS resolution
+ * shows the encoder's blocking along the seams. The source sites render the
+ * same texture into a canvas whose backing store is twice the CSS size and
+ * rely on the browser's downscale to average it out; this does the same
+ * through the runtime's own canvas-sizing hook (it re-reads the ratio every
+ * frame, so a single override is enough). Pan/zoom math is unaffected: it is
+ * expressed in CSS pixels (`clientWidth`) throughout.
+ */
+export function supersampleSpineCanvas(player: NativePlayer): void {
+	const renderer = player.sceneRenderer
+	if (renderer === undefined) return
+	const original = renderer.getSafeDevicePixelRatio?.bind(renderer)
+	renderer.getSafeDevicePixelRatio = (cssWidth, cssHeight) => {
+		// The original call also discovers and caches the GL size limits, and
+		// returns the device ratio the platform would have used.
+		const base = original?.(cssWidth, cssHeight) ?? 1
+		if (cssWidth <= 0 || cssHeight <= 0) {
+			return Math.max(base, SUPERSAMPLE_SCALE)
+		}
+		const limit = Math.min(
+			renderer.maxCanvasWidth !== undefined && renderer.maxCanvasWidth > 0
+				? renderer.maxCanvasWidth / cssWidth
+				: SUPERSAMPLE_SCALE,
+			renderer.maxCanvasHeight !== undefined && renderer.maxCanvasHeight > 0
+				? renderer.maxCanvasHeight / cssHeight
+				: SUPERSAMPLE_SCALE,
+		)
+		return Math.max(base, Math.min(SUPERSAMPLE_SCALE, limit))
+	}
+}
+
+/**
  * World units per screen pixel for the pan. The camera's pinned viewport
- * (`viewWorld`, set by `configureSkeletonViewport` on EX scenes) is the true
- * scale; falling back to the model's `getBounds()` (used when there is no
- * pinned viewport, i.e. standard scenes) keeps that path unchanged. `1` when
- * neither yields a positive width.
+ * (`viewWorld`, set by `configureSkeletonViewport` when the skeleton
+ * declares a setup canvas) is the true scale; falling back to the model's
+ * `getBounds()` keeps the path for a skeleton without one. `1` when neither
+ * yields a positive width.
  */
 export function worldPerPixel(
 	viewWorld: number | undefined,
@@ -478,7 +696,6 @@ export async function mountSpinePlayer(
 		autoplay,
 		loop,
 		debug,
-		skeletonViewport = false,
 		onReady,
 		onError,
 	} = options
@@ -491,6 +708,11 @@ export async function mountSpinePlayer(
 		throw new Error(`Spine runtime ${runtime} is not available`)
 	}
 	const Constructor = loadedModule.SpinePlayer
+	const viewportContext: ViewportContext = {
+		vector: loadedModule.Vector2,
+		physics: loadedModule.Physics?.update,
+		composed: (skins?.length ?? 0) > 0,
+	}
 
 	let ready = false
 	const rawDataUris: Record<string, string> = {}
@@ -504,6 +726,11 @@ export async function mountSpinePlayer(
 	}
 	if (urls.atlasText !== undefined) {
 		rawDataUris[urls.atlasUrl] = textRawDataUriFor(runtime, urls.atlasText)
+	}
+	if (urls.pageOverrides !== undefined) {
+		for (const [path, dataUri] of urls.pageOverrides) {
+			rawDataUris[path] = dataUri
+		}
 	}
 
 	// Native Spine pan/zoom: drive the skeleton's own transform (x/y/scaleX/scaleY),
@@ -572,10 +799,10 @@ export async function mountSpinePlayer(
 			bounds = undefined
 		}
 		// The pan must move the model 1:1 with the cursor, in the camera's own
-		// scale. On EX scenes the camera is pinned (configureSkeletonViewport)
-		// to the descriptor's setup bounds (`config.viewport.width/height`),
-		// which can be much larger than the animated `getBounds()` — using the
-		// latter made the pan lag by that ratio (the "drag 1 m → 10 cm" report).
+		// scale. A pinned camera (configureSkeletonViewport) is fitted to the
+		// skeleton's setup canvas (`config.viewport.width/height`), which can
+		// be much larger than the animated `getBounds()` — using the latter
+		// made the pan lag by that ratio (the "drag 1 m → 10 cm" report).
 		// Prefer the pinned viewport dims when present, else the model's bounds.
 		const viewport = isRecord(player.config?.viewport)
 			? player.config?.viewport
@@ -674,12 +901,24 @@ export async function mountSpinePlayer(
 		debug,
 		success: () => {
 			ready = true
-			if (skeletonViewport) configureSkeletonViewport(player)
 			// A composite skin stack supersedes the single `skin` the player
-			// constructed with (only one skin can be handed to the constructor).
+			// constructed with (only one skin can be handed to the constructor),
+			// and it adds slots — so it must be applied before the frame is
+			// measured from the posed skeleton.
 			if (skins !== undefined && skins.length > 0) {
 				applySkinStack(player, skins)
 			}
+			// Pin the frame to the skeleton's setup canvas. The runtime
+			// otherwise derives the frame from the current animation's bounds
+			// and reports `Animation bounds are invalid` for attachment-only
+			// animations — common in game exports (Live2DViewerEX `type:9` and
+			// the standard exports of the same toolchain). A skeleton whose
+			// painted content overflows its declared canvas is framed by the
+			// union instead, so props and extra layers are not cropped; a
+			// composed scene without any authored canvas frames its own
+			// content, since the runtime's fit would span the whole scene
+			// (its props make the character a speck).
+			configureSkeletonViewport(player, viewportContext)
 			refreshSkeletonBase()
 			onReady(readNamesOf(player))
 			if (!autoplay) setPaused(player, true)
@@ -692,6 +931,10 @@ export async function mountSpinePlayer(
 			onError(message)
 		},
 	})
+
+	// Render above the CSS resolution: the exports' lossy, low-resolution
+	// atlas pages otherwise show their blocking at seam level (see the fn).
+	supersampleSpineCanvas(player)
 
 	// The legacy 3.8 build ignores `showControls:false` for the initial
 	// visibility, so its controls bar + Spine logo occupy the stage — hide
@@ -727,6 +970,15 @@ export async function mountSpinePlayer(
 		},
 		setSkinStack(skins) {
 			applySkinStack(player, skins)
+			// A layer adds slots and can extend the painted area well past the
+			// authored canvas (props, the second face rig), so the frame is
+			// re-measured and the user's pan/zoom re-applied on top of it.
+			configureSkeletonViewport(player, {
+				...viewportContext,
+				composed: skins.length > 0,
+			})
+			refreshSkeletonBase()
+			applyViewport(viewportRef.current)
 		},
 		setPaused(paused) {
 			if (ready) setPaused(player, paused)
@@ -743,16 +995,141 @@ export async function mountSpinePlayer(
 	}
 }
 
+/** A viewport rectangle in skeleton units. */
+export type ViewportRect = {
+	readonly x: number
+	readonly y: number
+	readonly width: number
+	readonly height: number
+}
+
+/** Authors are allowed a pixel of slack before a frame counts as too small. */
+const VIEWPORT_SLACK = 1
+
 /**
- * Pin the native player's viewport to the skeleton canvas bounds. EX
- * exports often have animations whose automatic bounds calculation finds
- * no visible geometry (`Animation bounds are invalid`); the descriptor's
- * canvas bounds are the stable frame every animation shares.
+ * The rectangle a native player should frame:
+ *
+ * - content bounds missing or empty → the authored canvas (or nothing);
+ * - no authored canvas → `undefined`, leaving the runtime's own per-animation
+ *   fit alone — except for a composed scene, whose props make that fit span a
+ *   scene so wide the character shrinks to a speck, so it frames its own
+ *   composed content instead;
+ * - content inside the canvas → the canvas, unchanged;
+ * - content overflowing the canvas → their union, so props and extra skin
+ *   layers are visible instead of cropped.
  */
-function configureSkeletonViewport(player: NativePlayer) {
+export function viewportFrame(
+	canvas: ViewportRect | undefined,
+	bounds: ViewportRect | undefined,
+	options: { readonly composed?: boolean } = {},
+): ViewportRect | undefined {
+	const usable =
+		bounds !== undefined && bounds.width > 0 && bounds.height > 0
+			? bounds
+			: undefined
+	if (canvas === undefined) {
+		return options.composed === true ? usable : undefined
+	}
+	if (usable === undefined) return canvas
+	const contained =
+		usable.x >= canvas.x - VIEWPORT_SLACK &&
+		usable.y >= canvas.y - VIEWPORT_SLACK &&
+		usable.x + usable.width <= canvas.x + canvas.width + VIEWPORT_SLACK &&
+		usable.y + usable.height <= canvas.y + canvas.height + VIEWPORT_SLACK
+	if (contained) return canvas
+	const minX = Math.min(canvas.x, usable.x)
+	const minY = Math.min(canvas.y, usable.y)
+	const maxX = Math.max(canvas.x + canvas.width, usable.x + usable.width)
+	const maxY = Math.max(canvas.y + canvas.height, usable.y + usable.height)
+	return { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
+}
+
+/**
+ * Pin the native player's viewport to the frame {@link viewportFrame} picks.
+ * Game exports often have animations whose automatic bounds calculation finds
+ * no visible geometry (`Animation bounds are invalid`), which the runtime
+ * reports as a load failure; the skeleton's own setup canvas is the stable
+ * frame every animation shares. Returns silently when the skeleton declares no
+ * canvas, leaving the runtime's own per-animation fit untouched.
+ */
+function configureSkeletonViewport(
+	player: NativePlayer,
+	context: ViewportContext,
+) {
 	const data = player.skeleton?.data
 	if (!isRecord(data)) return
-	const { x, y, width, height } = data
+	const canvas = asRect(data.x, data.y, data.width, data.height)
+	const frame = viewportFrame(canvas, skeletonBounds(player, context), {
+		composed: context.composed,
+	})
+	if (frame === undefined) return
+	const config = player.config
+	if (!isRecord(config)) return
+	const viewport = isRecord(config.viewport) ? config.viewport : {}
+	const animations = isRecord(viewport.animations) ? viewport.animations : {}
+	config.viewport = { ...viewport, animations, ...frame }
+}
+
+/**
+ * The painted extent of the posed skeleton, or `undefined` when it cannot be
+ * measured. `Skeleton.getBounds` requires the runtime's own `Vector2` (it
+ * rejects plain objects), sets the minimum corner on the first vector and the
+ * size on the second, and reports zeros until the pose is current — so the
+ * world transform is refreshed first, with the physics mode 4.x insists on.
+ */
+function skeletonBounds(
+	player: NativePlayer,
+	context: ViewportContext,
+): ViewportRect | undefined {
+	const surface = player.skeleton as
+		| {
+				readonly getBounds?: (
+					offset?: unknown,
+					size?: unknown,
+					temp?: readonly number[],
+				) => unknown
+				readonly updateWorldTransform?: (physics?: unknown) => void
+		  }
+		| undefined
+	const vector = context.vector
+	if (surface === undefined || typeof surface.getBounds !== "function") {
+		return undefined
+	}
+	if (vector === undefined) return undefined
+	try {
+		updateWorldTransform(surface, context.physics)
+		const offset = new vector()
+		const size = new vector()
+		surface.getBounds(offset, size, [])
+		return asRect(offset.x, offset.y, size.x, size.y)
+	} catch {
+		return undefined
+	}
+}
+
+/**
+ * Refresh the pose before measuring it. 4.x requires the physics mode and
+ * throws `physics is undefined` without it; the legacy build takes no argument
+ * at all, so the argument-free call is the fallback.
+ */
+function updateWorldTransform(
+	surface: { readonly updateWorldTransform?: (physics?: unknown) => void },
+	physics: unknown,
+): void {
+	if (typeof surface.updateWorldTransform !== "function") return
+	try {
+		surface.updateWorldTransform(physics)
+	} catch {
+		surface.updateWorldTransform()
+	}
+}
+
+function asRect(
+	x: unknown,
+	y: unknown,
+	width: unknown,
+	height: unknown,
+): ViewportRect | undefined {
 	if (
 		typeof x !== "number" ||
 		typeof y !== "number" ||
@@ -761,15 +1138,13 @@ function configureSkeletonViewport(player: NativePlayer) {
 		!Number.isFinite(x) ||
 		!Number.isFinite(y) ||
 		!Number.isFinite(width) ||
-		!Number.isFinite(height)
+		!Number.isFinite(height) ||
+		width <= 0 ||
+		height <= 0
 	) {
-		return
+		return undefined
 	}
-	const config = player.config
-	if (!isRecord(config)) return
-	const viewport = isRecord(config.viewport) ? config.viewport : {}
-	const animations = isRecord(viewport.animations) ? viewport.animations : {}
-	config.viewport = { ...viewport, animations, x, y, width, height }
+	return { x, y, width, height }
 }
 
 /** Pause/resume via the player's own controls. */
@@ -841,8 +1216,18 @@ function setSkin(player: NativePlayer, name: string) {
 type SkinSurface = {
 	readonly setSkin?: (skin: unknown) => void
 	readonly setSkinByName?: (name: string) => void
+	/**
+	 * Re-attaches every slot from the setup pose. Required after a composite
+	 * `setSkin`: see `applySkinStack`.
+	 */
+	readonly setSlotsToSetupPose?: () => void
+	/** The skin currently in use, used to detect leaving a composite. */
+	readonly skin?: { readonly name?: string } | null
 	readonly data?: { readonly findSkin?: (name: string) => unknown }
 }
+
+/** Name of the merged skin `applySkinStack` installs. */
+const COMPOSITE_SKIN_NAME = "__hdo_composite_skin"
 
 /**
  * Apply a Live2DViewerEX composite skin stack. A stack of one falls back to
@@ -850,13 +1235,28 @@ type SkinSurface = {
  * `Skin` and set. When the runtime cannot build a composite (no name lookup,
  * no Skin constructor, or no copyable attachments) it degrades to the last
  * skin in the stack so the model still renders something.
+ *
+ * Setting the composite is not enough on its own. `Skeleton.setSkin` routes
+ * through `Skin.attachAll`, which attaches an attachment from the new skin
+ * *only where the old skin already had one attached* — so every slot the
+ * composite adds (a layer's second face rig, suit or props) stays empty, which
+ * is the headless / missing-pieces render. The source sites follow `setSkin`
+ * with `setSlotsToSetupPose()`, and the runtime documents that as the way to
+ * reset the visible attachments to the ones the setup pose names in the *new*
+ * skin. The next animation frame re-applies the animation's own attachment
+ * timelines on top, so this only fills the gaps.
  */
 export function applySkinStack(player: NativePlayer, stack: readonly string[]) {
 	const skeleton = player.skeleton as SkinSurface | undefined
 	if (skeleton === undefined || stack.length === 0) return
 
+	// A stack of one is the plain single-skin path — except when it replaces a
+	// composite, where the slots the composite filled must be reset to the
+	// setup pose as well or the dropped layers stay painted on the body.
+	const wasComposed = skeleton.skin?.name === COMPOSITE_SKIN_NAME
 	if (stack.length === 1) {
 		setSkin(player, stack[0]!)
+		if (wasComposed) skeleton.setSlotsToSetupPose?.()
 		return
 	}
 
@@ -882,7 +1282,7 @@ export function applySkinStack(player: NativePlayer, stack: readonly string[]) {
 	if (typeof ctor === "function") {
 		try {
 			composite = new (ctor as new (name: string) => unknown)(
-				"__hdo_composite_skin",
+				COMPOSITE_SKIN_NAME,
 			)
 		} catch {
 			composite = undefined
@@ -907,6 +1307,13 @@ export function applySkinStack(player: NativePlayer, stack: readonly string[]) {
 	// at the fresh skin, leaving the shared data skins pristine.
 	for (const skin of resolved) compositeAsSkin.addSkin(skin)
 	if (typeof skeleton.setSkin === "function") skeleton.setSkin(composite)
+	// `setSkin` only swapped the attachments the previous skin had already
+	// attached, so reset the slots to the setup pose to pull in everything the
+	// composite adds. Runs before the frame is measured, so the viewport sees
+	// the full layered body.
+	if (typeof skeleton.setSlotsToSetupPose === "function") {
+		skeleton.setSlotsToSetupPose()
+	}
 }
 
 /** Read the animation/skin name tables off a loaded native player. */

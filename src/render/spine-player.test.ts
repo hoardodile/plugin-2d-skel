@@ -2,13 +2,81 @@ import { describe, expect, test, vi } from "vitest"
 import {
 	applySkinStack,
 	atlasUsesPremultipliedAlpha,
+	clampPremultipliedRgba,
 	patchLegacyLoadingScreen,
 	prepareSpineAssets,
 	resolvePremultipliedAlpha,
+	supersampleSpineCanvas,
 	suppressLegacySpineChrome,
 	suppressSpinePlayerError,
+	viewportFrame,
 	worldPerPixel,
 } from "./spine-player"
+
+describe("clampPremultipliedRgba", () => {
+	test("zeroes the colour lossy WebP leaves under transparent pixels", () => {
+		const data = new Uint8ClampedArray([84, 82, 83, 0, 0, 0, 0, 0])
+		expect(clampPremultipliedRgba(data)).toBe(true)
+		expect([...data]).toEqual([0, 0, 0, 0, 0, 0, 0, 0])
+	})
+
+	test("clamps a channel above its alpha and leaves valid pixels alone", () => {
+		const data = new Uint8ClampedArray([200, 100, 40, 128, 10, 20, 30, 255])
+		expect(clampPremultipliedRgba(data)).toBe(true)
+		expect([...data]).toEqual([128, 100, 40, 128, 10, 20, 30, 255])
+	})
+
+	test("reports no change for already premultiplied pages", () => {
+		const data = new Uint8ClampedArray([64, 32, 16, 128, 255, 255, 255, 255])
+		expect(clampPremultipliedRgba(data)).toBe(false)
+	})
+})
+
+describe("supersampleSpineCanvas", () => {
+	function rendererOf(ratio: number) {
+		return {
+			maxCanvasWidth: 8192,
+			maxCanvasHeight: 8192,
+			getSafeDevicePixelRatio: vi.fn((_w: number, _h: number) => ratio),
+		}
+	}
+
+	test("raises a 1× device ratio to the supersample scale", () => {
+		const renderer = rendererOf(1)
+		const player = { sceneRenderer: renderer } as unknown as Parameters<
+			typeof supersampleSpineCanvas
+		>[0]
+		supersampleSpineCanvas(player)
+		expect(renderer.getSafeDevicePixelRatio(1000, 800)).toBe(2)
+	})
+
+	test("never lowers a platform ratio that is already higher", () => {
+		const renderer = rendererOf(3)
+		const player = { sceneRenderer: renderer } as unknown as Parameters<
+			typeof supersampleSpineCanvas
+		>[0]
+		supersampleSpineCanvas(player)
+		expect(renderer.getSafeDevicePixelRatio(1000, 800)).toBe(3)
+	})
+
+	test("clamps to the GL size limit", () => {
+		const renderer = rendererOf(1)
+		renderer.maxCanvasWidth = 1500
+		renderer.maxCanvasHeight = 1500
+		const player = { sceneRenderer: renderer } as unknown as Parameters<
+			typeof supersampleSpineCanvas
+		>[0]
+		supersampleSpineCanvas(player)
+		expect(renderer.getSafeDevicePixelRatio(1000, 800)).toBe(1.5)
+	})
+
+	test("tolerates a renderer without the hook", () => {
+		const player = {
+			sceneRenderer: {},
+		} as unknown as Parameters<typeof supersampleSpineCanvas>[0]
+		expect(() => supersampleSpineCanvas(player)).not.toThrow()
+	})
+})
 
 describe("atlasUsesPremultipliedAlpha", () => {
 	test("reads an explicit pma:true flag", () => {
@@ -134,6 +202,68 @@ describe("prepareSpineAssets", () => {
 		expect(urls?.atlasText).toContain("file:///texture0.png")
 		expect(urls?.atlasText).not.toContain("?fmt=")
 	})
+
+	test("leaves an already-WebP atlas page on the original bytes", async () => {
+		// A WebP-sourced model (e.g. an export that ships the CDN's own
+		// textures) must not be re-encoded to WebP: that second lossy pass
+		// blocks up the atlas seams.
+		const webpScene = { ...SCENE, textures: ["texture0.webp"] } as const
+		const urls = await prepareSpineAssets({
+			scene: webpScene,
+			readFile: readFileOf({ "atlas.txt": "texture0.webp\nsize: 512,512\n" }),
+			resolveFileUrl: (filename, variant) =>
+				variant === undefined
+					? `file:///${filename}`
+					: `file:///${filename}?fmt=${variant.format}&fit=${variant.fit}`,
+			imageVariant: { format: "webp", fit: "exact" },
+		})
+		expect(urls?.atlasText).toContain("file:///texture0.webp")
+		expect(urls?.atlasText).not.toContain("?fmt=")
+	})
+
+	test("keeps the page URL and overrides it for a pma atlas", async () => {
+		const urls = await prepareSpineAssets({
+			scene: SCENE,
+			readFile: readFileOf({
+				"atlas.txt": "texture0.png\nsize: 512,512\npma: true\n",
+			}),
+			resolveFileUrl: (filename) => `file:///${filename}`,
+			premultiplyPage: async (url) => `data:image/png;clamped(${url})`,
+		})
+		// The page name must stay a URL the runtime resolves as absolute; the
+		// clamped bytes ride the rawDataURIs override keyed by that same URL.
+		expect(urls?.atlasText).toContain("file:///texture0.png")
+		expect(urls?.atlasText).not.toContain("data:image/png")
+		expect(urls?.pageOverrides?.get("file:///texture0.png")).toBe(
+			"data:image/png;clamped(file:///texture0.png)",
+		)
+	})
+
+	test("leaves a non-premultiplied atlas page untouched", async () => {
+		const premultiplyPage = vi.fn(async () => "data:image/png;clamped")
+		const urls = await prepareSpineAssets({
+			scene: SCENE,
+			readFile: readFileOf({ "atlas.txt": ATLAS }),
+			resolveFileUrl: (filename) => `file:///${filename}`,
+			premultiplyPage,
+		})
+		expect(premultiplyPage).not.toHaveBeenCalled()
+		expect(urls?.atlasText).toContain("file:///texture0.png")
+		expect(urls?.pageOverrides).toBeUndefined()
+	})
+
+	test("keeps the original page when clamping reports no change", async () => {
+		const urls = await prepareSpineAssets({
+			scene: SCENE,
+			readFile: readFileOf({
+				"atlas.txt": "texture0.png\nsize: 512,512\npma: true\n",
+			}),
+			resolveFileUrl: (filename) => `file:///${filename}`,
+			premultiplyPage: async () => undefined,
+		})
+		expect(urls?.atlasText).toContain("file:///texture0.png")
+		expect(urls?.pageOverrides).toBeUndefined()
+	})
 })
 
 describe("suppressSpinePlayerError", () => {
@@ -254,16 +384,21 @@ describe("applySkinStack", () => {
 		}
 	}
 
-	function fakeSkeleton(skinNames: readonly string[]) {
+	function fakeSkeleton(skinNames: readonly string[], currentSkin?: string) {
 		const skins = skinNames.map((name) => new FakeSkin(name))
 		const setSkinCalls: FakeSkin[] = []
 		const setSkinByNameCalls: string[] = []
+		let setupPoseResets = 0
 		const skeleton = {
+			skin: currentSkin === undefined ? undefined : { name: currentSkin },
 			setSkin(skin: FakeSkin) {
 				setSkinCalls.push(skin)
 			},
 			setSkinByName(name: string) {
 				setSkinByNameCalls.push(name)
+			},
+			setSlotsToSetupPose() {
+				setupPoseResets++
 			},
 			data: {
 				skins,
@@ -280,31 +415,64 @@ describe("applySkinStack", () => {
 			} as unknown as Parameters<typeof applySkinStack>[0],
 			setSkinCalls,
 			setSkinByNameCalls,
+			setupPoseResets: () => setupPoseResets,
 		}
 	}
 
 	test("a single skin follows the existing single-skin path", () => {
-		const { player, setSkinByNameCalls } = fakeSkeleton(["skin_base"])
-		applySkinStack(player, ["skin_base"])
-		expect(setSkinByNameCalls).toEqual(["skin_base"])
+		const { player, setSkinByNameCalls } = fakeSkeleton(["body_base"])
+		applySkinStack(player, ["body_base"])
+		expect(setSkinByNameCalls).toEqual(["body_base"])
+	})
+
+	test("a plain single skin leaves the setup pose alone", () => {
+		// The compatibility guarantee: a scene that composes nothing (no
+		// composite is ever installed) keeps byte-for-byte the old single-skin
+		// behaviour.
+		const { player, setupPoseResets } = fakeSkeleton(["default"], "default")
+		applySkinStack(player, ["default"])
+		expect(setupPoseResets()).toBe(0)
+	})
+
+	test("a composite resets the slots to the setup pose", () => {
+		// `setSkin` only swaps attachments the previous skin had attached, so
+		// without this the composite's added slots stay empty — the
+		// missing-pieces render.
+		const { player, setSkinCalls, setupPoseResets } = fakeSkeleton(
+			["body_base", "face/one_Idle"],
+			"body_base",
+		)
+		applySkinStack(player, ["body_base", "face/one_Idle"])
+		expect(setSkinCalls).toHaveLength(1)
+		expect(setupPoseResets()).toBe(1)
+	})
+
+	test("leaving a composite resets the dropped layers' slots", () => {
+		const { player, setSkinByNameCalls, setupPoseResets } = fakeSkeleton(
+			["body_base"],
+			"__hdo_composite_skin",
+		)
+		applySkinStack(player, ["body_base"])
+		expect(setSkinByNameCalls).toEqual(["body_base"])
+		expect(setupPoseResets()).toBe(1)
 	})
 
 	test("merges a stack into a pristine composite Skin and sets it", () => {
 		const { player, setSkinCalls } = fakeSkeleton([
-			"skin_base",
-			"breast/Unedited",
-			"decorations/acc",
+			"body_base",
+			"variant/edited",
+			"layers/acc",
 		])
-		applySkinStack(player, ["skin_base", "breast/Unedited", "decorations/acc"])
+		applySkinStack(player, ["body_base", "variant/edited", "layers/acc"])
 		expect(setSkinCalls).toHaveLength(1)
 		const composite = setSkinCalls[0]!
 		// The composite is fresh, holding every resolved skin (the shared data
-		// skins are not mutated), so a later set_skins/remove_skins can rebuild.
+		// skins are not mutated), so a later stack update can rebuild it.
 		expect(composite.name).toBe("__hdo_composite_skin")
 		expect((composite.added as FakeSkin[]).map((s) => s.name)).toEqual([
-			"skin_base",
-			"breast/Unedited",
-			"decorations/acc",
+			"body_base",
+			"variant/edited",
+			"layers/acc",
 		])
 	})
 
@@ -317,13 +485,71 @@ describe("applySkinStack", () => {
 				},
 			},
 		} as unknown as Parameters<typeof applySkinStack>[0]
-		applySkinStack(player, ["skin_base", "face/idle"])
-		expect(setSkinByNameCalls).toEqual(["face/idle"])
+		applySkinStack(player, ["body_base", "face/one_Idle"])
+		expect(setSkinByNameCalls).toEqual(["face/one_Idle"])
 	})
 
 	test("a stack with no resolvable skins leaves the skeleton alone", () => {
 		const { player, setSkinCalls } = fakeSkeleton([])
-		applySkinStack(player, ["skin_base", "missing"])
+		applySkinStack(player, ["body_base", "missing"])
 		expect(setSkinCalls).toHaveLength(0)
+	})
+})
+
+describe("viewportFrame", () => {
+	const canvas = { x: -100, y: 0, width: 400, height: 600 }
+
+	test("a skeleton without an authored canvas keeps the runtime's own fit", () => {
+		expect(
+			viewportFrame(undefined, { x: 0, y: 0, width: 10, height: 10 }),
+		).toBeUndefined()
+		expect(viewportFrame(undefined, undefined)).toBeUndefined()
+	})
+
+	test("a composed scene without a canvas frames its own content", () => {
+		// The composed props otherwise make the runtime's per-animation fit
+		// span the whole scene and shrink the character to a speck.
+		expect(
+			viewportFrame(
+				undefined,
+				{ x: -828, y: -1137, width: 1803, height: 2474 },
+				{ composed: true },
+			),
+		).toEqual({ x: -828, y: -1137, width: 1803, height: 2474 })
+		// Without measurable content it still leaves the runtime alone.
+		expect(
+			viewportFrame(undefined, undefined, { composed: true }),
+		).toBeUndefined()
+	})
+
+	test("unmeasurable content leaves the authored canvas as it is", () => {
+		expect(viewportFrame(canvas, undefined)).toEqual(canvas)
+		expect(viewportFrame(canvas, { x: 0, y: 0, width: 0, height: 0 })).toEqual(
+			canvas,
+		)
+	})
+
+	test("content inside the canvas does not move the frame", () => {
+		expect(
+			viewportFrame(canvas, { x: -80, y: 20, width: 300, height: 500 }),
+		).toEqual(canvas)
+		// A pixel of slack keeps rounding noise from resizing the frame.
+		expect(
+			viewportFrame(canvas, { x: -101, y: -0.5, width: 402, height: 600.5 }),
+		).toEqual(canvas)
+	})
+
+	test("content overflowing the canvas expands the frame to their union", () => {
+		// The exported game models declare a setup canvas that their props and
+		// extra skin layers extend past; framing the canvas alone crops them.
+		expect(
+			viewportFrame(canvas, { x: -150, y: -100, width: 700, height: 900 }),
+		).toEqual({ x: -150, y: -100, width: 700, height: 900 })
+		expect(
+			viewportFrame(canvas, { x: -100, y: 0, width: 500, height: 600 }),
+		).toEqual({ x: -100, y: 0, width: 500, height: 600 })
+		expect(
+			viewportFrame(canvas, { x: -120, y: 10, width: 100, height: 100 }),
+		).toEqual({ x: -120, y: 0, width: 420, height: 600 })
 	})
 })

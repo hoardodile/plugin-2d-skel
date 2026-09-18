@@ -27,6 +27,7 @@ export function groupSpineScenes(
 		if (document === undefined) continue
 		const format = skeleton.endsWith(".skel") ? "skel" : "json"
 		const directory = dirname(skeleton)
+		const skinStack = pickSkinStack(files, skeleton, directory)
 		scenes.push({
 			engine: "spine",
 			skeleton,
@@ -38,6 +39,7 @@ export function groupSpineScenes(
 			animations: document.animations,
 			skins: document.skins,
 			label: basename(skeleton),
+			...(skinStack !== undefined ? { skinStack } : {}),
 		})
 	}
 	return scenes.filter(isRenderable)
@@ -78,6 +80,23 @@ function pickTextures(
 		.sort(naturalCompare)
 	if (local.length > 0) return local
 	return files.filter(isTextureName).sort(naturalCompare)
+}
+
+/**
+ * The layering declaration a model ships (`<skeleton>.skins.json`, else a plain
+ * `skins.json` beside it). The viewer has no built-in convention, so this file
+ * is what makes a layered export render composed.
+ */
+function pickSkinStack(
+	files: readonly string[],
+	skeleton: string,
+	directory: string,
+): string | undefined {
+	const prefix = directory === "" ? "" : `${directory}/`
+	const sameBase = `${prefix}${basename(skeleton)}.skins.json`
+	if (files.includes(sameBase)) return sameBase
+	const plain = `${prefix}skins.json`
+	return files.includes(plain) ? plain : undefined
 }
 
 /** Flatten scenes into the flat sidecar shape the host serializes. */

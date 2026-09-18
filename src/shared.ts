@@ -44,6 +44,12 @@ export type SpineScene = {
 	readonly label?: string
 	/** Present on EX scenes: the descriptor that owns the scene. */
 	readonly modelJson?: string
+	/**
+	 * The model's own layering declaration (`<skeleton>.skins.json`), when the
+	 * folder ships one. The viewer carries no convention of its own, so a scene
+	 * without this renders a single skin.
+	 */
+	readonly skinStack?: string
 }
 
 export type DragonBonesScene = {

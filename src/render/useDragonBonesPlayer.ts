@@ -21,7 +21,7 @@ import { usePluginAPI } from "./hooks"
 import type { SpineSettings } from "./prefs"
 import { dragonBonesRuntimeVersion } from "./runtime-version"
 import { parseSpineBounds, parseSpineHitAreas } from "./spine-hit"
-import { textureVariant } from "./texture-format"
+import { textureVariant, textureVariantFor } from "./texture-format"
 import type { SpineExHitData } from "./useSpinePlayer"
 
 export type DragonBonesPlayerStatus = "idle" | "loading" | "ready" | "error"
@@ -337,7 +337,10 @@ export function useDragonBonesPlayer(options: {
 					const texture = Texture.from(
 						api.resolveFileUrl(
 							ref.texture,
-							textureVariant(settings.webpTextures),
+							textureVariantFor(
+								ref.texture,
+								textureVariant(settings.webpTextures),
+							),
 						),
 					)
 					const atlasName = `${dataName}-atlas-${index}`

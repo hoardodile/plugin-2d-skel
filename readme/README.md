@@ -10,7 +10,8 @@ in all three formats:
 - **Spine** — direct `.json`/`.skel` + `.atlas` exports and Live2DViewerEX
   `type: 9` configs (`model0.json` + `skeleton_N` + `atlases_*`):
   animation/skin/overlay selection, EX hit-testing, dialogue, sound, model
-  variants.
+  variants. A layered export is composed into one skin with a toggle chip per
+  layer, using the layering its own `<model>.skins.json` declares.
 - **DragonBones** — direct `*_ske.json`/`*_dbbin` + `*_tex.json` atlas
   exports and Live2DViewerEX `type: 10` configs: animation, armature, skin
   selection and model variants.

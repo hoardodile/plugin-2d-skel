@@ -77,11 +77,14 @@ export type SpineController = PlayerCommon<"spine"> & {
 	readonly errorDetail?: string
 	readonly runtimeVersion?: string
 	/**
-	 * True for Live2DViewerEX `type:9` models that assemble their appearance
-	 * from a composite (`set_skins`/`add_skins`) skin stack; the single-select
-	 * skin chips in the Controls tab are meaningless for these and are hidden.
+	 * The live composite skin stack, as the model's own declaration resolved it
+	 * (its `<model>.skins.json`, or an EX `set_skins` graph). The Controls tab's
+	 * skin chips add/remove members instead of replacing one skin. Empty for a
+	 * model that declares nothing, which uses the plain `skin` choice.
 	 */
-	readonly isCompositeSkin: boolean
+	readonly skinStack: readonly string[]
+	/** Add or remove one layer of {@link SpineController.skinStack}. */
+	readonly toggleSkin: (name: string) => void
 }
 
 export type DragonBonesPlayerNames = {

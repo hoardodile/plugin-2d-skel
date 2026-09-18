@@ -14,9 +14,7 @@ export function rewriteAtlas(
 	const lines = atlasText.split(/\r?\n/)
 	let foundPage = false
 	const rewritten = lines.map((line, index) => {
-		if (!isPageLine(line)) return line
-		const next = lines[index + 1]
-		if (next === undefined || !next.trim().startsWith("size:")) return line
+		if (!isPageHeader(lines, index)) return line
 		const resolved = resolvePage(line.trim())
 		if (resolved === undefined) return line
 		foundPage = true
@@ -24,6 +22,27 @@ export function rewriteAtlas(
 	})
 	if (!foundPage) return ""
 	return rewritten.join("\n")
+}
+
+/**
+ * The page paths an atlas declares, in file order. Same rule as
+ * {@link rewriteAtlas}, for callers that must pre-process every page (e.g.
+ * normalising the pixels before the runtime loads them).
+ */
+export function atlasPagePaths(atlasText: string): string[] {
+	const lines = atlasText.split(/\r?\n/)
+	const pages: string[] = []
+	for (let index = 0; index < lines.length; index++) {
+		if (isPageHeader(lines, index)) pages.push(lines[index]!.trim())
+	}
+	return pages
+}
+
+/** A top-level line whose next line is its `size:` attribute. */
+function isPageHeader(lines: readonly string[], index: number): boolean {
+	const line = lines[index]
+	if (line === undefined || !isPageLine(line)) return false
+	return lines[index + 1]?.trim().startsWith("size:") === true
 }
 
 /** True for a page header: top-level, non-empty, and not a `key: value`. */

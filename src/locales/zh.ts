@@ -117,6 +117,10 @@ export default {
 		"DragonBones 版权归 DragonBones 项目所有，Pixi 适配层以 MIT 许可发布；运行时按其自身许可随包提供，仅用于模型展示。",
 	animations: "动画",
 	skins: "皮肤",
+	skinConfigHint:
+		"该模型没有自带分层声明，因此只按单个皮肤渲染。把下面的内容存成模型目录里的“<模型>.skins.json”，即可声明各层如何合成：",
+	skinConfigCopy: "复制模板",
+	skinConfigCopied: "已复制",
 	overlays: "叠加层",
 	standard: "标准",
 	format: "格式",

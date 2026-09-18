@@ -3,7 +3,7 @@ import { AltArrowLeft, AltArrowRight } from "@hoardodile/ui/icons/registry"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "../i18n"
 import type { SpineScene } from "../shared"
-import { baseAnimationNames, effectiveChoice } from "./choices"
+import { baseAnimationNames, defaultSkin, effectiveChoice } from "./choices"
 import { EngineIconButton } from "./EngineIconButton"
 import { type EnginePlugin, EngineStageContent } from "./EngineStageContent"
 import type { ViewerScene } from "./engine"
@@ -15,6 +15,7 @@ import {
 	toSpineSettings,
 } from "./prefs"
 import { SpineControlsTab } from "./SpineControlsTab"
+import { skinStackConfigTemplate } from "./spine-stack"
 import { useSpinePlayer } from "./useSpinePlayer"
 
 export type SpineHostProps = {
@@ -99,9 +100,20 @@ export function SpineHost({
 		animationChoice,
 		scene?.modelJson !== undefined,
 	)
-	const skin = player.isCompositeSkin
+	// A layered scene renders from the player's composite stack, so its chips
+	// add/remove layers; a single-skin scene keeps the plain choice.
+	const isLayered = player.skinStack.length > 0
+	// The viewer ships no layering convention: a model that declares nothing
+	// gets the starter template so its layers can be stated once, in the folder.
+	const skinConfigTemplateText =
+		scene?.skinStack === undefined && player.skinStack.length <= 1
+			? skinStackConfigTemplate(player.names.skins)
+			: undefined
+	const skin = isLayered
 		? undefined
-		: effectiveChoice(player.names.skins, skinChoice)
+		: skinChoice === undefined
+			? defaultSkin(player.names.skins)
+			: effectiveChoice(player.names.skins, skinChoice)
 	const overlay = effectiveChoice(player.names.overlays, overlayChoice)
 
 	function stepAnimation(dir: 1 | -1) {
@@ -157,13 +169,17 @@ export function SpineHost({
 				return (
 					<SpineControlsTab
 						animations={baseNames}
-						skins={player.isCompositeSkin ? [] : player.names.skins}
+						skins={player.names.skins}
+						{...(isLayered ? { activeSkins: player.skinStack } : {})}
+						{...(skinConfigTemplateText !== undefined
+							? { skinConfigTemplate: skinConfigTemplateText }
+							: {})}
 						overlays={player.names.overlays}
 						animation={animation}
 						skin={skin}
 						overlay={overlay}
 						onAnimationChange={setAnimationChoice}
-						onSkinChange={setSkinChoice}
+						onSkinChange={isLayered ? player.toggleSkin : setSkinChoice}
 						onOverlayChange={setOverlayChoice}
 						hitAreas={(player.exHit?.areas ?? []).map((area) => ({
 							name: area.name,

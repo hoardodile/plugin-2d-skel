@@ -122,6 +122,10 @@ export default {
 		"DragonBones は DragonBones プロジェクトに帰属し、Pixi アダプターは MIT ライセンスです。ランタイムはモデル表示のために各ライセンスに基づき同梱されています。",
 	animations: "アニメーション",
 	skins: "スキン",
+	skinConfigHint:
+		"このモデルはレイヤー構成を宣言していないため、1 つのスキンのみ表示します。以下をモデルフォルダに「<モデル>.skins.json」として保存すると、構成を宣言できます：",
+	skinConfigCopy: "テンプレートをコピー",
+	skinConfigCopied: "コピーしました",
 	overlays: "オーバーレイ",
 	standard: "標準",
 	format: "形式",

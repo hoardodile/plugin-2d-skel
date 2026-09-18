@@ -165,16 +165,3 @@ function skinStackFromGroup(
 	}
 	return undefined
 }
-
-/**
- * The scene-level fallback when no `set_skins` stack is declared: prefer the
- * complete-body `skin_base` skin (the Live2DViewerEX composite root), then
- * `default`, then the scene's first skin.
- */
-export function fallbackSkinStack(
-	sceneSkins: readonly string[],
-): readonly string[] {
-	if (sceneSkins.includes("skin_base")) return ["skin_base"]
-	if (sceneSkins.includes("default")) return ["default"]
-	return sceneSkins.length > 0 ? [sceneSkins[0]!] : []
-}

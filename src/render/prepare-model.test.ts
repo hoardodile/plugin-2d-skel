@@ -248,6 +248,38 @@ describe("prepareLive2dModel", () => {
 		expect(settings.pose).toBe("/file/pose.json")
 	})
 
+	test("leaves already-WebP textures on their original bytes", async () => {
+		// The variant only ever produces WebP, so a WebP source must not be
+		// re-encoded through it (a second lossy pass blocks up the seams).
+		const variant: ImageVariantSpec = { format: "webp", fit: "exact" }
+		const prepared = await prepareLive2dModel({
+			scene: {
+				modelJson: "model0.json",
+				kind: "ex",
+				engine: "live2d",
+				moc: "model_0.moc",
+				textures: ["textures_0_0.webp"],
+				motionGroups: ["idle"],
+				expressions: [],
+			},
+			readFile: readFileOf({
+				"model0.json": JSON.stringify({
+					type: 0,
+					model: "model_0.moc",
+					textures: ["textures_0_0.webp"],
+				}),
+			}),
+			resolveFileUrl: (filename, given) =>
+				given === undefined
+					? `/file/${filename}`
+					: `/file/${filename}?fmt=${given.format}&fit=${given.fit}`,
+			resolveBaseUrl,
+			imageVariant: variant,
+		})
+		const settings = prepared?.settings as Record<string, unknown>
+		expect(settings.textures).toEqual(["/file/textures_0_0.webp"])
+	})
+
 	test("drops empty texture placeholders from a Cubism descriptor", async () => {
 		// Live2DViewerEX exports carry `["Textures_0_0.png", ""]`; resolving the
 		// empty ref yields a broken `<path>//` URL the host cannot serve, so the

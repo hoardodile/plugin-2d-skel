@@ -126,4 +126,60 @@ describe("SpineControlsTab", () => {
 		screen.getByTestId("spine-overlay-none").click()
 		expect(base.onOverlayChange).toHaveBeenCalledWith("")
 	})
+
+	test("marks the active skin in single-select mode", () => {
+		renderTab({ skin: "alt" })
+		expect(screen.getByTestId("spine-skin-alt")).toHaveAttribute(
+			"aria-pressed",
+			"true",
+		)
+		expect(screen.getByTestId("spine-skin-default")).toHaveAttribute(
+			"aria-pressed",
+			"false",
+		)
+	})
+
+	test("shows every merged layer as pressed for a composed scene", () => {
+		// A composed scene mounts several skins at once, so the chips report
+		// membership instead of one active name.
+		const onSkinChange = vi.fn()
+		renderTab({
+			skins: ["body_base", "layers/one", "face/one_Idle"],
+			activeSkins: ["body_base", "face/one_Idle"],
+			skin: undefined,
+			onSkinChange,
+		})
+		expect(screen.getByTestId("spine-skin-body_base")).toHaveAttribute(
+			"aria-pressed",
+			"true",
+		)
+		expect(screen.getByTestId("spine-skin-face/one_Idle")).toHaveAttribute(
+			"aria-pressed",
+			"true",
+		)
+		expect(screen.getByTestId("spine-skin-layers/one")).toHaveAttribute(
+			"aria-pressed",
+			"false",
+		)
+		// Clicking toggles rather than replacing the selection.
+		screen.getByTestId("spine-skin-layers/one").click()
+		expect(onSkinChange).toHaveBeenCalledWith("layers/one")
+	})
+
+	test("offers the layering template when the model declares none", () => {
+		const template = '{\n\t"v": 1,\n\t"stack": ["default", "alt"]\n}\n'
+		renderTab({ skinConfigTemplate: template })
+		expect(screen.getByTestId("spine-skin-config-hint")).toBeInTheDocument()
+		expect(screen.getByTestId("spine-skin-config-template")).toHaveTextContent(
+			'"stack": ["default", "alt"]',
+		)
+		expect(screen.getByTestId("spine-skin-config-copy")).toBeInTheDocument()
+	})
+
+	test("hides the template once the model declares its layers", () => {
+		renderTab({ activeSkins: ["default"] })
+		expect(
+			screen.queryByTestId("spine-skin-config-hint"),
+		).not.toBeInTheDocument()
+	})
 })

@@ -1,3 +1,5 @@
+import { resolveSkinStack } from "./spine-stack"
+
 /**
  * Resolve a toolbar choice against the player's discovered names. A
  * missing or stale choice falls back to `idle` for EX scenes (the pose
@@ -12,6 +14,18 @@ export function effectiveChoice(
 	if (choice !== undefined && names.includes(choice)) return choice
 	if (preferIdle && names.includes("idle")) return "idle"
 	return names[0]
+}
+
+/**
+ * The skin a scene starts on when it composes nothing. The evaluator's base
+ * picker is the only place that decides (`default`, else the first name); a
+ * layered scene never reaches this — its stack comes from the model's own
+ * `<model>.skins.json`. The alphabetically-first name of a layered export is
+ * often an expression skin that draws nothing on its own, which is exactly why
+ * a model is expected to declare its composition.
+ */
+export function defaultSkin(names: readonly string[]): string | undefined {
+	return resolveSkinStack(names).base
 }
 
 /**

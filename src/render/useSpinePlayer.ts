@@ -7,12 +7,12 @@ import {
 	parseMotionGraph,
 	parseMotionRef,
 } from "../core/motion-graph"
+import { parseSkinStackConfig } from "../core/skin-stack-config"
 import type { SpineScene } from "../shared"
 import { HOME, type ViewportTransform } from "./canvas-view"
-import { baseAnimationNames, effectiveChoice } from "./choices"
+import { baseAnimationNames, defaultSkin, effectiveChoice } from "./choices"
 import {
 	applySkinCommand,
-	fallbackSkinStack,
 	parseSkinCommand,
 	skinStackFromMotionGraph,
 } from "./commands"
@@ -34,6 +34,11 @@ import {
 	type SpinePlayback,
 	sceneRuntime,
 } from "./spine-player"
+import {
+	type ResolvedSkinStack,
+	resolveSceneSkinStack,
+	toggleSkinLayer,
+} from "./spine-stack"
 import { textureVariant } from "./texture-format"
 
 export type SpinePlayerStatus = "idle" | "loading" | "ready" | "error"
@@ -112,7 +117,12 @@ export function useSpinePlayer(options: {
 	const preferIdle = scene?.modelJson !== undefined
 	const baseNames = baseAnimationNames(names.animations, names.overlays)
 	const animation = effectiveChoice(baseNames, animationChoice, preferIdle)
-	const skin = effectiveChoice(names.skins, skinChoice)
+	// An unset skin starts on the scene's base skin, not on whatever name
+	// sorts first — the toolbar's chips and the mount must agree.
+	const skin =
+		skinChoice === undefined
+			? defaultSkin(names.skins)
+			: effectiveChoice(names.skins, skinChoice)
 	const overlay = effectiveChoice(names.overlays, overlayChoice)
 	const [paused, setPaused] = useState(false)
 	const [dialogue, setDialogue] = useState<SpineDialogue>({
@@ -124,7 +134,15 @@ export function useSpinePlayer(options: {
 	const [runtimeVersion, setRuntimeVersion] = useState<string | undefined>(
 		undefined,
 	)
-	const [isCompositeSkin, setIsCompositeSkin] = useState(false)
+	/**
+	 * The live composite skin stack. A model that declares its layers (its own
+	 * `<model>.skins.json`, or an EX `set_skins` graph) mounts and toggles
+	 * through it; a scene that declares nothing leaves it empty and uses the
+	 * `skin` choice instead.
+	 */
+	const [skinStack, setSkinStack] = useState<readonly string[]>([])
+	/** The declaration the current stack was resolved from, for toggling. */
+	const resolvedStackRef = useRef<ResolvedSkinStack | undefined>(undefined)
 
 	const sceneKey = `${scene?.skeleton ?? ""}\u0000${scene?.atlas ?? ""}`
 
@@ -135,6 +153,7 @@ export function useSpinePlayer(options: {
 		graphRef.current = {}
 		hitMapRef.current = new Map()
 		skinStackRef.current = []
+		resolvedStackRef.current = undefined
 		playMotionRefImplRef.current = () => {}
 		hitImplRef.current = () => {}
 		setPaused(false)
@@ -143,7 +162,7 @@ export function useSpinePlayer(options: {
 		setExHit(undefined)
 		setErrorDetail(undefined)
 		setRuntimeVersion(undefined)
-		setIsCompositeSkin(false)
+		setSkinStack([])
 
 		function clearTimer() {
 			if (timerRef.current !== null) window.clearTimeout(timerRef.current)
@@ -182,6 +201,7 @@ export function useSpinePlayer(options: {
 					skinCommand,
 				)
 				playbackRef.current?.setSkinStack(skinStackRef.current)
+				setSkinStack(skinStackRef.current)
 				return
 			}
 			onCommand(command)
@@ -235,6 +255,25 @@ export function useSpinePlayer(options: {
 		playMotionRefImplRef.current = playMotionRefImpl
 		hitImplRef.current = playHitNames
 
+		/**
+		 * Read the model's own layering declaration. A folder without one (or a
+		 * malformed one) simply declares nothing, and the scene renders a single
+		 * skin with the Controls panel offering the template.
+		 */
+		async function readSkinStackConfig() {
+			if (scene?.skinStack === undefined) return undefined
+			try {
+				const bytes = await api.readFile(scene.skinStack)
+				return parseSkinStackConfig(new TextDecoder().decode(bytes))
+			} catch (reason) {
+				api.logWarn("spine skins config read failed", {
+					filename: scene.skinStack,
+					reason: String(reason),
+				})
+				return undefined
+			}
+		}
+
 		async function mount() {
 			if (scene === undefined || containerRef.current === null) return
 			const runtime = sceneRuntime(scene)
@@ -248,7 +287,10 @@ export function useSpinePlayer(options: {
 				animationChoice,
 				scene.modelJson !== undefined,
 			)
-			const mountSkin = effectiveChoice(scene.skins, skinChoice)
+			const mountSkin =
+				skinChoice === undefined
+					? defaultSkin(scene.skins)
+					: effectiveChoice(scene.skins, skinChoice)
 
 			let pageUrls: ReadonlyMap<string, string> | undefined
 			if (scene.modelJson !== undefined) {
@@ -286,22 +328,29 @@ export function useSpinePlayer(options: {
 				skins: scene.skins,
 			})
 
-			// Live2DViewerEX `type:9` Spine models are composite: their full
-			// look is a base skin plus additive layer skins declared by a
-			// motion's `set_skins`/`add_skins`. Seed the player with that stack
-			// (falling back to a sensible single base) so the character renders
-			// whole instead of one alphabetically-first layer skin.
-			let mountSkins: readonly string[] | undefined
-			if (scene.modelJson !== undefined) {
-				mountSkins =
-					skinStackFromMotionGraph(graphRef.current) ??
-					fallbackSkinStack(scene.skins)
-				if (mountSkins.length > 0) skinStackRef.current = mountSkins
-				// Composite (layered) models hide the meaningless single-select
-				// skin chips; a base-only stack keeps them, since `skin_base`
-				// is the whole-body root and safe to pick.
-				setIsCompositeSkin(mountSkins.length > 1)
-			}
+			// A model states how its skins compose in its own
+			// `<model>.skins.json` (written by the archive tool, or hand-written
+			// for any other toolchain); an EX descriptor states it with
+			// `set_skins`. Both are data — this viewer carries no convention, so
+			// a model that declares nothing mounts a single skin.
+			const config = await readSkinStackConfig()
+			if (disposed) return
+			const declaredStack = skinStackFromMotionGraph(graphRef.current)
+			const resolved = resolveSceneSkinStack({
+				names: scene.skins,
+				...(config !== undefined ? { config } : {}),
+				...(declaredStack !== undefined ? { declaredStack } : {}),
+			})
+			resolvedStackRef.current = resolved
+			// The runtime takes one skin in its constructor; the rest compose on
+			// top of it once mounted.
+			const layers = resolved.applies
+				? resolved.defaultStack
+				: mountSkin === undefined
+					? []
+					: [mountSkin]
+			skinStackRef.current = layers
+			setSkinStack(layers)
 
 			try {
 				const urls = await prepareSpineAssets({
@@ -326,14 +375,11 @@ export function useSpinePlayer(options: {
 					urls,
 					runtime,
 					animation: mountAnimation,
-					skin: mountSkins?.length ? mountSkins[0] : mountSkin,
-					...(mountSkins !== undefined && mountSkins.length > 0
-						? { skins: mountSkins }
-						: {}),
+					skin: layers[0] ?? mountSkin,
+					...(layers.length > 0 ? { skins: layers } : {}),
 					autoplay: settings.autoplay,
 					loop: settings.loop,
 					debug: settings.debug,
-					skeletonViewport: scene.modelJson !== undefined,
 					onReady(nextNames) {
 						if (disposed) return
 						setNames({
@@ -452,6 +498,27 @@ export function useSpinePlayer(options: {
 		hitImplRef.current(hitNames)
 	}, [])
 
+	/**
+	 * Add or remove one skin layer of the live composite. The rules come from the
+	 * model's own declaration (pinned body skin, single-choice families) and are
+	 * resolved once per scene; the player re-applies the merged skin and the
+	 * viewport is re-fitted, since a layer can extend the model's bounds.
+	 */
+	const toggleSkin = useCallback(
+		(name: string) => {
+			const fallback = resolveSceneSkinStack({ names: names.skins })
+			const next = toggleSkinLayer(
+				resolvedStackRef.current ?? fallback,
+				skinStackRef.current,
+				name,
+			)
+			skinStackRef.current = next
+			playbackRef.current?.setSkinStack(next)
+			setSkinStack(next)
+		},
+		[names.skins],
+	)
+
 	const tapAt = useCallback(
 		function tapAt(
 			point: { readonly x: number; readonly y: number },
@@ -524,7 +591,8 @@ export function useSpinePlayer(options: {
 		applyViewport,
 		getAppliedViewport,
 		capture,
-		isCompositeSkin,
+		skinStack,
+		toggleSkin,
 	}
 }
 
