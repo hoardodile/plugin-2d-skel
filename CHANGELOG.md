@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.0](https://github.com/hoardodile/plugin-2d-skel/compare/v0.1.13...v0.2.0) (2026-09-18)
+
+### Features
+
+* **render:** keep composite skins and the restored view stable ([3326a96](https://github.com/hoardodile/plugin-2d-skel/commit/3326a96793d7e1cd9b10a69d23886b26429c6632))
+
+### Bug Fixes
+
+* **render:** stop the plain skin choice from replacing a composite ([3a78a83](https://github.com/hoardodile/plugin-2d-skel/commit/3a78a83de9ca724ff5a69965e8c7de275b04708c))
+
 ## [0.1.13](https://github.com/hoardodile/plugin-2d-skel/compare/v0.1.12...v0.1.13) (2026-09-08)
 
 ## [0.1.12](https://github.com/hoardodile/plugin-2d-skel/compare/v0.1.11...v0.1.12) (2026-09-04)
