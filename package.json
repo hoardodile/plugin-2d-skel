@@ -91,7 +91,7 @@
 		"jsdom": "^30.0.1",
 		"lefthook": "^2.1.10",
 		"license-checker-rseidelsohn": "^5.0.1",
-		"lint-staged": "^17.3.0",
+		"lint-staged": "^17.5.1",
 		"release-it": "^21.0.2",
 		"shadcn": "^4.19.0",
 		"tailwindcss": "^4.3.3",
