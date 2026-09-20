@@ -1,6 +1,6 @@
 {
 	"name": "@hoardodile/plugin-2d-skel",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"private": true,
 	"license": "MIT",
 	"type": "module",

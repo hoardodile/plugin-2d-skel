@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.1](https://github.com/hoardodile/plugin-2d-skel/compare/v0.2.0...v0.2.1) (2026-09-20)
+
+### Bug Fixes
+
+* **cover:** reset upload state after saving ([9230ad1](https://github.com/hoardodile/plugin-2d-skel/commit/9230ad18a54a2fa51f446f1c9fa3508db5bdc68e))
+
 ## [0.2.0](https://github.com/hoardodile/plugin-2d-skel/compare/v0.1.13...v0.2.0) (2026-09-18)
 
 ### Features
