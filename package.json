@@ -70,7 +70,7 @@
 		"pixi-dragonbones-runtime": "7.0.0",
 		"pixi-live2d-display": "0.5.0-beta",
 		"pixi.js": "7.4.3",
-		"react": "^19.2.8",
+		"react": "^19.3.0",
 		"react-dom": "^19.2.8"
 	},
 	"devDependencies": {
@@ -84,7 +84,7 @@
 		"@testing-library/jest-dom": "^7.0.0",
 		"@testing-library/react": "^16.3.2",
 		"@types/node": "^26.1.2",
-		"@types/react": "^19.2.18",
+		"@types/react": "^19.3.0",
 		"@types/react-dom": "^19.2.4",
 		"@vitejs/plugin-react": "^6.0.5",
 		"fflate": "^0.8.3",
