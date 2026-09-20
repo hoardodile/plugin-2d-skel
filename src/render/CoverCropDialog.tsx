@@ -41,22 +41,31 @@ export function CoverCropDialog(props: {
 	}, [])
 
 	async function confirm() {
+		if (status === "saving") return
 		setStatus("saving")
 		try {
 			const cropped = await renderRef.current()
 			const dataUrl2 = await blobToDataUrl(cropped.blob)
 			const result = await submitCover(dataUrl2)
-			if (result.ok) onOpenChange(false)
-			else setStatus("error")
+			if (result.ok) {
+				setStatus("idle")
+				onOpenChange(false)
+			} else setStatus("error")
 		} catch {
 			setStatus("error")
 		}
 	}
 
+	function changeOpen(next: boolean) {
+		if (status === "saving") return
+		setStatus("idle")
+		onOpenChange(next)
+	}
+
 	return (
 		<AppDialog
 			open={open}
-			onOpenChange={onOpenChange}
+			onOpenChange={changeOpen}
 			title={t("cropCover")}
 			description={t("cropHint")}
 			size="lg"
@@ -74,7 +83,7 @@ export function CoverCropDialog(props: {
 							type="button"
 							variant="secondary"
 							size="sm"
-							onClick={() => onOpenChange(false)}
+							onClick={() => changeOpen(false)}
 							disabled={status === "saving"}
 							data-testid="crop-cancel"
 						>

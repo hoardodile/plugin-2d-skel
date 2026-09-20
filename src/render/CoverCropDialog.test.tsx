@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
+import { useState } from "react"
 import { describe, expect, test, vi } from "vitest"
 import { CoverCropDialog } from "./CoverCropDialog"
 
@@ -27,6 +28,38 @@ vi.mock("@hoardodile/ui/components/image-cropper", () => ({
 }))
 
 describe("CoverCropDialog", () => {
+	test("can upload again after a successful close and reopen", async () => {
+		const submitCover = vi.fn(async () => ({ ok: true }))
+		function Harness() {
+			const [open, setOpen] = useState(true)
+			return (
+				<>
+					<button type="button" onClick={() => setOpen(true)}>
+						reopen
+					</button>
+					<CoverCropDialog
+						open={open}
+						onOpenChange={setOpen}
+						dataUrl="data:image/png;base64,mem"
+						submitCover={submitCover}
+					/>
+				</>
+			)
+		}
+		render(<Harness />)
+		fireEvent.click(screen.getByTestId("crop-confirm"))
+		await waitFor(() =>
+			expect(screen.queryByTestId("cover-crop-dialog")).not.toBeInTheDocument(),
+		)
+		fireEvent.click(screen.getByText("reopen"))
+		expect(screen.getByTestId("crop-confirm")).toBeEnabled()
+		expect(screen.getByTestId("crop-cancel")).toBeEnabled()
+		fireEvent.click(screen.getByTestId("crop-confirm"))
+		await waitFor(() => expect(submitCover).toHaveBeenCalledTimes(2))
+		await waitFor(() =>
+			expect(screen.queryByTestId("cover-crop-dialog")).not.toBeInTheDocument(),
+		)
+	})
 	test("renders the shared cropper and the dialog buttons", () => {
 		render(
 			<CoverCropDialog
